@@ -5,7 +5,8 @@ const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
 
 // set the view engine to ejs
-// app.set("view engine", "ejs");
+app.set("view engine", "ejs");
+app.set("views", "./views");
 
 // process.env.DEPLOYMENT is set by Docker Entrypoint
 if (!process.env.DEPLOYMENT) {
@@ -28,11 +29,29 @@ app.use((request, response, next) => {
   next();
 });
 
-app.get("/", (request, response) => {
-  response.send("Hello World!");
-});
+// app.get("/", (request, response) => { ///////////////////////////////////////////
+//   response.send("Hello World!");
+// });
 
 // Your routes here ...
+app.get("/", (request, response) => {
+  response.render("pages/index");
+});
+app.get("/over-ons", (request, response) => {
+  response.render("pages/over-ons");
+});
+app.get("/bezoekers", (request, response) => {
+  response.render("pages/bezoekers");
+});
+app.get("/organisatoren", (request, response) => {
+  response.render("pages/organisatoren");
+});
+app.get("/hulp", (request, response) => {
+  response.render("pages/hulp");
+});
+app.get("/inloggen", (request, response) => {
+  response.render("pages/inloggen");
+});
 
 // Middleware for unknown routes
 // Must be last in pipeline

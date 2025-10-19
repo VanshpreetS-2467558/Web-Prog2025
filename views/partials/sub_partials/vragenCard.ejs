@@ -1,0 +1,49 @@
+
+<!-- VragenCard voor FAQ sectie -->
+
+<div class="border-2 border-gray-600 rounded-lg overflow-hidden">
+
+    <!-- vraag -->
+    <button class="w-full flex justify-between items-center px-6 py-3 text-lg font-semibold"
+            onclick="toggle(this)">
+        
+        <%= vraag %>
+        
+        <span class="transform transition-transform duration-300 rotate-0">
+            <!-- svg chevron opgezocht -->
+            <svg height="13px" width="13px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 185.343 185.343" xml:space="preserve" fill="#000000" transform="rotate(90)"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path style="fill:#010002;" d="M51.707,185.343c-2.741,0-5.493-1.044-7.593-3.149c-4.194-4.194-4.194-10.981,0-15.175 l74.352-74.347L44.114,18.32c-4.194-4.194-4.194-10.987,0-15.175c4.194-4.194,10.987-4.194,15.18,0l81.934,81.934 c4.194,4.194,4.194,10.987,0,15.175l-81.934,81.939C57.201,184.293,54.454,185.343,51.707,185.343z"></path> </g> </g> </g></svg>
+        </span>
+    </button>
+
+    <!-- antwoord -->
+    <div class="accordion-content max-h-0 overflow-hidden transition-[max-height] duration-300 ease-in-out">
+        <div class="px-6 pb-6 text-gray-600">
+            <%= antwoord %>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- javascrit voor openen/sluiten van kolom -->
+<script>
+  function toggle(btn) {
+    const content = btn.nextElementSibling;
+    const isOpen = content.classList.contains('open');
+
+    // Sluit andere envetueel open kolommen van faq
+    document.querySelectorAll('.accordion-content').forEach(c => {
+      c.style.maxHeight = null;
+      c.classList.remove('open');
+      c.previousElementSibling.querySelector('span').classList.remove('rotate-180');
+    });
+
+    // Open huidige (als hij nog niet open was)
+    if (!isOpen) {
+      content.style.maxHeight = content.scrollHeight + 'px';
+      content.classList.add('open');
+      btn.querySelector('span').classList.add('rotate-180');
+    }
+  }
+</script>

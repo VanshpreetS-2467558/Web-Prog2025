@@ -29,10 +29,10 @@ This README is part of your submission. Make sure it is clear and contains the r
 
 ## Local development
 
-install: `npm install`
-run: `node app.js`
+run: `node app.js` --> voor backend op te starten
+run: `npm run dev` --> voor tailwind tijdens dev
 
-## Deployment
+## Deployment wnr klaar
 
 build: `docker build . -t webprogramming/project`
 run: `docker run -it -p 8080:80 webprogramming/project`
@@ -48,3 +48,9 @@ run: `docker run -it -p 8080:80 webprogramming/project`
   - A statement on AI usage.
 - You can include any relevant optional artefacts, e.g., mockups, diagrams, task distribution, timesheets.
 - Don't include unnecessary files, e.g., `.git` or `node_modules`.
+
+## 2 zelf bedachte features:
+
+- Punten sparen bij aankomen en zo een gratis item krijgen voor eender evenement
+- een "wat is populair" pagina waar je kan zien wat het populairste drank/eten is bij alle evenementen die gekocht worden, welke locaties het meeste bezoekers heeft gemiddeld en andere analyses ofzo zodat organisatoren kunnen zien wat we best kunnen verkopen qua eten en drinken + welke locaties het populairste zijn
+- je kan een qr-code scannen Of applepay/ (andriod pay?) gebruiken om via gsm te betalen (NFC tyype shi)

@@ -4,12 +4,17 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tailwindcss -i ./public/css/input.css -o ./public/css/styles.css --minify",
+    "dev": "tailwindcss -i ./public/css/input.css -o ./public/css/styles.css --watch"
   },
   "dependencies": {
     "better-sqlite3": "^12.2.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-validator": "^7.2.1"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.18"
   }
 }

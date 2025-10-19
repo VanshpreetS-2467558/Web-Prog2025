@@ -1,0 +1,50 @@
+<!-- faq sectie -->
+<section class="container mx-auto px-4 py-16 text-center">
+
+    <h1 class="text-4xl font-bold mb-4">Veelgestelde vragen</h1>
+    <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">Alles wat je moet weten over FestCoin</p>
+
+    <div class="max-w-3xl mx-auto space-y-4">
+        <!-- voeg hier faq's toe met vragenCard -->
+        <%- include("sub_partials/vragenCard", {
+            vraag: "Hoe werkt het cashless munten systeem?",
+            antwoord: "Je koopt virtuele munten via de webapp met je bankkaart of andere betaalmethoden. Deze munten kun je gebruiken op het evenement. Munten die je niet gebruikt, kunnen achteraf teruggestort worden."
+        })%>
+
+        <%- include("sub_partials/vragenCard", {
+            vraag:"Is mijn geld veilig?",
+            antwoord:"Absoluut! Alle transacties zijn versleuteld volgens de hoogste beveiligingsstandaarden. Je gegevens worden beschermd met bankwaardige beveiliging en we slaan geen gevoelige betaalinformatie op."
+        })%>
+
+        <%- include("sub_partials/vragenCard", {
+            vraag:"Kan ik munten delen met vrienden?",
+            antwoord:"Ja! Je kunt een groepspot aanmaken, vrienden uitnodigen en samen betalen. Ideaal voor rondjes drank of gezamenlijke aankopen."
+        })%>
+
+        <%- include("sub_partials/vragenCard", {
+            vraag:"Kan ik als gebruiker een overzicht krijgen van de groepstransacties?",
+            antwoord:"Ja, alle uitgaven in een groepspot zijn zichtbaar voor de deelnemers, inclusief wie hoeveel heeft bijgedragen en wat er nog over is."
+        })%>
+
+        <%- include("sub_partials/vragenCard", {
+            vraag:"Hoe weet ik hoeveel ik uitgegeven heb?",
+            antwoord:"In je account kun je je muntengebruik en resterende saldo realtime volgen. Zo zie je precies wat je hebt uitgegeven en wat nog beschikbaar is."
+        })%>
+
+        <%- include("sub_partials/vragenCard", {
+            vraag:"Wat als ik mijn telefoon verlies tijdens het evenement?",
+            antwoord:"Je account is gekoppeld aan je account, niet aan je toestel. Je kunt gewoon op een ander apparaat inloggen en verdergaan waar je gebleven was."
+        })%>
+
+        <%- include("sub_partials/vragenCard", {
+            vraag:"Zijn er kosten verbonden voor organisatoren?",
+            antwoord:"De prijs hangt af van de grootte van het evenement en het gekozen plan. Vaak is er een gratis testperiode of een beperkt aantal gratis transacties."
+        })%>
+
+        <%- include("sub_partials/vragenCard", {
+            vraag:"Is er een FestCoin-app beschikbaar voor iPhone of Android?",
+            antwoord:"Nee, je kunt FestCoin voorlopig alleen gebruiken via de webapp op je smartphone, tablet of computer. Een aparte app hoef je niet te installeren."
+        })%>
+    </div>
+
+</section>
