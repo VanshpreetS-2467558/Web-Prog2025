@@ -12,14 +12,6 @@ This README is part of your submission. Make sure it is clear and contains the r
 
 ## Included
 
-**Bootstrap**
-
-- https://getbootstrap.com/
-  - `<link rel="stylesheet" href="css/bootstrap.css">`
-  - `<script src="js/bootstrap.bundle.js"></script>`
-- https://icons.getbootstrap.com/
-  - `<link rel="stylesheet" href="css/bootstrap-icons.css">`
-
 **Express**
 
 - https://expressjs.com/
@@ -30,6 +22,7 @@ This README is part of your submission. Make sure it is clear and contains the r
 ## Local development
 
 run: `node app.js` --> voor backend op te starten
+
 run: `npm run dev` --> voor tailwind tijdens dev
 
 ## Deployment wnr klaar
