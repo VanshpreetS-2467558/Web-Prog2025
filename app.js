@@ -52,6 +52,19 @@ app.get("/hulp", (request, response) => {
 app.get("/inloggen", (request, response) => {
   response.render("pages/inloggen");
 });
+app.get("/privacy" , (request,response)=>{
+  response.render("pages/privacy");
+})
+app.get("/voorwaarden" , (request,response)=>{
+  response.render("pages/voorwaarden");
+})
+app.get("/cookiebeleid" , (request,response)=>{
+  response.render("pages/cookie");
+})
+app.get("/registreren", (request,response)=>{
+  response.render("pages/registreren");
+})
+
 
 // Middleware for unknown routes
 // Must be last in pipeline
