@@ -3,29 +3,27 @@
 <section class="container mx-auto px-4 py-12 text-center">
     
     <!-- titel en subtekst van features -->
-    <h1 class="text-4xl font-bold mb-4">Waarom FestCoin?</h1>
-    <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">Alles wat je nodig hebt voor een vlekkeloos evenement, voor bezoeker als organisator!</p>
+    <h1 class="text-4xl font-bold mb-4"><%- title %></h1>
+    <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto"><%- sub %></p>
 
     <!-- grid voor feature cards-->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         <!-- card 1 -->
-        <%- include("Cards/featureCard", { 
-        icoon: "/assets/icons/fast.png", 
-        icoonAlt: "Snel betalen", 
+        <%- include("cards/featureCard", { 
+        icoon: "/assets/icons/fast.png",
         title: "Snelle transacties", 
         uitleg: "Geen lange wachtrijen meer! Betaal in seconden met een simpele scan of tap en geniet meteen van je favourite drankje!"
         }) %>
 
         <!-- card 2 -->
-        <%- include("Cards/featureCard", {
+        <%- include("cards/featureCard", {
           icoon: "/assets/icons/veilig.png",
-          icoonAlt: "Veilig betalen",
-          title: "100% veilig",
+          title: "100% veilig betalen",
           uitleg: "Geen contant geld, geen zorgen. Al je transacties zijn versleuteld en beveiligd."
         }) %>
 
         <!-- card 3 -->
-        <%- include("Cards/featureCard", {
+        <%- include("cards/featureCard", {
           icoon: "/assets/icons/live.png",
           icoonAlt: "Live inzichten",
           title: "live inzichten",
@@ -33,25 +31,22 @@
         }) %>
 
         <!-- card 4 -->
-        <%- include("Cards/featureCard", {
+        <%- include("cards/featureCard", {
           icoon: "/assets/icons/group.png",
-          icoonAlt: "Groupsbetalingen",
           title: "Groupsbetalingen",
           uitleg: "Trakteer je vrienden of split de rekening eenvoudig via groupspotten."
         }) %>
 
         <!-- card 5 -->
-        <%- include("Cards/featureCard", {
+        <%- include("cards/featureCard", {
           icoon: "/assets/icons/analytics.png",
-          icoonAlt: "analytics",
           title: "analytics voor organisatoren",
           uitleg: "Uitgebreide rapportagess, populairste items en drukste tijden in één oogopslag."
         }) %>
 
         <!-- card 6 -->
-        <%- include("Cards/featureCard", {
+        <%- include("cards/featureCard", {
           icoon: "/assets/icons/coins.png",
-          icoonAlt: "Eenvoudig munten systeem",
           title: "Eenvoudig munten systeem",
           uitleg: "Laad munten op, betaal overal op het evenement. Simpel en overzichtelijk"
         }) %>

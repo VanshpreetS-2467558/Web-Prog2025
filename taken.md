@@ -25,3 +25,5 @@
 - ... ?
 
 ## taal van engels <-> nederlands kunnen veranderne, bij footer?
+
+## partials folder in views overzichterlijker maken!

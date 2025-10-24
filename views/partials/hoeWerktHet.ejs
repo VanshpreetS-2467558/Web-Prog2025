@@ -1,0 +1,28 @@
+<section class="container mx-auto px-4 py-12 text-center">
+
+    <h1 class="text-4xl font-bold mb-4">Hoe werkt het?</h1>
+    <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">Het is simpel en snel!</p>
+
+    <!-- stappen -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <%- include("cards/stappen", {
+            icoon: "/assets/icons/register.png",
+            icoonAlt: "registreren",
+            title: "Registreer als bezoeker",
+            uitleg: "Maak een gratis bezoeker account aan."
+        }) %>
+        <%- include("cards/stappen", {
+            icoon: "/assets/icons/coins.png",
+            icoonAlt: "FestCoins opladen",
+            title: "Laad FestCoins op je account",
+            uitleg: "Koop FestCoins met je favourite betaalmethoden. Veilig en versleuteld!"
+        }) %>
+        <%- include("cards/stappen", {
+            icoon: "/assets/icons/qr.png",
+            icoonAlt: "QR-code scannen om te betalen",
+            title: "Scan & betaal",
+            uitleg: "Scan de QR-code bij de standjes, betaal in seconden en geniet van je drankje/maaltijd. Geen wachtrijen, geen gedoe!"
+        }) %>
+    </div>
+
+</section>

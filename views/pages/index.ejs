@@ -22,9 +22,18 @@
             knop2: "Start als organisator"
         }) %>
 
-        <%- include("../partials/features") %>
+        <%- include("../partials/features", {
+            title: "Waarom FestCoin?",
+            sub: "Alles wat je nodig hebt voor een vlekkeloos evenement, voor bezoeker als organisator!",
+        }) %>
+
         <%- include("../partials/faq") %>
-        <%- include("../partials/cta") %>
+        
+        <%- include("../partials/cta", {
+            title: "Klaar om volledig los te gaan?", 
+            sub:"Sluit je aan bij duizenden bezoekers en honderden evenementen die al kiezen voor FestCoin"
+        }) %>
+        
     </main>
 
     <!-- Footer -->

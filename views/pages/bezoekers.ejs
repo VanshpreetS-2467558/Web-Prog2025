@@ -19,10 +19,25 @@
         }) %>
 
         <!-- Hoe werkt het sectie -->
+        <%- include("../partials/hoeWerktHet") %>
+
         <!-- Waarom FestCoin -->
+        <%- include("../partials/waarom") %>
+
         <!-- features op bezoekers gericht -->
+        <%- include("../partials/features", {
+            title: "Alles wat je nodig hebt",
+            sub: "FestCoin is de toekomst voor evenementen"
+        }) %> 
+
         <!-- faq op bezoekers gericht -->
+        <%- include("../partials/faq") %>
+
         <!-- CTA -->
+        <%- include("../partials/cta",{
+            title:"Klaar voor je volgende evenement?",
+            sub:"Maak nu een gratis account aan en ervaar het gemak en kracht van FestCoin",
+        }) %>
     </main>
 
     <!-- footer -->
