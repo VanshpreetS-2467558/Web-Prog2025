@@ -12,11 +12,13 @@
 
     <!-- body -->
     <main class="pt-16">
-        <h1 class="bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">ORGANISATOREN</h1>
-        <p>Voeg hier ORGANISATOREN pagina toe</p>
-
         <!-- hero sectie -->
+        <%- include("../partials/hero", {
+            title:"Verhoog je omzet,<br/>Verlaag je kosten",
+            subtext: "FestCoin helpt orgaisatoren om transacties te versnellen, kosten te verlagen en realtime inzichten bij te krijgen",
+        }) %>
         <!-- waarom voor organisatoren -->
+        <%- include("../partials/waarom", {sub:"De voordelen om jouw evenement vlekkeloos te laten verlopen",daarom: organisatoren_redenen}) %>
         <!-- Extra technical info voor organisatoren -->
         <!-- review sectie van andere organisatoren ? -->
         <!-- FAQ gericht op organisatoren -->

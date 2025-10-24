@@ -1,5 +1,6 @@
 import express from "express";
 import { InitializeDatabase } from "./db.js";
+import { bezoeker_redenen, organisatoren_redenen } from "./data/bezoekerVSorganisator.js";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
@@ -41,10 +42,10 @@ app.get("/over-ons", (request, response) => {
   response.render("pages/over-ons");
 });
 app.get("/bezoekers", (request, response) => {
-  response.render("pages/bezoekers");
+  response.render("pages/bezoekers", {bezoeker_redenen});
 });
 app.get("/organisatoren", (request, response) => {
-  response.render("pages/organisatoren");
+  response.render("pages/organisatoren", {organisatoren_redenen});
 });
 app.get("/hulp", (request, response) => {
   response.render("pages/hulp");

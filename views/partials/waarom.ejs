@@ -1,40 +1,12 @@
 <section class="container mx-auto px-4 py-12 text-center">
 
     <h1 class="text-4xl font-bold mb-4">Waarom overstappen naar FestCoin?</h1>
-    <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">Het is meer dan gewoon betalen</p>
+    <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto"><%= sub %></p>
 
     <!-- stappen -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
-        <%- include("cards/daaromCard", {
-            icoon: "/assets/icons/budget_alert.png",
-            title: "Slimme budget alerts",
-            uitleg: "Stel je budget in en ontvang een email of gsm-berichtje als je bijna doorheen je budget bent! Zo moet je niet gaan tellen hoeveel je uitgeeft en kan je gewoon lekker genieten van het evenement"
-        }) %>
-        <%- include("cards/daaromCard", {
-            icoon: "/assets/icons/refund.png",
-            title: "Terugstorten mogelijk",
-            uitleg: "Na een evenement nog bonnetjes over? Dat is verleden tijd met FestCoins! Heb je er nog over die je niet wilt gebruiken? Laat ze simpel en zonder extra kosten terugstorten op je zichtrekening."
-        }) %>
-        <%- include("cards/daaromCard", {
-            icoon: "/assets/icons/analytics.png",
-            title: "Inzichten over je uitgaven",
-            uitleg: "Bekijk in real-time waar je geld naartoe gaat met duidelijke grafieken en slimme inzichten. Krijg budgetalerts wanneer je bijna over je limiet gaat, volg je uitgaven per categorie en houd altijd overzicht over je financiën – alles op één plek."
-        }) %>
-        <%- include("cards/daaromCard", {
-            icoon: "/assets/icons/group.png",
-            title: "Split & share",
-            uitleg: "Ga je uit met vrienden? Maak een groeppot aan, nodig vrienden uit om bij te dragen, en betaal samen. Perfect voor rondjes."
-        }) %>
-        <%- include("cards/daaromCard", {
-            icoon: "/assets/icons/veilig.png",
-            title: "Beveiligde transacties",
-            uitleg: "Al je transacties zijn versleuteld met dezelfde beveiliging als online bankieren. Zo moet je geen zorgen maken over je betalingen!"
-        }) %>
-        <%- include("cards/daaromCard", {
-            icoon: "/assets/icons/loyalty.png",
-            title: "Loyalty-programma",
-            uitleg: "Verzamel punten per transactie en krijg exclusieve voordelen. Hoe meer je FestCoin gebruikt, hoe meer je bespaart!"
-        }) %>
+        <% daarom.forEach(card => { %>
+            <%- include("cards/daaromCard", card) %>
+        <% }) %>
     </div>
-
 </section>
