@@ -13,7 +13,15 @@
 
     <!-- main -->
     <main class="pt-16">
-        <%- include("../partials/hero") %>
+
+        <%- include("../partials/hero", {
+            img: "./assets/tomorrowland.jpg",
+            title: "Cashless betalingen<br>voor jouw evenement", 
+            subtext: "Maak betalen op evenementen moeiteloos. <br/>Perfect voor festivals, concerten en grote evenementen.",
+            knop1:"Start als bezoeker",
+            knop2: "Start als organisator"
+        }) %>
+
         <%- include("../partials/features") %>
         <%- include("../partials/faq") %>
         <%- include("../partials/cta") %>

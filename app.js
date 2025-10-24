@@ -75,7 +75,7 @@ app.use((request, response, next) => {
 // Middleware for error handling
 app.use((error, request, response, next) => {
   console.error(error.stack);
-  response.status(500).send("Something broke!");
+  response.status(500).render("error_pages/500");
 });
 
 // App starts here

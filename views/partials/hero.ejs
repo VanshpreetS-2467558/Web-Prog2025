@@ -3,35 +3,38 @@
 <section class="relative overflow-hidden" style="min-height: calc(100vh - 4rem);">
   
   <!-- background foto + gradient overlay -->
-  <div class="absolute inset-0 bg-gradient-to-br from-blue-100 via-transparent to-pink-100"></div>
-  <div class="absolute inset-0 opacity-10 bg-cover bg-center" style="background-image: url('./assets/tomorrowland.jpg');"></div>
+  <div class="absolute inset-0 bg-gradient-to-br from-pink-300 via-transparent to-purple-300"></div>
+  <% if (typeof img !== "undefined") { %>
+  <div class="absolute inset-0 opacity-10 bg-cover bg-center" style="background-image: url('<%= img %>');"> </div>
+  <% } %>
 
   <!-- hero sectie -->
   <div class="container mx-auto px-4 relative z-10 flex items-center justify-center" style="min-height: calc(100vh - 4rem);">
     <div class="max-w-4xl text-center">
 
       <!-- titel -->
-      <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent leading-tight">
-        Cashless betalingen
-        <br>
-        voor jouw evenement
+      <h1 class="text-5xl md:text-7xl font-bold mb-6 pb-3 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+        <%- title %>
       </h1>
 
       <!-- subtekst -->
       <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
-        Maak betalen op evenementen moeiteloos. <br/>
-        Perfect voor festivals, concerten en grote evenementen.
+        <%- subtext %>
       </p>
 
       <!-- knoppen -->
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
 
-        <a href="/bezoekers" class="px-8 py-3 text-lg font-semibold rounded-full text-purple-500 border-2 border-purple-500 hover:bg-purple-500 hover:text-white transition-colors duration-300">
-          Start als bezoeker
-        </a>
-        <a href="/organisatoren" class="px-8 py-3 text-lg font-semibold rounded-full text-pink-500 border-2 border-pink-500 hover:bg-pink-500 hover:text-white transition-colors duration-300">
-          Start als organisator
-        </a>
+        <% if(typeof knop1 !== "undefined") { %>
+          <a href="/bezoekers" class="px-8 py-3 text-lg font-semibold rounded-full text-purple-500 border-2 border-purple-500 hover:bg-purple-500 hover:text-white transition-colors duration-300">
+            <%= knop1 %>
+          </a>
+        <% } %>
+        <% if(typeof knop2 !== "undefined") { %>
+          <a href="/organisatoren" class="px-8 py-3 text-lg font-semibold rounded-full text-pink-500 border-2 border-pink-500 hover:bg-pink-500 hover:text-white transition-colors duration-300">
+            <%= knop2 %>
+          </a>
+        <% } %>
       </div>
 
     </div>

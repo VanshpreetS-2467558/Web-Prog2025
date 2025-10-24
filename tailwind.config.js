@@ -1,3 +1,5 @@
+import { text } from 'express';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
