@@ -12,6 +12,7 @@ tmp/
 .cache/
 .next/
 out/
+public/css/styles.css
 
 # Environment variables
 .env
