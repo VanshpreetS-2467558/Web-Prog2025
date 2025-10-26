@@ -2,8 +2,6 @@
 
 ## Over ons pagina style
 
-## Bezoekers en Organisatoren pagina stylen
-
 ## Hulp/FAQ pagina stylen
 
 ## Privacybeleid pagina stylen
@@ -11,8 +9,6 @@
 ## Aglemene voorwaarden pagina stylen
 
 ## Cookiebeleid stylen
-
-## 404 en 500 pagina stylen
 
 ## authentication mogelijk maken en zorgen dat "inloggen" vervangen wordt door profiel/user knop
 
@@ -26,4 +22,4 @@
 
 ## taal van engels <-> nederlands kunnen veranderne, bij footer?
 
-## partials folder in views overzichterlijker maken!
+## partials folder in views overzichterlijker maken?
