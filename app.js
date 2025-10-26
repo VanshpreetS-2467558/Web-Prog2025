@@ -1,6 +1,6 @@
 import express from "express";
+import router from "./routes/routes.js";
 import { InitializeDatabase } from "./db.js";
-import { bezoeker_redenen, organisatoren_redenen, faq_home, faq_bezoekers, faq_org } from "./data/bezoekerVSorganisator.js";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
@@ -35,36 +35,7 @@ app.use((request, response, next) => {
 // });
 
 // Your routes here ...
-app.get("/", (request, response) => {
-  response.render("pages/index", {faq_home});
-});
-app.get("/over-ons", (request, response) => {
-  response.render("pages/over-ons");
-});
-app.get("/bezoekers", (request, response) => {
-  response.render("pages/bezoekers", {bezoeker_redenen, faq_bezoekers});
-});
-app.get("/organisatoren", (request, response) => {
-  response.render("pages/organisatoren", {organisatoren_redenen, faq_org});
-});
-app.get("/hulp", (request, response) => {
-  response.render("pages/hulp");
-});
-app.get("/inloggen", (request, response) => {
-  response.render("pages/inloggen");
-});
-app.get("/privacy" , (request,response)=>{
-  response.render("pages/privacy");
-})
-app.get("/voorwaarden" , (request,response)=>{
-  response.render("pages/voorwaarden");
-})
-app.get("/cookiebeleid" , (request,response)=>{
-  response.render("pages/cookie");
-})
-app.get("/registreren", (request,response)=>{
-  response.render("pages/registreren");
-})
+app.use("/", router);
 
 
 // Middleware for unknown routes
