@@ -24,14 +24,8 @@
         <!-- Waarom FestCoin -->
         <%- include("../partials/waarom", {sub:"Het is meer dan gewoon betalen" ,daarom: bezoeker_redenen}) %>
 
-        <!-- features op bezoekers gericht -->
-        <%- include("../partials/features", {
-            title: "Alles wat je nodig hebt",
-            sub: "FestCoin is de toekomst voor evenementen"
-        }) %> 
-
         <!-- faq op bezoekers gericht -->
-        <%- include("../partials/faq") %>
+        <%- include('../partials/faq' , {faq: faq_bezoekers}) %>
 
         <!-- CTA -->
         <%- include("../partials/cta",{
