@@ -16,8 +16,8 @@ router.get("/bezoekers", (request, response) => {
 router.get("/organisatoren", (request, response) => {
   response.render("pages/organisatoren", {organisatoren_redenen, faq_org});
 });
-router.get("/hulp", (request, response) => {
-  response.render("pages/hulp");
+router.get("/klantenservice", (request, response) => {
+  response.render("pages/klantenservice");
 });
 router.get("/inloggen", (request, response) => {
   response.render("pages/inloggen");
