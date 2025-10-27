@@ -1,4 +1,8 @@
-## Zorgen dat alles responsive is voor grotere/kleinere schermen (->tailwind classes)
+## Zorgen dat alles responsive is voor grotere/kleinere schermen (->tailwind classes) ( ZO GOED ALS ALLES IS RESPONSIEF , behalve footer en header normaal)
+
+## Organisator pagina style -- KLAAR
+
+## Bezoeker pagina stylen -- KLAAR
 
 ## Over ons pagina style
 
@@ -12,15 +16,9 @@
 
 ## bij login/register maken zodat wachtwoord min 8 tekens moet zijn met hoofdletter, ... , en REGIX voor email en gsm ??
 
-## authentication mogelijk maken en zorgen dat "inloggen" vervangen wordt door profiel/user knop
+## authentication mogelijk maken en zorgen dat "inloggen" vervangen wordt door profiel/user knop -- KLAAR
 
-## zorgen dat je profiel/user knop dropdown menu heeft en naar profiel settings kan.
-
-- bezoeker/organisator profiel (hangt af welke je bent)
-- balance (voor bezoekers?)
-- profiel settings
-- uitloggen
-- ... ?
+## zorgen dat je profiel/user knop dropdown menu heeft en naar profiel settings kan. -- KLAAR
 
 ## taal van engels <-> nederlands kunnen veranderne, bij footer?
 

@@ -1,3 +1,8 @@
+## Test accounts
+
+bezoeker: email: bezoeker123@gmail.com - wachtwoord: test
+organisator: email: org@gmail.com - wachtwoord: test
+
 # Web programming project skeleton
 
 A skeleton that provides some of the basics to get starting with the web programming project.

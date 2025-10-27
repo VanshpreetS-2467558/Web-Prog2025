@@ -1,0 +1,48 @@
+<script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
+
+<% if(user.role === "bezoeker") { %>
+    <el-dropdown class="inline-block relative">
+        <button class="inline-flex w-full justify-center py-1 font-semibold border-b-2 border-transparent hover:border-pink-500 transition-all duration-500">
+            <%= user.name %>
+            <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="-mr-1 size-5 text-gray-400">
+                <path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
+            </svg>
+        </button>
+
+        <el-menu anchor="bottom end" popover class="absolute top-full right-0 mt-2 w-52 rounded-md bg-white shadow-lg outline-2">
+            <div class="py-1">
+                <p class="block px-4 py-2 font-bold bg-gradient-to-br from-purple-500 via-pink-400 to-pink-600 bg-clip-text text-transparent">
+                    FestCoins: <%= user.FestCoins %>
+                </p>
+            </div>
+            <div class="py-1">
+                <a href="#" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100 focus:text-blue-500 focus:outline-hidden">Profiel</a>
+                <a href="#" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100 focus:text-blue-500 focus:outline-hidden">Actieve evenementen</a>
+                <a href="/klantenservice" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100 focus:text-blue-500 focus:outline-hidden">klantenservice</a>
+            </div>
+            <div class="py-1">
+                <a href="logout" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100 focus:text-blue-500 focus:outline-hidden">Uitloggen</a>
+            </div>
+        </el-menu>
+    </el-dropdown>
+<% } else { %>
+    <el-dropdown class="inline-block relative">
+        <button class="inline-flex w-full justify-center py-1 font-semibold border-b-2 border-transparent hover:border-pink-500 transition-all duration-500">
+            <%= user.name %>
+            <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="-mr-1 size-5 text-gray-400">
+                <path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
+            </svg>
+        </button>
+
+        <el-menu anchor="bottom end" popover class="absolute top-full right-0 mt-2 w-52 rounded-md bg-white shadow-lg outline-2">
+            <div class="py-1">
+                <a href="#" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100 focus:text-blue-500">Profiel</a>
+                <a href="#" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100 focus:text-blue-500 focus:outline-hidden">Beheer Evenementen</a>
+                <a href="/klantenservice" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100 focus:text-blue-500 focus:outline-hidden">klantenservice</a>
+            </div>
+            <div class="py-1">
+                <a href="logout" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100 focus:text-blue-500 focus:outline-hidden">Uitloggen</a>
+            </div>
+        </el-menu>
+    </el-dropdown>
+    <% } %>

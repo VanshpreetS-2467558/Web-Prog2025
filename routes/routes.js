@@ -38,6 +38,17 @@ router.get("/registreren", (request,response)=>{
   response.render("pages/registreren");
 })
 
+// GET-ROUTE voor uitloggen ? IPV POST MET FORM HTLM? ??????????????????????????????????????????????????????????????????????????????????????????????????
+router.get("/logout", (req,res) => {
+  req.session.destroy(err => {
+    if(err){
+      console.error(err);
+      return res.status(500).send("kon niet uitleggen");
+    }
+    res.redirect("/home");
+  })
+})
+
 
 // register POST
 router.post("/register", async (req,res) => {
@@ -53,12 +64,15 @@ router.post("/register", async (req,res) => {
 
   // probeert het in database te stoppen
   try{
+    // bezoekers krijgen 0 getal en org. krijgen null want moeten niet met festcoins werken
+    const festCoins = role === "bezoeker" ? 0 : null;
+    const cleanEmail = email.trim().toLowerCase();
     const newUser = db.prepare(`
-      INSERT INTO users (role, name, email, phone, password) VALUES (?, ?, ?, ?, ?)  
-    `).run(role, name, email, phone, hashedPass);
+      INSERT INTO users (role, name, email, phone, password, FestCoins) VALUES (?, ?, ?, ?, ?, ?)  
+    `).run(role, name, cleanEmail, phone, hashedPass, festCoins);
     
     // maakt sessie aan voor gebruiker
-    req.session.user = {id: newUser.lastInsertRowid, name, role};
+    req.session.user = {id: newUser.lastInsertRowid, name, role , festCoins};
     res.redirect("/home");
 
   } catch (err){
@@ -75,14 +89,14 @@ router.post("/login", async (req, res) => {
 
   // haalt user data op door email , zo niet dan error
   const user = db.prepare("SELECT * FROM users WHERE email = ?").get(email.trim().toLowerCase());
-  if (!user) return res.render("pages/inloggen", { error: "Email of wachtwoord is fout" });
+  if (!user) return res.render("pages/inloggen", { error: "Dit e-mailadres is nog niet in gebruik. Maak een nieuw account aan." });
 
   // kijkt of wachtwoord matched; anders weer error
   const match = await bcrypt.compare(password, user.password);
   if (!match) return res.render("pages/inloggen", { error: "Email of wachtwoord is fout" });
 
   // sessie opslaan en redirect
-  req.session.user = { id: user.id, name: user.name, role: user.role };
+  req.session.user = { id: user.id, name: user.name, role: user.role , FestCoins: user.FestCoins };
   res.redirect("/home");
 });
 
