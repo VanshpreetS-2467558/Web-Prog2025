@@ -1,6 +1,4 @@
-## Zorgen dat alles responsive is voor grotere/kleinere schermen (->tailwind classes) ( ZO GOED ALS ALLES IS RESPONSIEF , behalve footer en header normaal)
-
-## Over ons pagina style
+## Zorgen dat alles responsive is voor grotere/kleinere schermen (->tailwind classes) ( ZO GOED ALS ALLES IS RESPONSIEF , behalve footer en header niet normaal)
 
 ## Hulp/FAQ pagina stylen
 

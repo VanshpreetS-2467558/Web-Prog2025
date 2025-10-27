@@ -34,7 +34,7 @@ export const features_main = [
 
 // FAQ per paginq
 export const faq_home = [
-    {vraag: "Hoe werkt FestCoint?", antwoord: "Koop digitale munten via de webapp en betaal overal op het evenement. Geen cash, geen bonnetjes — alles digitaal."},
+    {vraag: "Hoe werkt FestCoint?", antwoord: "Koop digitale munten via de webapp en betaal overal op het evenement. Geen cash, geen bonnetjes - alles digitaal."},
     {vraag:"Is mijn geld veilig?", antwoord: "Ja, absoluut! Alle transacties zijn versleuteld en beveiligd"},
     {vraag: "Moet ik iets installeren?", antwoord:"Nee, voorlopig werkt FestCoin gewoon via de webapp op je smartphone of computer."},
     {vraag:"Kan ik munten delen met vrienden?", antwoord:"Zeker! Je kunt een groepspot aanmaken, vrienden uitnodigen en samen betalen. Ideaal voor rondjes drank of gezamenlijke aankopen."},

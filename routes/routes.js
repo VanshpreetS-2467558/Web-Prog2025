@@ -1,8 +1,9 @@
 import express from "express";
-import { bezoeker_redenen, organisatoren_redenen, faq_home, faq_bezoekers, faq_org } from "../data/bezoekerVSorganisator.js";
 const router = express.Router();
 import bcrypt from "bcrypt";
-import { db } from "../db.js"; 
+import { db } from "../db.js";
+import { bezoeker_redenen, organisatoren_redenen, faq_home, faq_bezoekers, faq_org } from "../data/bezoekerVSorganisator.js";
+import {bezoekerStappen, groepspotStappen, organisatorStappen} from "../data/hoeWerktHetData.js" 
 
 
 // GET
@@ -10,8 +11,9 @@ router.get("/", (req, res) => res.redirect("/home"));
 router.get("/home", (req, res) => {
   res.render("pages/index", { faq_home });
 });
-router.get("/over-ons", (request, response) => {
-  response.render("pages/over-ons");
+router.get("/HoeWerktFestCoin", (request, response) => {
+  const zichtbaar = request.query.zichtbaar || "bezoeker";
+  response.render("pages/instructies", {zichtbaar,bezoekerStappen, groepspotStappen, organisatorStappen});
 });
 router.get("/bezoekers", (request, response) => {
   response.render("pages/bezoekers", {bezoeker_redenen, faq_bezoekers});

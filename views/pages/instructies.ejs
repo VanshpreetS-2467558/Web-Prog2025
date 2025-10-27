@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/styles.css">
-    <title>Over ons - FestCoin</title>
+    <title>Hoe werkt FestCoin - FestCoin</title>
 </head>
 <body>
     <!-- Header -->
@@ -12,11 +12,12 @@
 
     <!-- body -->
     <main class="pt-16">
-        <p>Voeg hier over-ons pagina toe</p>
-        <!-- hero voor over ons -->
-        <!-- ons verhaal? (missie en visie) -->
-        <!-- onze doelen/kern -->
-        <!-- contact info (email, telefonisch en live chat) -->
+        <%- include("../partials/instructie", {
+            bezoekerStappen,
+            organisatorStappen,
+            groepspotStappen,
+            zichtbaar
+        })%>
     </main>
 
     <!-- footer -->

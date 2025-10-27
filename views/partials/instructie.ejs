@@ -1,0 +1,82 @@
+<section class="py-16">
+    <div class="max-w-5xl mx-auto text-center">
+        <h1 class="text-7xl font-bold mb-5 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            Hoe Werkt FestCoin?
+        </h1>
+    <p class="text-lg text-gray-800 mb-5">
+        Simpel, snel en veilig betalen op evenementen. Kies je rol en ontdek hoe het werkt.
+    </p>
+
+    <!-- knoppen -->
+    <div class="flex justify-center gap-4 mb-16">
+        <a href="/HoeWerktFestCoin?zichtbaar=bezoeker" class="px-6 py-2 rounded font-semibold shadow-lg <%= zichtbaar === 'bezoeker' ? 'bg-purple-500 text-white' : 'border-2' %>">
+            Bezoeker
+        </a>
+        <a href="/HoeWerktFestCoin?zichtbaar=organisator" class="px-6 py-2 rounded font-semibold <%= zichtbaar === 'organisator' ? 'bg-purple-500 text-white' : 'border-2' %>">
+            Organisator
+        </a>
+    </div>
+
+
+    <!-- stappen tonen bij keuze van knoppen -->
+    <div>
+        <% const stappen = zichtbaar === 'bezoeker' ? bezoekerStappen : organisatorStappen; %>
+        <% stappen.forEach((step, index) => { %>
+            <div class="mb-10 flex flex-col md:flex-row <%= index % 2 === 0 ? '' : 'md:flex-row-reverse' %> items-center relative"> <!-- voor zig zag patroon -->
+                <!-- index stap -->
+                <div class="absolute left-8 md:left-1/2 w-6 h-6 md:w-12 md:h-12 rounded-full bg-purple-500 text-white flex items-center justify-center text-lg font-bold transform -translate-x-1/2">
+                    <%= step.stap %>
+                </div>
+
+                <!-- Cards -->
+                <div class="w-full md:w-1/2 bg-white border rounded shadow p-4 <%= index % 2 === 0 ? 'md:mr-auto md:pr-8' : 'md:ml-auto md:pl-8' %>">
+                    <div class="flex gap-2 items-center">
+                        <div class="p-3 rounded">
+                            <img src="<%= step.icon %>" alt="<%= step.title %>" class="w-10 h-10">
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold mb-2"><%= step.title %></h3>
+                            <p class="text-gray-800"><%= step.beschrijving %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+
+    <!-- uitleg voor groepspotten enkel tonen bij bezoekers -->
+    <% if(zichtbaar === 'bezoeker') { %>
+        <h1 class="text-5xl font-bold mb-6 pt-20 pb-2 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            Hoe maak je een groepspot aan?
+        </h1>
+        <p class="text-lg text-gray-700 mb-8">
+            Bestel samen met vrienden en deel de kosten!
+        </p>
+
+        <div>
+            <% groepspotStappen.forEach((step, index) => { %>
+                <div class="mb-10 flex flex-col md:flex-row <%= index % 2 === 0 ? '' : 'md:flex-row-reverse' %> items-center relative">
+                    <!-- Number Circle -->
+                    <div class="absolute left-8 md:left-1/2 w-6 h-6 md:w-12 md:h-12 rounded-full bg-purple-500 text-white flex items-center justify-center text-lg font-bold transform -translate-x-1/2">
+                        <%= step.stap %>
+                    </div>
+
+                    <!-- Card -->
+                    <div class="w-full md:w-1/2 bg-white border rounded shadow p-4 <%= index % 2 === 0 ? 'md:mr-auto md:pr-8' : 'md:ml-auto md:pl-8' %>">
+                        <div class="flex gap-2 items-center">
+                            <div class="p-3 rounded">
+                                <img src="<%= step.icon %>" alt="<%= step.title %>" class="w-10 h-10">
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-bold mb-2"><%= step.title %></h3>
+                                <p class="text-gray-800"><%= step.beschrijving %></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } %>
+
+  </div>
+</section>
