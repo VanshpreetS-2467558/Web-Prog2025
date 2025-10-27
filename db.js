@@ -1,8 +1,8 @@
 import Database from "better-sqlite3";
 
-const db = new Database("database.db", { verbose: console.log });
+export const db = new Database("database.db", { verbose: console.log });
 
-export function InitializeDatabase() {
+export function InitializeDatabase() { // moet async als we gaan hashen (met bcrypt?)
   db.pragma("journal_mode = WAL;");
   db.pragma("busy_timeout = 5000;");
   db.pragma("synchronous = NORMAL;");
@@ -10,16 +10,14 @@ export function InitializeDatabase() {
   db.pragma("foreign_keys = true;");
   db.pragma("temp_store = memory;");
 
-  db.prepare("CREATE TABLE IF NOT EXISTS users (name TEXT) STRICT").run();
-
-  const exampleUsers = [
-    { name: "Peter" },
-    { name: "Jori" },
-    { name: "Joris" },
-    { name: "Mike" },
-  ];
-  const insertUser = db.prepare("INSERT INTO users (name) VALUES (?)");
-  exampleUsers.forEach((user) => {
-    insertUser.run(user.name);
-  });
+ db.prepare(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role TEXT,
+    name TEXT,
+    email TEXT UNIQUE,
+    phone TEXT,
+    password TEXT
+  ) STRICT
+`).run();
 }

@@ -15,7 +15,7 @@
         </div>
 
         <!-- form voor registratie -->
-        <form action="" class="space-y-4">
+        <form action="/register" method="POST" class="space-y-4">
 
             <!-- rol kiezen (bezoeker of organisator)-->
             <div>
@@ -73,6 +73,11 @@
                     class="w-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-white py-2 rounded-lg font-semibold hover:opacity-90 shadow-md">
                 Account aanmaken ➜
             </button>
+
+            <!-- error -->
+            <% if(typeof error !== "undefined") { %>
+                <p class="font-thin text-red-600 "><%= error %></p>
+            <% } %>
         </form>
 
         <div class="mt-6 text-center">

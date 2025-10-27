@@ -10,6 +10,8 @@
 
 ## Cookiebeleid stylen
 
+## bij login/register maken zodat wachtwoord min 8 tekens moet zijn met hoofdletter, ... , en REGIX voor email en gsm ??
+
 ## authentication mogelijk maken en zorgen dat "inloggen" vervangen wordt door profiel/user knop
 
 ## zorgen dat je profiel/user knop dropdown menu heeft en naar profiel settings kan.

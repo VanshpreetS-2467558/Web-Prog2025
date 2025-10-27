@@ -24,9 +24,15 @@
           klantenservice
         </a> -->
 
-        <a href="/inloggen" class="py-1 font-semibold border-b-2 border-transparent hover:border-blue-500 transition-all duration-500">
-          Inloggen
-        </a>
+        <% if(!user) { %>
+          <a href="/inloggen" class="py-1 font-semibold border-b-2 border-transparent hover:border-blue-500 transition-all duration-500">
+            Inloggen
+          </a>
+        <% } else { %>
+            <a href="#" class="py-1 font-semibold border-b-2 border-transparent hover:border-blue-500 transition-all duration-500" >
+              <%= user.name %>
+            </a>
+        <% } %>
 
     </div>
 

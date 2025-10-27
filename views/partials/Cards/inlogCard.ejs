@@ -10,16 +10,16 @@
         <h2 class="text-xl font-semibold mt-3 mb-2">Inloggen</h2>
     
         <!-- inlog form -->
-        <form action="" class="space-y-4">
+        <form action="/login" method="POST" class="space-y-4">
             <div>
                 <label class="block text-sm font-medium mb-1" for="email">Email</label>
-                <input type="email" id="email" class="w-full border rounded px-3 py-2" placeholder="Email">
+                <input type="email" id="email" name="email" class="w-full border rounded px-3 py-2" placeholder="Email">
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1" for="password">Wachtwoord</label>
                 <div class="relative">
-                    <input type="password" id="wachtwoord" class="w-full border rounded px-3 py-2 pr-10" placeholder="Wachtwoord">
-                    <button type="button" id="togglePassword" class="absolute right-2 top-3">
+                    <input type="password" name="password" id="wachtwoord" class="w-full border rounded px-3 py-2 pr-10" placeholder="Wachtwoord">
+                    <button type="button" id="togglePassword" name="password" class="absolute right-2 top-3">
                         <!-- SVG van oog open (https://heroicons.com/)-->
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 oog-open">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
@@ -35,13 +35,16 @@
 
             <!-- wachtwoord vergeten -->
             <div class="text-right text-sm">
-                <a href="/home" class="text-blue-500 hover:underline">Wachtwoord vergeten?</a>
+                <a href="/404" class="text-blue-500 hover:underline">Wachtwoord vergeten?</a>
             </div>
 
             <!-- Inloggen knop-->
-            <button type="sumbit" class="w-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-white py-2 rounded hover:bg-blue-600 transition">
+            <button type="submit" class="w-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-white py-2 rounded hover:bg-blue-600 transition">
                 Inloggen
             </button>
+            <% if(typeof error !== "undefined") { %>
+                <p class="font-thin text-red-600 "><%= error %></p>
+            <% } %>
         </form>
 
         <!-- nieuwe account aanmaken -->
