@@ -1,28 +1,18 @@
 ## Zorgen dat alles responsive is voor grotere/kleinere schermen (->tailwind classes) ( ZO GOED ALS ALLES IS RESPONSIEF , behalve footer en header normaal)
 
-## Organisator pagina style -- KLAAR
-
-## Bezoeker pagina stylen -- KLAAR
-
 ## Over ons pagina style
 
 ## Hulp/FAQ pagina stylen
 
-## Privacybeleid pagina stylen
-
 ## Aglemene voorwaarden pagina stylen
 
-## Cookiebeleid stylen
-
 ## bij login/register maken zodat wachtwoord min 8 tekens moet zijn met hoofdletter, ... , en REGIX voor email en gsm ??
-
-## authentication mogelijk maken en zorgen dat "inloggen" vervangen wordt door profiel/user knop -- KLAAR
-
-## zorgen dat je profiel/user knop dropdown menu heeft en naar profiel settings kan. -- KLAAR
 
 ## taal van engels <-> nederlands kunnen veranderne, bij footer?
 
 ## partials folder in views overzichterlijker maken?
+
+## na al deze taken grote backend bullshit beginnen en front end van hele werking. (ook kijken hoe we gsm ding gaan regelen)
 
 werking:
 
