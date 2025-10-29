@@ -1,5 +1,6 @@
 import express from "express";
 import router from "./routes/routes.js";
+import authenticationRouter from "./routes/authenticationRoutes.js";
 import { InitializeDatabase } from "./db.js";
 import session from "express-session";
 
@@ -55,6 +56,7 @@ app.use((req, res, next) => {
 
 // Your routes here ...
 app.use("/", router);
+app.use("/", authenticationRouter);
 
 
 // Middleware for unknown routes
