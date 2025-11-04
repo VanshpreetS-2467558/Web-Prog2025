@@ -29,3 +29,5 @@ werking:
 
 - QR-codes zijn max 15 min geldig en dan is 'bestelling' zwz gecanceld, bij groupspot krrijgen alle personen die bijgedragen hebben hun FestCoins automatisch terug dan.
 - 1 FestCoin is 1 Euro. Omdat veel evenementen andere prijzen hebben en ook decimalen, werkt coins ook met decimalen, enkel FestCoin bijkopen kan met gehele getallen
+
+- Functionaliteit van QR code op laptop/pc beperkt houden

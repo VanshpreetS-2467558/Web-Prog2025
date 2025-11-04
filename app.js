@@ -36,7 +36,7 @@ if (!process.env.DEPLOYMENT) {
 app.use(express.static("public"));
 
 // Middleware for parsing JSON bodies and html forms
-app.use(express.urlencoded({extended: true })); // voor html forms bij inlog/register
+app.use(express.urlencoded({ extended: true })); // voor html forms bij inlog/register
 app.use(express.json());
 
 // Middleware for debug logging
@@ -73,7 +73,6 @@ app.use((error, request, response, next) => {
 
 // App starts here
 InitializeDatabase();
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server is running on http://0.0.0.0:${port}`);
 });
-
