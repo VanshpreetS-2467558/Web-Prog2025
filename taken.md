@@ -6,6 +6,8 @@
 
 ## taal van engels <-> nederlands kunnen veranderne, bij footer?
 
+## inlog/registratie functionaliteit niet veilig? nog aanpassen (ook pop up! (gradient?))
+
 ## partials folder in views overzichterlijker maken? en scheiden (kwaliteit nastreven)
 
 ## Alle ejs splitsen als mogelijk. en mss tailwind config file gebruiken voor gradient kleur?
@@ -35,4 +37,4 @@ werking:
 - 1 FestCoin is 1 Euro. Omdat veel evenementen andere prijzen hebben en ook decimalen, werkt coins ook met decimalen, enkel FestCoin bijkopen kan met gehele getallen
 
 - Functionaliteit van QR code op laptop/pc beperkt houden
-- organisatoren kunnen atm maar 1 event aanmaken per organisator account!
+- organisatoren kunnen maar 1 event aanmaken per organisator account!
