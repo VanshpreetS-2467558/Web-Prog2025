@@ -22,8 +22,13 @@
                 <a href="/klantenservice" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">klantenservice</a>
             </div>
             <div class="py-1">
-                <a href="logout" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Uitloggen</a>
+                <form action="/logout" method="POST">
+                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">
+                        Uitloggen
+                    </button>
+                </form>
             </div>
+
         </el-menu>
     </el-dropdown>
 <% } else { %>
@@ -42,8 +47,15 @@
                 <a href="/klantenservice" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">klantenservice</a>
             </div>
             <div class="py-1">
-                <a href="logout" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Uitloggen</a>
+                <form action="/logout" method="POST">
+                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">
+                        Uitloggen
+                    </button>
+                </form>
             </div>
         </el-menu>
     </el-dropdown>
     <% } %>
+
+
+    
