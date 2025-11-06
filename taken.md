@@ -6,9 +6,15 @@
 
 ## bij login/register maken zodat wachtwoord min 8 tekens moet zijn met hoofdletter, ... , en REGIX voor email en gsm ??
 
+## bij inloggen als wachtwoord verkeerd is moet email blijven staan en bij registratie rest van form ook. (AJAX)
+
 ## taal van engels <-> nederlands kunnen veranderne, bij footer?
 
-## partials folder in views overzichterlijker maken?
+## partials folder in views overzichterlijker maken? en scheiden (kwaliteit nastreven)
+
+## kleine notificatie vanboven dat we zijn uitgelogd
+
+## Alle ejs splitsen als mogelijk. en mss tailwind config file gebruiken voor gradient kleur?
 
 ## na al deze taken grote backend bullshit beginnen en front end van hele werking. (ook kijken hoe we gsm ding gaan regelen)
 
@@ -31,3 +37,4 @@ werking:
 - 1 FestCoin is 1 Euro. Omdat veel evenementen andere prijzen hebben en ook decimalen, werkt coins ook met decimalen, enkel FestCoin bijkopen kan met gehele getallen
 
 - Functionaliteit van QR code op laptop/pc beperkt houden
+- organisatoren kunnen atm maar 1 event aanmaken per organisator account!

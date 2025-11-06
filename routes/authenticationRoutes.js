@@ -42,7 +42,7 @@ authenticationRouter.post("/register", async (req,res) => {
     
     // maakt sessie aan voor gebruiker
     req.session.user = {id: newUser.lastInsertRowid, name, role , festCoins};
-    res.redirect("/home");
+    res.redirect("/profiel");
 
   } catch (err){
     // Als email al bestaat
@@ -66,7 +66,7 @@ authenticationRouter.post("/login", async (req, res) => {
 
   // sessie opslaan en redirect
   req.session.user = { id: user.id, name: user.name, role: user.role , FestCoins: user.FestCoins };
-  res.redirect("/home");
+  res.redirect("/profiel");
 });
 
 

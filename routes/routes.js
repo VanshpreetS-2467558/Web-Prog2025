@@ -55,6 +55,12 @@ router.get("/cookiebeleid" , (request,response)=>{
 router.get("/registreren", (request,response)=>{
   response.render("pages/registreren");
 });
+router.get("/profiel", (request,response)=>{
+  response.render("pages/profiel");
+});
+router.get("/evenementen", (request,response)=>{
+  response.render("pages/eventLijst");
+});
 
 
 export default router;
