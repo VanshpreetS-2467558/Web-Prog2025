@@ -15,7 +15,7 @@
         </div>
 
         <!-- form voor registratie -->
-        <form action="/register" method="POST" class="space-y-4">
+        <form id="registratieform" class="space-y-4" novalidate>
 
             <!-- rol kiezen (bezoeker of organisator)-->
             <div>
@@ -56,10 +56,10 @@
             <!-- wachtwoord -->
             <div>
                 <label for="password" class="block mb-1 font-medium">Wachtwoord</label>
+                <p class="text-xs text-gray-500 mt-1">(Gebruik minimaal 8 tekens, met een hoofdletter, kleine letter, cijfer en speciaal teken.)</p>
                 <input type="password" id="password" name="password" maxlength="100" required class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
                     placeholder="•••••••••••">
             </div>
-
             <!-- Bevestig wachtwoord -->
             <div>
                 <label for="confirmPassword" class="block mb-1 font-medium">Bevestig wachtwoord</label>
@@ -97,3 +97,82 @@
     </div>
 
 </section>
+
+
+
+<script>
+    document.getElementById("registratieform").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const errorMsg = form.querySelector(".text-red-600") || document.createElement("p");
+        errorMsg.className = "font-thin text-red-600";
+        if(!form.contains(errorMsg)) form.appendChild(errorMsg);
+
+        const formData = {
+            role: form.role.value,
+            name: form.name.value,
+            email: form.email.value,
+            phone: form.phone.value,
+            password: form.password.value,
+            confirmPassword: form.confirmPassword.value
+        };
+
+        // Check lege velden 
+        if (!formData.name || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) { 
+            errorMsg.textContent = "Vul alle velden in!"; 
+            return; 
+        }
+
+        if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            errorMsg.textContent = "Ongeldig e-mailadres";
+            return;
+        }
+
+        // telefoon check
+        const phoneRegex = /^(?:\+32|0)(?:[4][789]\d{2}[\s.-]?\d{3}[\s.-]?\d{2}|[1-9]\d{1,2}[\s.-]?\d{2,3}[\s.-]?\d{2,3})$/;
+
+        if (!phoneRegex.test(formData.phone)) {
+            errorMsg.textContent = "Ongeldig telefoonnummer";
+            return;
+        }
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+        if (!passwordRegex.test(formData.password)) {
+            errorMsg.textContent = "Wachtwoord is niet veilig genoeg!";
+            document.getElementById("password").value = "";
+            document.getElementById("confirmPassword").value = "";
+            return;
+        }
+
+
+        if(formData.confirmPassword === ""){
+            errorMsg.textContent = "Bevestig je wachtwoord!";
+            return;
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            errorMsg.textContent = "Wachtwoorden komen niet overeen!";
+            document.getElementById("password").value = "";
+            document.getElementById("confirmPassword").value = "";
+            return;
+        }
+
+        try {
+            const res = await fetch("/register", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(formData)
+            });
+            const data = await res.json();
+            if(data.success) {
+                window.location.href = "/profiel"; // redirect bij succes
+            } else {
+                errorMsg.textContent = data.error;
+            }
+        } catch (err) {
+            errorMsg.textContent = "Er is iets misgegaan...";
+            console.error(err);
+        }
+    });
+
+</script>

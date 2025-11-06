@@ -4,17 +4,15 @@
 
 ## Aglemene voorwaarden pagina stylen
 
-## bij login/register maken zodat wachtwoord min 8 tekens moet zijn met hoofdletter, ... , en REGIX voor email en gsm ??
-
-## bij inloggen als wachtwoord verkeerd is moet email blijven staan en bij registratie rest van form ook. (AJAX)
-
 ## taal van engels <-> nederlands kunnen veranderne, bij footer?
 
 ## partials folder in views overzichterlijker maken? en scheiden (kwaliteit nastreven)
 
-## kleine notificatie vanboven dat we zijn uitgelogd
-
 ## Alle ejs splitsen als mogelijk. en mss tailwind config file gebruiken voor gradient kleur?
+
+## alle scripts in de public js folder steken voor duidelijkheid
+
+## kleine notificatie vanboven dat we zijn uitgelogd
 
 ## na al deze taken grote backend bullshit beginnen en front end van hele werking. (ook kijken hoe we gsm ding gaan regelen)
 

@@ -10,7 +10,7 @@
         <h2 class="text-xl font-semibold mt-3 mb-2">Inloggen</h2>
     
         <!-- inlog form -->
-        <form action="/login" method="POST" class="space-y-4">
+        <form id="loginForm" class="space-y-4" novalidate>
             <div>
                 <label class="block text-sm font-medium mb-1" for="email">Email</label>
                 <input type="email" id="email" name="email" class="w-full border rounded px-3 py-2" placeholder="Email">
@@ -42,9 +42,7 @@
             <button type="submit" class="w-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-white py-2 rounded hover:bg-blue-600 transition">
                 Inloggen
             </button>
-            <% if(typeof error !== "undefined") { %>
-                <p class="font-thin text-red-600 "><%= error %></p>
-            <% } %>
+            <p id="errorMsg" class="font-thin text-red-600"></p>
         </form>
 
         <!-- nieuwe account aanmaken -->
@@ -76,4 +74,38 @@
         oogOpen.classList.toggle('hidden');
         oogDicht.classList.toggle('hidden');
     });
+</script>
+
+<!-- logging ajax -->>
+<script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("wachtwoord").value;
+    const errorMsg = document.getElementById("errorMsg");
+
+    // eenvoudige emailcheck
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        errorMsg.textContent = "Ongeldig emailadres";
+        return; // stopt het submitten
+    }
+
+    const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+        window.location.href = "/profiel";
+    } else {
+        errorMsg.textContent = data.error;
+        document.getElementById("wachtwoord").value = "";
+    }
+});
+
 </script>
