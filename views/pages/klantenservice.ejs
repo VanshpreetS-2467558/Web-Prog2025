@@ -13,11 +13,20 @@
     <!-- body -->
     <main class="pt-16">
         <!-- hero - hoe kunnen we helpen type shi -->
-        <p>Voeg hier klantenservice pagina toe</p>
-        <!-- contact info (email, telefonisch en live chat) -->
-        <!-- Hulp bronnen -->
+        <%- include("../partials/hero", {
+            title: "Hoe kunnen we helpen?",
+            subtext: "Vind antwoorden op je vraag of neem gerust contact op met ons",
+        })%>
         <!-- Veel gestelde vragen -->
+        <%- include("../partials/faq", {faq: faq_all}) %>
+        <!-- contact info (email, telefonisch en live chat) -->
+        <%- include("../partials/contactInfo")%>
         <!-- CTA voor HULP -->
+        <%- include("../partials/cta",{
+            title:"Nog vragen of extra hulp nodig?",
+            sub:"Ons support team staat altijd voor je klaar"
+        }) %>
+
     </main>
 
     <!-- footer -->

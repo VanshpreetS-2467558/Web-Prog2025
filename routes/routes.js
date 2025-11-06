@@ -1,6 +1,6 @@
 import express, { response } from "express";
 const router = express.Router();
-import { bezoeker_redenen, organisatoren_redenen, faq_home, faq_bezoekers, faq_org } from "../data/bezoekerVSorganisator.js";
+import { bezoeker_redenen, organisatoren_redenen, faq_home, faq_bezoekers, faq_org , faq_all} from "../data/bezoekerVSorganisator.js";
 import {bezoekerStappen, groepspotStappen, organisatorStappen} from "../data/hoeWerktHetData.js" 
 
 
@@ -28,7 +28,7 @@ router.get("/organisatoren", (request, response) => {
 
 // klantenservice pagina
 router.get("/klantenservice", (request, response) => {
-  response.render("pages/klantenservice");
+  response.render("pages/klantenservice", {faq_all});
 });
 
 // inlog pagina

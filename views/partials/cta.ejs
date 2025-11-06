@@ -4,9 +4,11 @@
     <h2 class="text-4xl md:text-5xl font-bold mb-6"><%- title %></h2>
     <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto"><%- sub %></p>
 
+    <% if(typeof knop !== "undefined") { %>
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="/registreren" class="px-16 py-2 text-lg font-semibold rounded-full text-white border-2 border-white hover:bg-white hover:text-black transition-colors duration-300">
-            Registreer nu!
+        <a href="<%= knopHref %>" class="px-16 py-2 text-lg font-semibold rounded-full text-white border-2 border-white hover:bg-white hover:text-black transition-colors duration-300">
+            <%= knop %>
         </a>
     </div>
+    <% } %>
 </section>

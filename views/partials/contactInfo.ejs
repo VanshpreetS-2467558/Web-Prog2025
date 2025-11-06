@@ -1,0 +1,43 @@
+<section class="py-20">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4">Vraag niet gevonden?</h2>
+            <p class="text-xl text-muted-foreground">Kies je gewenste contactmethode en neem gerust contacto op!</p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-8 max-w-7xl mx-auto">
+
+        <!-- Email support -->
+        <%- include("Cards/stappen", {
+            icoon: "/assets/icons/email.png",
+            icoonAlt: "Email support",
+            title: "Email support",
+            uitleg: "We reageren binnen de 24 uur!",
+            knopNaam: "Email ons",
+            knopHref: "mailto:vanshpreet.singh@student.uhasselt.be",
+        }) %>
+
+        <!-- Telefonisch -->
+        <%- include("Cards/stappen", {
+            icoon: "/assets/icons/phone.png",
+            icoonAlt: "Telefonisch",
+            title: "Telefonisch",
+            uitleg: "Ma-Vr 09:00-18:00",
+            knopNaam: "+32 123456789",
+            knopHref: "tel:+32 123456789",
+        }) %>
+
+        <!-- Live chat -->
+        <%- include("Cards/stappen", {
+            icoon: "/assets/icons/liveChat.png",
+            icoonAlt: "Live chat",
+            title: "Live Chat",
+            uitleg: "Direct antwoord online",
+            knopNaam: "Start Chat",
+            knopHref: "disable",
+        }) %>
+
+
+        </div>
+    </div>
+</section>
