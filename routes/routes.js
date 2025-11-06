@@ -1,4 +1,4 @@
-import express from "express";
+import express, { response } from "express";
 const router = express.Router();
 import { bezoeker_redenen, organisatoren_redenen, faq_home, faq_bezoekers, faq_org } from "../data/bezoekerVSorganisator.js";
 import {bezoekerStappen, groepspotStappen, organisatorStappen} from "../data/hoeWerktHetData.js" 
