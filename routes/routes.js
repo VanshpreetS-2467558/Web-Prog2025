@@ -63,6 +63,9 @@ router.get("/dashboard", (request,response)=>{
 router.get("/evenementen", (request,response)=>{
   response.render("pages/eventLijst");
 });
+router.get("/wallet", (request,response)=>{
+  response.render("pages/walletBeheer");
+});
 
 
 export default router;

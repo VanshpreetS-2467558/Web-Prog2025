@@ -1,0 +1,107 @@
+
+<div class="container mx-auto pb-4 max-w-4xl">
+    <!-- Tabs -->
+    <div class="mb-8 p-4 border-gray-400 shodow">
+        <div class="grid grid-cols-3 bg-gray-100">
+        <button class="tab-btn py-2 font-semibold border-b-2 border-purple-400 text-purple-500" data-tab="buy">Kopen</button>
+        <button class="tab-btn py-2 font-semibold border-b-2 text-gray-500" data-tab="sell">Verkopen</button>
+        <button class="tab-btn py-2 font-semibold border-b-2 text-gray-500" data-tab="send">Deel FestCoins</button>
+        </div>
+    </div>
+
+    <div class="min-h-[385px]">
+        <!-- Kopen -->
+        <div class="tab-content" id="buy">
+            <div class="border rounded-2xl p-6 shadow-sm space-y-4">
+            <h2 class="text-xl font-semibold">FestCoins Kopen</h2>
+            <p class="text-gray-500">Voeg Festcoins toe aan je account</p>
+
+            <div class="grid gap-2">
+                <label for="buyAmount" class="font-medium">Bedrag (€)</label>
+                <input id="buyAmount" type="number" step="1" placeholder="0" min="0"
+                class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="flex gap-2">
+                <button class="border px-4 py-2 rounded-lg hover:bg-gray-100" onclick="setAmount('buyAmount', 10)">€10</button>
+                <button class="border px-4 py-2 rounded-lg hover:bg-gray-100" onclick="setAmount('buyAmount', 25)">€25</button>
+                <button class="border px-4 py-2 rounded-lg hover:bg-gray-100" onclick="setAmount('buyAmount', 50)">€50</button>
+                <button class="border px-4 py-2 rounded-lg hover:bg-gray-100" onclick="setAmount('buyAmount', 100)">€100</button>
+            </div>
+
+            <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 flex justify-center items-center">
+                <i class="fa-solid fa-arrow-down-left mr-2"></i>
+                FestCoins Kopen
+            </button>
+            </div>
+        </div>
+
+        <!-- Verkopen -->
+        <div class="tab-content hidden" id="sell">
+            <div class="border rounded-2xl p-6 shadow-sm space-y-4">
+            <h2 class="text-xl font-semibold">FestCoins Verkopen</h2>
+            <p class="text-gray-500">Stort je FestCoins terug op je zichtrekening - Gemakkelijk en Snel!</p>
+
+            <div class="grid gap-2">
+                <label for="sellAmount" class="font-medium">Bedrag (€)</label>
+                <input id="sellAmount" type="number" step="1" placeholder="0" min="0"
+                class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500">
+                <p class="text-sm text-gray-500">Beschikbaar: <%= user.FestCoins %> FestCoins</p>
+            </div>
+
+            <button class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 flex justify-center items-center">
+                <i class="fa-solid fa-arrow-up-right mr-2"></i>
+                FestCoins Verkopen
+            </button>
+            </div>
+        </div>
+
+        <!-- Versturen -->
+        <div class="tab-content hidden" id="send">
+            <div class="border rounded-2xl p-6 shadow-sm space-y-4">
+            <h2 class="text-xl font-semibold">FestCoins Versturen</h2>
+            <p class="text-gray-500">Verstuur Festcoins naar vrienden of famillie!</p>
+
+            <div class="grid gap-2">
+                <label for="recipientEmail" class="font-medium">Ontvanger (Id)</label>
+                <input id="recipientEmail" type="email" placeholder="678912"
+                class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="grid gap-2">
+                <label for="sendAmount" class="font-medium">Bedrag (€)</label>
+                <input id="sendAmount" type="number" step="1" placeholder="0" min="0"
+                class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <p class="text-sm text-gray-500">Beschikbaar: <%= user.FestCoins %> FestCoins</p>
+            </div>
+
+            <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 flex justify-center items-center">
+                <i class="fa-solid fa-paper-plane mr-2"></i>
+                Versturen
+            </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+  // eenvoudige tab-switch logica
+  const tabs = document.querySelectorAll('.tab-btn');
+  const contents = document.querySelectorAll('.tab-content');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('text-purple-500', 'border-b-2', 'border-purple-400'));
+      contents.forEach(c => c.classList.add('hidden'));
+
+      tab.classList.add('text-purple-500', 'border-b-2', 'border-purple-400');
+      document.getElementById(tab.dataset.tab).classList.remove('hidden');
+    });
+  });
+
+  // bedrag snel invullen
+  function setAmount(id, amount) {
+    document.getElementById(id).value = amount.toFixed(2);
+  }
+</script>

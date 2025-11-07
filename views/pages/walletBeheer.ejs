@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Actieve Evenementen - FestCoin</title>
     <link rel="stylesheet" href="css/styles.css">
+    <title>Mijn Wallet - FestCoin</title>
 </head>
 <body>
-    <!-- header -->
     <%- include("../partials/header") %>
-
-    <!-- main body -->
-    <main class="pt-16 h-screen">
-        <%- include("../partials/liveEventList") %>
+    
+    <main class="py-16">
+        <%- include("../partials/saldo")%>
+        <%- include("../partials/festCoinsActionTabs")  %>
+        <%- include("../partials/saldoTransactie")  %>
     </main>
 
-    <!-- footer -->
     <%- include("../partials/footer") %>
 </body>
 </html>

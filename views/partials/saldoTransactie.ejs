@@ -1,0 +1,44 @@
+<section class="container mx-auto py-10 max-w-4xl">
+    <div class="border rounded-2xl p-6 shadow-sm mb-8">
+        <!-- Card Header -->
+        <div class="mb-4">
+            <h2 class="flex items-center gap-2 text-xl font-semibold">
+            <i class="fa-solid fa-history"></i>
+            Transactie Geschiedenis
+            </h2>
+        </div>
+
+        <!-- placeholders -->
+        <% const transactions = [{ id: "1", type: "buy", amount: 25.00, date: "2024-07-10T14:30", status: "completed" },{ id: "2", type: "send", amount: -10.00, recipient: "vriend@email.com", date: "2024-07-11T16:20", status: "completed" },{ id: "3", type: "receive", amount: 15.00, sender: "jan@email.com", date: "2024-07-12T10:15", status: "completed" },{ id: "4", type: "sell", amount: -20.00, date: "2024-07-13T12:00", status: "pending" }]; %>
+
+        <!-- Card Content -->
+        <div class="space-y-3">
+            <% transactions.forEach(transaction => { %>
+            <div class="flex justify-between items-center p-3 bg-gray-100 rounded-lg">
+                <div class="flex items-center gap-3">
+                <% if(transaction.type === 'buy') { %>
+                    <i class="fa-solid fa-arrow-down-left text-green-500"></i>
+                <% } else if(transaction.type === 'sell') { %>
+                    <i class="fa-solid fa-arrow-up-right text-red-500"></i>
+                <% } else { %>
+                    <i class="fa-solid fa-paper-plane text-blue-500"></i>
+                <% } %>
+
+                <div>
+                    <p class="font-medium"><%= transaction.label %></p>
+                    <p class="text-sm text-gray-500"><%= new Date(transaction.date).toLocaleString('nl-NL') %></p>
+                </div>
+                </div>
+
+                <div class="text-right">
+                <p class="font-semibold <%= transaction.amount > 0 ? 'text-green-600' : 'text-red-600' %>">
+                    <%= transaction.amount > 0 ? '+' : '' %>€<%= Math.abs(transaction.amount).toFixed(2) %>
+                </p>
+                <p class="text-sm text-gray-500 capitalize"><%= transaction.status %></p>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+</section>
+

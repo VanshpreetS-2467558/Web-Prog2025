@@ -1,15 +1,13 @@
 ## TO-DO:
 
-- Live Evenementen lijst pagina maken
-- Beheer FestCoins pagina maken
 - Mijn Evenement pagina maken
+- profiel settings pagina maken
 - Inlog/registratie functionaliteit veiliger maken, aanpassen
-- Pop-up verbeteren ook aanpassen (gradient)
+- Pop-up verbeteren ook aanpassen (gradient) + pop up voor uitloggen (zelfde gwn)
 - Partials folder in views overzichtelijker maken? en alles beter/juist scheiden
 - Alle ejs splitsen als mogelijk, en mss tailwind config gebruiken voor gradient text/bg
 - Alle scripts in de public js folder steken voor duidelijkheid
 - Zorgen dat alles responsive is (via Tailwind) -> Alles is zo goed als responsive, behalve header (en footer?)
-- pop up voor uitloggen ?
 
 ## niet vergeten
 
