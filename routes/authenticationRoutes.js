@@ -38,7 +38,7 @@ authenticationRouter.post("/register", async (req, res) => {
       INSERT INTO users (role, name, email, phone, password, FestCoins) VALUES (?, ?, ?, ?, ?, ?)
     `).run(role, name, cleanEmail, phone, hashedPass, festCoins);
 
-    req.session.user = {id: newUser.lastInsertRowid, name, role, festCoins};
+    req.session.user = {id: newUser.lastInsertRowid, name, role, festCoins , email: cleanEmail};
     res.json({success: true});
   } catch (err) {
     console.error(err);
@@ -65,7 +65,7 @@ authenticationRouter.post("/login", async (req, res) => {
     return res.json({ success: false, error: "Wachtwoord is fout." });
   }
   // sessie opslaan en redirect
-  req.session.user = { id: user.id, name: user.name, role: user.role , FestCoins: user.FestCoins };
+  req.session.user = { id: user.id, name: user.name, role: user.role , FestCoins: user.FestCoins, email: user.email};
   res.json({ success: true });
 });
 

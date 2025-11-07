@@ -1,7 +1,6 @@
 ## TO-DO:
 
-- Mijn Evenement pagina maken
-- profiel settings pagina maken
+- Zorgen dat pagina's van user enkel zichtbaar zijn als er een user is (verschil tussen bezoeker - org !)
 - Inlog/registratie functionaliteit veiliger maken, aanpassen
 - Pop-up verbeteren ook aanpassen (gradient) + pop up voor uitloggen (zelfde gwn)
 - Partials folder in views overzichtelijker maken? en alles beter/juist scheiden

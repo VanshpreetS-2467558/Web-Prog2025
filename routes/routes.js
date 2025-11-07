@@ -66,6 +66,13 @@ router.get("/evenementen", (request,response)=>{
 router.get("/wallet", (request,response)=>{
   response.render("pages/walletBeheer");
 });
+router.get("/event-management", (request,response)=>{
+  response.render("pages/orgEvent");
+});
+router.get("/profile-settings", (request,response)=>{
+  response.render("pages/profielSettings");
+});
+
 
 
 export default router;
