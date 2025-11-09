@@ -1,9 +1,9 @@
 ## TO-DO:
 
-- Inlog/registratie functionaliteit veiliger maken, aanpassen
+- hulp functies bij authenticationRoutes.js
 - Pop-up verbeteren ook aanpassen (gradient) + pop up voor uitloggen (zelfde gwn)
 - Partials folder in views overzichtelijker maken? en alles beter/juist scheiden
-- Alle ejs splitsen als mogelijk, en mss tailwind config gebruiken voor gradient text/bg
+- Alle ejs splitsen als mogelijk, en mss tailwind config gebruiken voor gradient text/bg (utilities bestand werkt niet ofzo)
 - Alle scripts in de public js folder steken voor duidelijkheid
 - Zorgen dat alles responsive is (via Tailwind) -> Alles is zo goed als responsive, behalve header (en footer?)
 
@@ -23,3 +23,7 @@
 
 - // process.env.DEPLOYMENT docker entry point is enkel voor development dus kunnenwe zo uittesten ig
 - // bij productie mag die regel weg, is gewoon nice bij uittesten of het werkt als we klaar zijn
+
+## vragen
+
+- CSRF toepassen nodig?

@@ -3,7 +3,7 @@
 <section class="relative overflow-hidden" style="min-height: calc(100vh - 4rem);">
   
   <!-- background foto + gradient overlay -->
-  <div class="absolute inset-0 bg-gradient-to-br from-pink-300 via-transparent to-purple-300"></div>
+  <div class="absolute inset-0 bg-gradientAchtergrond"></div>
   <% if (typeof img !== "undefined") { %>
   <div class="absolute inset-0 opacity-10 bg-cover bg-center" style="background-image: url('<%= img %>');"> </div>
   <% } %>
@@ -13,7 +13,7 @@
     <div class="max-w-4xl text-center">
 
       <!-- titel -->
-      <h1 class="text-5xl md:text-7xl font-bold mb-6 pb-3 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+      <h1 class="text-5xl md:text-7xl font-bold mb-6 pb-3 bg-gradientkleurBR bg-clip-text text-transparent">
         <%- title %>
       </h1>
 

@@ -1,11 +1,10 @@
 <section class="min-h-screen bg-gradient-to-br from-indigo-200 via-white to-pink-200 flex items-center justify-center p-4">
 
-    <div id="notification-registreren" class="fixed top-20 z-[100] right-4 bg-green-500 px-4 py-2 rounded-lg shadow-lg opacity-0 transform translate-y-[-20px] transition-all duration-500 pointer-events-none"></div>
-
+    <div id="register-notificatie" class="fixed top-20 right-5 bg-green-500 text-white px-3 py-2 rounded opacity-0 transition-opacity duration-500 pointer-events-none"></div>
     
     <div class="w-full max-w-2xl bg-white p-8 rounded-2xl shadow-xl">
         <div class="flex flex-col items-center mb-8">
-            <a href="/home" class="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            <a href="/home" class="text-5xl font-bold bg-gradientkleurR bg-clip-text text-transparent">
                 FestCoin
             </a>
 
@@ -69,14 +68,13 @@
 
             <!-- knop -->
             <button type="submit" 
-                    class="w-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-white py-2 rounded-lg font-semibold hover:opacity-90 shadow-md">
+                    class="w-full bg-gradientkleurR text-white py-2 rounded-lg font-semibold hover:opacity-90 shadow-md">
                 Account aanmaken ➜
             </button>
 
-            <!-- error -->
-            <% if(typeof error !== "undefined") { %>
-                <p class="font-thin text-red-600 "><%= error %></p>
-            <% } %>
+            <!-- error msg box -->
+            <p id="errorMsg" class="font-thin text-red-600 "></p>
+            
         </form>
 
         <div class="mt-6 text-center">
@@ -98,103 +96,41 @@
 </section>
 
 
-
+<!-- register ajax/fetch -->
 <script>
     document.getElementById("registratieform").addEventListener("submit", async (e) => {
         e.preventDefault();
         const form = e.target;
-        const errorMsg = form.querySelector(".text-red-600") || document.createElement("p");
-        errorMsg.className = "font-thin text-red-600";
-        if(!form.contains(errorMsg)) form.appendChild(errorMsg);
+        const data = Object.fromEntries(new FormData(form));
+        const errorMsg = document.getElementById("errorMsg");
 
-        const formData = {
-            role: form.role.value,
-            name: form.name.value,
-            email: form.email.value,
-            phone: form.phone.value,
-            password: form.password.value,
-            confirmPassword: form.confirmPassword.value
-        };
+        const res = await fetch("/register", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data),
+        });
 
-        // Check lege velden 
-        if (!formData.name || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) { 
-            errorMsg.textContent = "Vul alle velden in!"; 
-            return; 
-        }
+        const result = await res.json();
 
-        if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            errorMsg.textContent = "Ongeldig e-mailadres";
-            return;
-        }
-
-        // telefoon check
-        const phoneRegex = /^(?:\+32|0)(?:[4][789]\d{2}[\s.-]?\d{3}[\s.-]?\d{2}|[1-9]\d{1,2}[\s.-]?\d{2,3}[\s.-]?\d{2,3})$/;
-
-        if (!phoneRegex.test(formData.phone)) {
-            errorMsg.textContent = "Ongeldig telefoonnummer";
-            return;
-        }
-
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
-        if (!passwordRegex.test(formData.password)) {
-            errorMsg.textContent = "Wachtwoord is niet veilig genoeg!";
-            document.getElementById("password").value = "";
-            document.getElementById("confirmPassword").value = "";
-            return;
-        }
-
-
-        if(formData.confirmPassword === ""){
-            errorMsg.textContent = "Bevestig je wachtwoord!";
-            return;
-        }
-
-        if (formData.password !== formData.confirmPassword) {
-            errorMsg.textContent = "Wachtwoorden komen niet overeen!";
-            document.getElementById("password").value = "";
-            document.getElementById("confirmPassword").value = "";
-            return;
-        }
-
-        try {
-            const res = await fetch("/register", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(formData)
-            });
-            const data = await res.json();
-            if(data.success) {
-                showNotification("Account succesvol aangemaakt!");
-                setTimeout(() => window.location.href = "/dashboard", 1000);
-            } else {
-                errorMsg.textContent = data.error;
-            }
-        } catch (err) {
-            errorMsg.textContent = "Er is iets misgegaan...";
-            console.error(err);
+        if(result.success){
+            showNotification("Account succesvol aangemaakt!");
+            setTimeout(() => window.location.href = "/dashboard", 1000);
+        } else{
+            errorMsg.textContent = result.error;
         }
     });
 
 </script>
 
+<!-- notificatie tonen bij inloggen -->
 <script>
-    function showNotification(message, type = "success") {
-        const notif = document.getElementById("notification-registreren");
+    function showNotification(message) {
+        const notif = document.getElementById("register-notificatie");
         notif.textContent = message;
+        notif.classList.remove("opacity-0");
 
-        // pas kleur aan
-        notif.className = `fixed top-[16px] right-4 px-4 py-2 rounded-lg shadow-lg opacity-0 transform -translate-y-10 transition-all duration-500 pointer-events-none 
-            ${type === "success" ? "from-green-500" : "bg-red-500"} z-[999]`;
-
-
-        // Animatie in
-        requestAnimationFrame(() => {
-            notif.classList.remove("opacity-0", "-translate-y-10");
-        });
-
-        // Na 3 sec uit
-        setTimeout(() => {
-            notif.classList.add("opacity-0", "-translate-y-10");
-        }, 1000);
+        setTimeout(()=> {
+            notif.classList.add("opacity-0");
+        }, 1500);
     }
 </script>

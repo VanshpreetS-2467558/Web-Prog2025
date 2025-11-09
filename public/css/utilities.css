@@ -1,0 +1,9 @@
+
+
+
+@layer utilities {
+    .gradientTekst {
+        @apply bg-gradientkleurBR bg-clip-text text-transparent;
+    }
+}
+/* werkt niet ofz */

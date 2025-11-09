@@ -32,9 +32,9 @@ router.get("/klantenservice", (request, response) => {
   response.render("pages/klantenservice", {faq_all});
 });
 
-// inlog pagina
+// inlog pagina (enkel als er geen session is)
 router.get("/inloggen", (request, response) => {
-  response.render("pages/inloggen");
+  if(!request.session.user) response.render("pages/inloggen"); else response.redirect("/dashboard");
 });
 
 // privacy
@@ -57,19 +57,27 @@ router.get("/registreren", (request,response)=>{
   response.render("pages/registreren");
 });
 
+// dashboard pagina
 router.get("/dashboard", requireLogin() ,(request,response)=>{
   response.render("pages/dashboard");
 });
 
+// evenementen lijst pagina
 router.get("/evenementen",requireLogin("bezoeker") ,(request,response)=>{
   response.render("pages/eventLijst");
 });
+
+// wallet pagina (bezoeker)
 router.get("/wallet", requireLogin("bezoeker") ,(request,response)=>{
   response.render("pages/walletBeheer");
 });
+
+// event beheren pagina
 router.get("/event-management",requireLogin("organisator") ,(request,response)=>{
   response.render("pages/orgEvent");
 });
+
+// profiel pagina
 router.get("/profile", requireLogin() ,(request,response)=>{
   response.render("pages/profielSettings");
 });
