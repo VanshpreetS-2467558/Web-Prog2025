@@ -1,6 +1,5 @@
 ## TO-DO:
 
-- Zorgen dat pagina's van user enkel zichtbaar zijn als er een user is (verschil tussen bezoeker - org !)
 - Inlog/registratie functionaliteit veiliger maken, aanpassen
 - Pop-up verbeteren ook aanpassen (gradient) + pop up voor uitloggen (zelfde gwn)
 - Partials folder in views overzichtelijker maken? en alles beter/juist scheiden
@@ -19,3 +18,8 @@
 - 2 goeie features implementeren (live pagina met data, punten systeem)
 - Na al deze taken backend implemeneteren en volledige werking
 - Taal van Engels <-> nederlands kunnen veranderen, bij footer (??)
+
+## productie / docker
+
+- // process.env.DEPLOYMENT docker entry point is enkel voor development dus kunnenwe zo uittesten ig
+- // bij productie mag die regel weg, is gewoon nice bij uittesten of het werkt als we klaar zijn

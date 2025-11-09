@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>forbidden - FestCoin</title>
+</head>
+<body>
+
+    <!-- Header -->
+    <%- include("../partials/header") %>
+
+    <main class="pt-16 h-screen">
+        <%- include("../partials/cards/codeCard", {code: "403", title: "geen toegang tot deze pagina!",}) %>
+    </main>
+
+    <!-- footer -->
+    <%- include("../partials/footer") %>
+</body>
+</html>

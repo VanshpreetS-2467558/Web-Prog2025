@@ -2,6 +2,7 @@ import express, { response } from "express";
 const router = express.Router();
 import { bezoeker_redenen, organisatoren_redenen, faq_home, faq_bezoekers, faq_org , faq_all} from "../data/bezoekerVSorganisator.js";
 import {bezoekerStappen, groepspotStappen, organisatorStappen} from "../data/hoeWerktHetData.js" 
+import {requireLogin} from "../middleware/requireLogin.js";
 
 
 // Home pagina
@@ -56,20 +57,20 @@ router.get("/registreren", (request,response)=>{
   response.render("pages/registreren");
 });
 
-router.get("/dashboard", (request,response)=>{
+router.get("/dashboard", requireLogin() ,(request,response)=>{
   response.render("pages/dashboard");
 });
 
-router.get("/evenementen", (request,response)=>{
+router.get("/evenementen",requireLogin("bezoeker") ,(request,response)=>{
   response.render("pages/eventLijst");
 });
-router.get("/wallet", (request,response)=>{
+router.get("/wallet", requireLogin("bezoeker") ,(request,response)=>{
   response.render("pages/walletBeheer");
 });
-router.get("/event-management", (request,response)=>{
+router.get("/event-management",requireLogin("organisator") ,(request,response)=>{
   response.render("pages/orgEvent");
 });
-router.get("/profile-settings", (request,response)=>{
+router.get("/profile", requireLogin() ,(request,response)=>{
   response.render("pages/profielSettings");
 });
 
