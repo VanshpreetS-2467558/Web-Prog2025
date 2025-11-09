@@ -9,13 +9,13 @@
 <body>
 
     <!-- Header -->
-    <%- include("../partials/header") %>    
+    <%- include("../partials/index/header") %>    
 
     <main class="pt-16 h-screen">
-        <%- include("../partials/Cards/codeCard", {code: "500", title: "Oops, er is iets kapot gegaan.",}) %>
+        <%- include("../partials/error/codeCard", {code: "500", title: "Oops, er is iets kapot gegaan.",}) %>
     </main>
 
     <!-- footer -->
-    <%- include("../partials/footer") %>
+    <%- include("../partials/index/footer") %>
 </body>
 </html>

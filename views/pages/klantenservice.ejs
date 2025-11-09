@@ -8,21 +8,21 @@
 </head>
 <body>
     <!-- header -->
-    <%- include("../partials/header") %>
+    <%- include("../partials/index/header") %>
 
     <!-- body -->
     <main class="pt-16">
         <!-- hero - hoe kunnen we helpen type shi -->
-        <%- include("../partials/hero", {
+        <%- include("../partials/index/hero", {
             title: "Hoe kunnen we helpen?",
             subtext: "Vind antwoorden op je vraag of neem gerust contact op met ons",
         })%>
         <!-- Veel gestelde vragen -->
-        <%- include("../partials/faq", {faq: faq_all}) %>
+        <%- include("../partials/index/faq", {faq: faq_all}) %>
         <!-- contact info (email, telefonisch en live chat) -->
-        <%- include("../partials/contactInfo")%>
+        <%- include("../partials/klantenservice/contactInfo")%>
         <!-- CTA voor HULP -->
-        <%- include("../partials/cta",{
+        <%- include("../partials/index/cta",{
             title:"Nog vragen of extra hulp nodig?",
             sub:"Ons support team staat altijd voor je klaar"
         }) %>
@@ -30,6 +30,6 @@
     </main>
 
     <!-- footer -->
-    <%- include("../partials/footer") %>
+    <%- include("../partials/index/footer") %>
 </body>
 </html>

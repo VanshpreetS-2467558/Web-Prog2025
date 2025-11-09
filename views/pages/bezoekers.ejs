@@ -8,27 +8,27 @@
 </head>
 <body>
     <!-- header -->
-    <%- include("../partials/header") %>
+    <%- include("../partials/index/header") %>
 
     <!-- body -->
     <main class="pt-16">
         <!-- hero sectie -->
-        <%- include("../partials/hero", {
+        <%- include("../partials/index/hero", {
             title:"Geniet van je evenement, wij regelen de rest!",
             subtext: "Met FestCoin betaal je snel, veilig en overzichtelijk met je smartphone. Vanaf nu geen contant geld of bonnetjes meer",
         }) %>
 
         <!-- Hoe werkt het sectie -->
-        <%- include("../partials/hoeWerktHet") %>
+        <%- include("../partials/role/hoeWerktHet") %>
 
         <!-- Waarom FestCoin -->
-        <%- include("../partials/waarom", {sub:"Het is meer dan gewoon betalen" ,daarom: bezoeker_redenen}) %>
+        <%- include("../partials/role/waarom", {sub:"Het is meer dan gewoon betalen" ,daarom: bezoeker_redenen}) %>
 
         <!-- faq op bezoekers gericht -->
-        <%- include('../partials/faq' , {faq: faq_bezoekers}) %>
+        <%- include('../partials/index/faq' , {faq: faq_bezoekers}) %>
 
         <!-- CTA -->
-        <%- include("../partials/cta",{
+        <%- include("../partials/index/cta",{
             title:"Klaar voor je volgende evenement?",
             sub:"Maak nu een gratis account aan en ervaar het gemak en kracht van FestCoin",
             knop: "Registreer nu!",
@@ -37,7 +37,7 @@
     </main>
 
     <!-- footer -->
-    <%- include("../partials/footer") %>
+    <%- include("../partials/index/footer") %>
     
 </body>
 </html>

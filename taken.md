@@ -1,7 +1,6 @@
 ## TO-DO:
 
-- Partials folder in views overzichtelijker maken? en alles beter/juist scheiden
-- Alle ejs splitsen als mogelijk, en mss tailwind config gebruiken voor gradient text/bg (utilities bestand werkt niet ofzo)
+- Alle ejs splitsen als mogelijk
 - Alle scripts in de public js folder steken voor duidelijkheid
 - Zorgen dat alles responsive is (via Tailwind) -> Alles is zo goed als responsive, behalve header (en footer?)
 
@@ -12,6 +11,7 @@
 
 ## EXTRA na TO-DO klaar is
 
+- tailwind classes overzichtelijker maken? (utilities bij public aangemaakt en gebruik maken van tailwind.config)
 - stay logged knop in feature bij inloggen
 - 2 goeie features implementeren (live pagina met data, punten systeem)
 - Na al deze taken backend implemeneteren en volledige werking

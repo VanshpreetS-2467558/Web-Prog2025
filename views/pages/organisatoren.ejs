@@ -8,28 +8,26 @@
 </head>
 <body>
     <!-- header -->
-    <%- include("../partials/header") %>
+    <%- include("../partials/index/header") %>
 
     <!-- body -->
     <main class="pt-16">
         <!-- hero sectie -->
-        <%- include("../partials/hero", {
+        <%- include("../partials/index/hero", {
             title:"Verhoog je omzet,<br/>Verlaag je kosten",
             subtext: "FestCoin helpt orgaisatoren om transacties te versnellen, kosten te verlagen en realtime inzichten bij te krijgen",
         }) %>
         <!-- waarom voor organisatoren -->
-        <%- include("../partials/waarom", {sub:"De voordelen om jouw evenement vlekkeloos te laten verlopen",daarom: organisatoren_redenen}) %>
-        <!-- review sectie van andere organisatoren ? -->
-        <!-- REVIEW SECTIE MAKEN ?? MSS NIE? -->
+        <%- include("../partials/role/waarom", {sub:"De voordelen om jouw evenement vlekkeloos te laten verlopen",daarom: organisatoren_redenen}) %>
         <!-- FAQ gericht op organisatoren -->
-        <%- include("../partials/faq" , {faq: faq_org}) %>
+        <%- include("../partials/index/faq" , {faq: faq_org}) %>
         <!-- CTA -->
-        <%- include("../partials/cta" , {title:"Klaar om FestCoin te gebruiken?", sub:"Maak je organisatoraccount aan en beheer je betalingen eenvoudig met FestCoin", knop: "Registreer nu!", knopHref: "/registreren",}) %>
+        <%- include("../partials/index/cta" , {title:"Klaar om FestCoin te gebruiken?", sub:"Maak je organisatoraccount aan en beheer je betalingen eenvoudig met FestCoin", knop: "Registreer nu!", knopHref: "/registreren",}) %>
 
     </main>
 
     <!-- footer -->
-    <%- include("../partials/footer") %>
+    <%- include("../partials/index/footer") %>
     
 </body>
 </html>

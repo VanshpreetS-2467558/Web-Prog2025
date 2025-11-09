@@ -8,13 +8,13 @@
 </head>
 <body>
     <!-- Header -->
-    <%- include("../partials/header") %>
+    <%- include("../partials/index/header") %>
     <!-- body -->
     <main class="pt-16">
-        <%- include(user.role === "bezoeker" ? "../partials/dashboardUser" : "../partials/dashboardOrg") %>
+        <%- include(user.role === "bezoeker" ? "../partials/dashboard/dashboardUser" : "../partials/dashboard/dashboardOrg") %>
     </main>
     <!-- footer -->
-    <%- include("../partials/footer") %>
+    <%- include("../partials/index/footer") %>
     
 </body>
 </html>

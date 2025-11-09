@@ -36,7 +36,7 @@
             Inloggen
           </a>
         <% } else { %>
-            <%- include("../partials/dropdownMenu") %>
+            <%- include("dropdownMenu") %>
         <% } %>
 
     </div>
@@ -61,7 +61,7 @@
             setTimeout(() => {
                 notif.classList.add("opacity-0");
                 window.location.href = "/home";
-            }, 1000);
+            }, 400);
         }
     });
 });

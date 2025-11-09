@@ -9,12 +9,12 @@
 </head>
 <body>
     <!-- Header -->
-    <%- include("../partials/header") %>
+    <%- include("../partials/index/header") %>
 
     <!-- main -->
     <main class="pt-16">
 
-        <%- include("../partials/hero", {
+        <%- include("../partials/index/hero", {
             img: "./assets/tomorrowland.jpg",
             title: "Cashless betalingen<br>voor jouw evenement", 
             subtext: "Maak betalen op evenementen moeiteloos. <br/>Perfect voor festivals, concerten en grote evenementen.",
@@ -22,14 +22,14 @@
             knop2: "Start als organisator"
         }) %>
 
-        <%- include("../partials/features", {
+        <%- include("../partials/index/features", {
             title: "Waarom FestCoin?",
             sub: "Alles wat je nodig hebt voor een vlekkeloos evenement, voor bezoeker als organisator!",
         }) %>
 
-        <%- include('../partials/faq' , {faq: faq_home}) %>
+        <%- include('../partials/index/faq' , {faq: faq_home}) %>
         
-        <%- include("../partials/cta", {
+        <%- include("../partials/index/cta", {
             title: "Klaar om volledig los te gaan?", 
             sub:"Sluit je aan bij duizenden bezoekers en honderden evenementen die al kiezen voor FestCoin",
             knop: "Registreer nu!",
@@ -39,6 +39,6 @@
     </main>
 
     <!-- Footer -->
-    <%- include("../partials/footer") %>
+    <%- include("../partials/index/footer") %>
 </body>
 </html>
