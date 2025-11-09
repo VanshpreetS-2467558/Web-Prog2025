@@ -1,6 +1,5 @@
 ## TO-DO:
 
-- hulp functies bij authenticationRoutes.js
 - Partials folder in views overzichtelijker maken? en alles beter/juist scheiden
 - Alle ejs splitsen als mogelijk, en mss tailwind config gebruiken voor gradient text/bg (utilities bestand werkt niet ofzo)
 - Alle scripts in de public js folder steken voor duidelijkheid

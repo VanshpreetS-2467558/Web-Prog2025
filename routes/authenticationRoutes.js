@@ -1,23 +1,23 @@
 import express from "express";
-const authenticationRouter = express.Router();
 import bcrypt from "bcrypt";
-import { db } from "../db.js";
+import { isValidEmail, isValidPhone, isStrongPassword, isPasswordCorrect } from "../utils/validatieHulpfuncties.js";
+import { emailExists, getUserByEmail, createUser } from "../utils/dbHulpfuncties.js";
 
 
- 
+const authenticationRouter = express.Router();
+
 
 // uitlog post
 authenticationRouter.post("/logout", (req, res) => {
   req.session.destroy(err => {
     if (err) {
       console.error("Error destroying session:", err);
-      return res.status(500).send("Er is iets misgegaan, probeer opnieuw.");
+      return res.status(500).send("Er is iets misgegaan, kon niet uitloggen.");
     }
     res.clearCookie('connect.sid');
     res.redirect("/home");
   });
 });
-
 
 // register POST
 authenticationRouter.post("/register", async (req, res) => {
@@ -27,38 +27,18 @@ authenticationRouter.post("/register", async (req, res) => {
   if (!role || !name || !email || !phone || !password || !confirmPassword)
     return res.json({ success: false, error: "Vul alle velden in!" });
 
-  // Email check
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-    return res.json({ success: false, error: "Ongeldig e-mailadres" });
-
-  // Telefoon check (mag simpeler)
-  if (!/^\+?\d{8,15}$/.test(phone))
-    return res.json({ success: false, error: "Ongeldig telefoonnummer" });
-
-  // Wachtwoord (sterkte) check
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
-  if (!passwordRegex.test(password))
-    return res.json({ success: false, error: "Wachtwoord is niet sterk genoeg" });
-
-  // check of wachtwoord overeenkomt
-  if (password !== confirmPassword)
-    return res.json({success: false, error: "Wachtwoorden komen niet overeen!"});
+  // validatie checken
+  if (!isValidEmail(email)) return res.json({success: false, error: "Ongeldig e-mailadres"});
+  if (!isValidPhone(phone)) return res.json({success: false, error: "Ongeldig telefoonnummer"});
+  if (!isStrongPassword(password)) return res.json({success: false, error: "Wachtwoord is niet sterk genoeg"});
+  if (password !== confirmPassword) return res.json({success: false, error: "Wachtwoorden komen niet overeen"});
+  if (emailExists(email)) return res.json({success: false, error: "Er bestaat al een account met dit e-mailadres"});
 
   try {
     const hashedPass = await bcrypt.hash(password, 10);
-    const FestCoins =  0;
-    const cleanEmail = email.trim().toLowerCase();
-
-    // check of email al bestaat
-    const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(cleanEmail);
-    if (existing)
-      return res.json({ success: false, error: "Er bestaat al een account met dit e-mailadres." });
-
-    const newUser = db.prepare(`
-      INSERT INTO users (role, name, email, phone, password, FestCoins) VALUES (?, ?, ?, ?, ?, ?)
-    `).run(role, name, cleanEmail, phone, hashedPass, FestCoins);
-
-    req.session.user = {id: newUser.lastInsertRowid, name, role, FestCoins , email: cleanEmail};
+    const festCoins =  0;
+    const newUser = createUser({role, name, email, phone, password: hashedPass, festCoins});
+    req.session.user = {id: newUser.lastInsertRowid, name , role, festCoins, email};
     res.json({success: true});
   } catch (err) {
     console.error(err);
@@ -69,37 +49,24 @@ authenticationRouter.post("/register", async (req, res) => {
 
 // loging POST
 authenticationRouter.post("/login", async (req, res) => {
+
   // vraagt gegevens van form html
   const { email, password } = req.body;
 
   // checkt of het een geldige email is
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-    return res.json({success: false, error: "Geef een geldige email!"})
-  }
+  if (!isValidEmail(email)) return res.json({ success: false, error: "Ongeldig e-mailadres" });
 
-  // haalt user data op door email , zo niet dan error
-  const user = db.prepare("SELECT * FROM users WHERE email = ?").get(email.trim().toLowerCase());
-
-  if (!user) {
-    return res.json({ success: false, error: "Dit e-mailadres is nog niet in gebruik. Maak een nieuw account aan." });
-  }
-
-  // email checken
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return res.json({ success: false, error: "Ongeldig e-mailadres" });
-  }
-
+  // haalt user data op door email
+  const user = getUserByEmail(email);
+  if (!user) return res.json({ success: false, error: "Dit e-mailadres is nog niet in gebruik. Maak een nieuw account aan." });
+  
   // kijkt of wachtwoord matched; anders weer error
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) {
-    return res.json({ success: false, error: "E-mail of wachtwoord is fout." });
-  }
+  const match = await isPasswordCorrect(password, user.password);
+  if (!match) return res.json({ success: false, error: "E-mail of wachtwoord is fout." });
+  
   // sessie opslaan en redirect
-  req.session.user = { id: user.id, name: user.name, role: user.role , FestCoins: user.FestCoins, email: user.email};
+  req.session.user = { id: user.id, name: user.name, role: user.role , festCoins: user.FestCoins, email: user.email};
   res.json({ success: true });
 });
-
-
-
 
 export default authenticationRouter;
