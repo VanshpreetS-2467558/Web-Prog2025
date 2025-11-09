@@ -624,12 +624,20 @@ video {
   right: 0.5rem;
 }
 
+.right-4 {
+  right: 1rem;
+}
+
 .right-5 {
   right: 1.25rem;
 }
 
 .top-0 {
   top: 0px;
+}
+
+.top-16 {
+  top: 4rem;
 }
 
 .top-20 {
@@ -646,6 +654,10 @@ video {
 
 .top-full {
   top: 100%;
+}
+
+.top-4 {
+  top: 1rem;
 }
 
 .z-10 {
