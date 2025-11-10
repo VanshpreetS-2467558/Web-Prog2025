@@ -1,0 +1,50 @@
+<!-- Verkopen vandaag -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <div class="p-6 lg:col-span-2 bg-white rounded-lg shadow">
+        <h2 class="text-2xl font-bold mb-6 flex-items-center gap-2">📈 Verkopen vandaag</h2>
+        
+        <!-- dummy grafiek -->
+        <% const salesData = [
+            { time: '09:00', sales: 10 },
+            { time: '10:00', sales: 15 },
+            { time: '11:00', sales: 8 },
+            { time: '12:00', sales: 20 },
+            { time: '13:00', sales: 12 },
+        ]; %>
+        <div class="flex items-end h-48 space-x-2">
+            <% salesData.forEach(d => { %>
+                <div class="bg-blue-500 w-6" style="height: <%= d.sales * 10 %>px;"></div>
+            <% }) %>
+        </div>
+        <div class="flex justify-between text-sm mt-2 text-gray-500">
+            <% salesData.forEach(d => { %>
+                <span><%= d.time %></span>
+            <% }) %>
+        </div>
+    </div>
+
+    <div class="p-6 bg-white rounded-lg shadow">
+        <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">🛒 Populairste items</h2>
+        <% const popularItems = [
+            { name: 'T-shirt', sold: 50, revenue: 500 },
+            { name: 'Pet', sold: 30, revenue: 300 },
+            { name: 'Sticker', sold: 20, revenue: 40 }
+        ]; %>
+        <div class="space-y-4">
+            <% popularItems.forEach((item, index) => { 
+                const widthPercent = (item.sold / popularItems[0].sold) * 100;
+            %>
+            <div class="space-y-1">
+                <div class="flex justify-between text-sm">
+                    <span class="font-semibold"><%= item.name %></span>
+                    <span class="text-gray-500"><%= item.sold %>x</span>
+                </div>
+                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div class="h-full bg-blue-500" style="width: <%= widthPercent %>%"></div>
+                </div>
+                <div class="text-xs font-semibold text-blue-600">€<%= item.revenue %></div>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+</div>

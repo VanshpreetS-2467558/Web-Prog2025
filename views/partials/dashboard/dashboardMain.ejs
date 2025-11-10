@@ -1,0 +1,30 @@
+<section class="container mx-auto max-w-full p-14 border-2">
+
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-2">Welkom terug, <%= user.name %>!</h1>
+        <% if(user.role === "bezoeker") { %>
+            <p class="text-gray-600">Bekijk rustig je overzicht.</p>
+        <% } else { %>
+            <p class="text-gray-600">Admin Dashboard - Live overzicht van je evenement</p>
+        <% } %>
+    </div>
+
+    <!-- info kaarten -->
+    <%- include("AlgemeneInfo") %>
+
+    <% if(user.role === "bezoeker") { %>
+
+        <!-- uitgaven per categorie -->
+        <%- include("bezoekerTotaleUitgaven") %>
+
+    <% } else { %>
+
+        <!-- Verkopen vandaag -->
+        <%- include("orgVerkochte") %>
+
+    <% } %>
+
+    <!-- Recente transacties -->
+    <%- include("recenteTransacties") %>
+
+</section>

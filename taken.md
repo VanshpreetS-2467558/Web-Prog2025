@@ -1,6 +1,5 @@
 ## TO-DO:
 
-- Alle ejs splitsen als mogelijk
 - Alle scripts in de public js folder steken voor duidelijkheid
 - Zorgen dat alles responsive is (via Tailwind) -> Alles is zo goed als responsive, behalve header (en footer?)
 
@@ -25,3 +24,7 @@
 ## vragen
 
 - CSRF toepassen nodig?
+
+## EJS is snel gemaakt maar moet nog veranderen (wist nie hoe ik da moest doen zonder backend honestly)
+
+- orgEventBeheer.ejs (bij partial: role)

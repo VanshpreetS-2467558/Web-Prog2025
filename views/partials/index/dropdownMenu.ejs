@@ -1,63 +1,42 @@
 <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
 
-<% if(user.role === "bezoeker") { %>
-    <el-dropdown class="inline-block relative">
-        <button class="inline-flex w-full justify-center py-1 font-semibold border-b-2 border-transparent hover:border-pink-500 transition-all duration-500">
-            <%= user.name %>
-            <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="-mr-1 size-5 text-gray-400">
-                <path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
-            </svg>
-        </button>
 
-        <el-menu anchor="bottom end" popover class="absolute top-full right-0 mt-2 w-52 rounded-md bg-white shadow-lg outline-2">
+<el-dropdown class="inline-block relative">
+    <button class="inline-flex w-full justify-center py-1 font-semibold border-b-2 border-transparent hover:border-pink-500 transition-all duration-500">
+        <%= user.name %>
+        <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="-mr-1 size-5 text-gray-400">
+            <path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
+        </svg>
+    </button>
+
+    <el-menu anchor="bottom end" popover class="absolute top-full right-0 mt-2 w-52 rounded-md bg-white shadow-lg outline-2">
+        <% if(user.role === "bezoeker") {  %>
             <div class="py-1">
                 <p class="block px-4 py-2 font-bold bg-gradientkleurSmallText bg-clip-text text-transparent">
                     FestCoins: <%= user.festCoins %>
                 </p>
             </div>
-            <div class="py-1">
-                <a href="/dashboard" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Dashboard</a>
+        <% } %>
+        <div class="py-1">
+            <a href="/dashboard" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Dashboard</a>
+            <% if(user.role === "bezoeker") {  %>
                 <a href="wallet" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Beheer FestCoins</a>
                 <a href="/evenementen" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Actieve evenementen</a>
-                <a href="/klantenservice" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">klantenservice</a>
-                <a href="/profile" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Account settings</a>
-            </div>
-            <div class="py-1">
-                <form action="/logout" method="POST">
-                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">
-                        Uitloggen
-                    </button>
-                </form>
-            </div>
-
-        </el-menu>
-    </el-dropdown>
-<% } else { %>
-    <el-dropdown class="inline-block relative">
-        <button class="inline-flex w-full justify-center py-1 font-semibold border-b-2 border-transparent hover:border-pink-500 transition-all duration-500">
-            <%= user.name %>
-            <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="-mr-1 size-5 text-gray-400">
-                <path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
-            </svg>
-        </button>
-
-        <el-menu anchor="bottom end" popover class="absolute top-full right-0 mt-2 w-52 rounded-md bg-white shadow-lg outline-2">
-            <div class="py-1">
-                <a href="/dashboard" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Dashboard</a>
+            <% } else { %>
                 <a href="/event-management" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Mijn Evenement</a>
-                <a href="/klantenservice" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">klantenservice</a>
-                <a href="/profile" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Account settings</a>
-            </div>
-            <div class="py-1">
-                <form action="/logout" method="POST">
-                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">
-                        Uitloggen
-                    </button>
-                </form>
-            </div>
-        </el-menu>
-    </el-dropdown>
-    <% } %>
+            <% } %>
+            <a href="/klantenservice" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">klantenservice</a>
+            <a href="/profile" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Account settings</a>
+        </div>
+        <div class="py-1">
+            <form action="/logout" method="POST">
+                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">
+                    Uitloggen
+                </button>
+            </form>
+        </div>
+    </el-menu>
+</el-dropdown>
 
 
     
