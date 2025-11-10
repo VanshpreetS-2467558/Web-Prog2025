@@ -1,6 +1,5 @@
 ## TO-DO:
 
-- Alle scripts in de public js folder steken voor duidelijkheid
 - Zorgen dat alles responsive is (via Tailwind) -> Alles is zo goed als responsive, behalve header (en footer?)
 
 ## niet vergeten
