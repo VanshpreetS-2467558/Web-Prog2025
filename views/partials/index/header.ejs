@@ -1,47 +1,28 @@
-
-<!-- header -->
 <header class="bg-white/70 backdrop-blur-md fixed top-0 w-full z-50">
 
   <div id="uitlog-notificatie" class="fixed top-16 right-4 bg-green-500 text-white px-3 py-2 rounded opacity-0 transition-opacity duration-500 pointer-events-none z-50"></div>
 
-
-  <div class="flex items-center justify-between px-4 py-3 w-full gap-20">
+  <div class="flex flex-wrap items-center justify-between px-4 py-3 w-full gap-6 md:gap-20">
     
-    <!-- logo links -->
-    <div class="flex items-end gap-10">
-      <a href="/home" class="text-4xl font-bold bg-gradientkleurBR bg-clip-text text-transparent">
-        FestCoin
-      </a>
-    </div>
+    <!-- logo -->
+    <a href="/home" class="text-3xl md:text-4xl font-bold bg-gradientkleurBR bg-clip-text text-transparent">
+      FestCoin
+    </a>
 
+    <!-- knoppen -->
+    <nav class="flex items-center flex-wrap gap-4 md:gap-10 text-sm md:text-base">
+      <a href="/home" class="hidden md:inline font-semibold border-b-2 border-transparent hover:border-pink-500 transition-all">Home</a>
+      <a href="/HoeWerktFestCoin" class="font-semibold border-b-2 border-transparent hover:border-blue-500 transition-all">Instructies</a>
 
-    <!-- knoppen rechts -->
-    <div class="flex items-center gap-10">
-
-        <a href="/home" class="py-1 font-semibold border-b-2 border-transparent hover:border-pink-500 transition-all duration-500">
-          Home
-        </a>
-
-        <a href="/HoeWerktFestCoin" class="py-1 font-semibold border-b-2 border-transparent hover:border-blue-500 transition-all duration-500">
-          Instructies
-        </a>
-
-        <!--
-        <a href="/klantenservice" class="py-1 font-semibold border-b-2 border-transparent hover:border-pink-500 transition-all duration-500">
-          klantenservice
-        </a> -->
-
-        <% if(!user) { %>
-          <a href="/inloggen" class="py-1 font-semibold border-b-2 border-transparent hover:border-pink-500 transition-all duration-500">
-            Inloggen
-          </a>
-        <% } else { %>
-            <%- include("dropdownMenu") %>
-        <% } %>
-
-    </div>
+      <% if(!user) { %>
+        <a href="/inloggen" class="font-semibold border-b-2 border-transparent hover:border-pink-500 transition-all">Inloggen</a>
+      <% } else { %>
+        <%- include("dropdownMenu") %>
+      <% } %>
+    </nav>
 
   </div>
+
 </header>
 
 <!-- pop up voor uitloggen -->
