@@ -23,3 +23,5 @@
 ## EJS is snel gemaakt maar moet nog veranderen (wist nie hoe ik da moest doen zonder backend honestly)
 
 - orgEventBeheer.ejs (bij partial: role)
+
+## extra feature als ingelogd dan is logo href naar dashboard en niet home (is al geimplementeerd)
