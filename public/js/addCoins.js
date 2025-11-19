@@ -1,12 +1,15 @@
 
-// 
+
+// functie voor het kopen van FestCoins
 document.getElementById("koopform").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const buyAmount = document.getElementById("buyAmount").value;
+    const buyAmount = parseFloat(document.getElementById("buyAmount").value);
     const errorMsg = document.getElementById("errorMsg")
 
-    let res;
     console.log("button pressed.")
+
+    let res;
+
     if (buyAmount){
         if (buyAmount > 0){
             res = await fetch("/addAmount", {
@@ -29,6 +32,8 @@ document.getElementById("koopform").addEventListener("submit", async (e) => {
     if(result.success){
         showNotification("Succesvol " + buyAmount + " festcoins toegevoegd.");
         document.getElementById("buyAmount").value="";
+        updateUserCoins(result.newValue, user.id);
+
     } else{
         errorMsg.textContent = result.error;
     }
@@ -43,4 +48,12 @@ function showNotification(message) {
     setTimeout(()=> {
         notif.classList.add("opacity-0");
     }, 1500);
+}
+
+
+
+function updateUserCoins(newValue, userId) {
+    document.querySelectorAll(`.userCoins[data-user-id="${userId}"]`).forEach(el => {
+        el.textContent = newValue;
+    });
 }

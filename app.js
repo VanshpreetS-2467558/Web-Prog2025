@@ -1,6 +1,7 @@
 import express from "express";
 import router from "./routes/routes.js";
 import authenticationRouter from "./routes/authenticationRoutes.js";
+import beheerCoinsRouter from "./routes/beheerCoins.js";
 import { InitializeDatabase } from "./db.js";
 import session from "express-session";
 import logger from "./middleware/debug.js"
@@ -51,6 +52,7 @@ app.use(sessionMiddleware);
 // Routes
 app.use("/", router);
 app.use("/", authenticationRouter);
+app.use("/", beheerCoinsRouter);
 
 // Middleware for unknown routes
 app.use((request, response, next) => {

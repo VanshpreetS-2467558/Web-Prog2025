@@ -18,7 +18,7 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
     email TEXT UNIQUE,
     phone TEXT,
     password TEXT,
-    FestCoins FLOAT DEFAULT NULL
+    FestCoins INTEGER DEFAULT NULL
   ) STRICT
 `).run();
 }

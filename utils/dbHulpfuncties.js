@@ -26,8 +26,11 @@ export function checkUserId({id}){
 
 // update de hoeveelheid coins
 export function updateCoins({value, user}){
-    const updatedValue = db.prepare("SELECT FestCoin FROM users WHERE id = ?").get(user.id) + value;
-    try {db.execute("UPDATE users SET FestCoin = ? WHERE id = ?", [updatedValue, user.id]);
+    const row = db.prepare("SELECT FestCoins FROM users WHERE id = ?").get(user.id);
+    const current = Number(row.FestCoins) || 0; // fallback naar 0
+    const updatedValue = current + Number(value);
+    
+    try {db.prepare("UPDATE users SET FestCoins = ? WHERE id = ?").run(updatedValue, user.id);
         return updatedValue;
     }
     catch (err){

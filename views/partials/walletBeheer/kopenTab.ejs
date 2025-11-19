@@ -2,11 +2,13 @@
 
 <!-- Kopen -->
 <div class="tab-content" id="buy">
+    <div id="uitlog-notificatie" class="fixed top-16 right-4 bg-green-500 text-white px-3 py-2 rounded opacity-0 transition-opacity duration-500 pointer-events-none z-50"></div>
+
     <div class="border rounded-2xl p-6 shadow-sm space-y-4">
         <h2 class="text-xl font-semibold">FestCoins Kopen</h2>
         <p class="text-gray-500">Voeg Festcoins toe aan je account</p>
 
-        <form id="koopform">
+        <form id="koopform" class="space-y-4">
             <div class="grid gap-2">
                 <label for="buyAmount" class="font-medium">Bedrag (€)</label>
                 <input id="buyAmount" type="number" placeholder="0" min="0"
@@ -14,10 +16,10 @@
             </div>
 
             <div class="flex gap-2">
-                <button class="border px-4 py-2 rounded-lg hover:bg-gray-100" onclick="setAmount('buyAmount', 10)">€10</button>
-                <button class="border px-4 py-2 rounded-lg hover:bg-gray-100" onclick="setAmount('buyAmount', 25)">€25</button>
-                <button class="border px-4 py-2 rounded-lg hover:bg-gray-100" onclick="setAmount('buyAmount', 50)">€50</button>
-                <button class="border px-4 py-2 rounded-lg hover:bg-gray-100" onclick="setAmount('buyAmount', 100)">€100</button>
+                <button type="button" class="border px-4 py-2 rounded-lg hover:bg-gray-100" onclick="setAmount('buyAmount', 10)">€10</button>
+                <button type="button" class="border px-4 py-2 rounded-lg hover:bg-gray-100" onclick="setAmount('buyAmount', 25)">€25</button>
+                <button type="button" class="border px-4 py-2 rounded-lg hover:bg-gray-100" onclick="setAmount('buyAmount', 50)">€50</button>
+                <button type="button" class="border px-4 py-2 rounded-lg hover:bg-gray-100" onclick="setAmount('buyAmount', 100)">€100</button>
             </div>
 
             <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 flex justify-center items-center">
@@ -30,51 +32,6 @@
     </div>
 </div>
 
-<script>
-
-// 
-document.getElementById("koopform").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const buyAmount = document.getElementById("buyAmount").value;
-    const errorMsg = document.getElementById("errorMsg")
-
-    let res;
-    console.log("button pressed.")
-    if (buyAmount){
-        if (buyAmount > 0){
-            res = await fetch("/addAmount", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ buyAmount }),
-            });
-        }
-        else {
-            return errorMsg.textContent = "Geef een waarde groter dan nul in.";
-        }
-    }
-    else {
-        return errorMsg.textContent = "Geef een waarde in.";
-    }
 
 
-    const result = await res.json();
-
-    if(result.success){
-        showNotification("Succesvol " + buyAmount + " festcoins toegevoegd.");
-        document.getElementById("buyAmount").value="";
-    } else{
-        errorMsg.textContent = result.error;
-    }
-});
-
-// notificatie tonen
-function showNotification(message) {
-    const notif = document.getElementById("koop-notificatie");
-    notif.textContent = message;
-    notif.classList.remove("opacity-0");
-
-    setTimeout(()=> {
-        notif.classList.add("opacity-0");
-    }, 1500);
-}
-</script>
+<script src="/js/addCoins.js"></script>
