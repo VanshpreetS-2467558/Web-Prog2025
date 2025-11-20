@@ -1,6 +1,6 @@
 ## to-do:
 
-- [-] (vansh) aankoop knop feature afmaken en verkoop + share ook maken (ook met een limiet van kopen (zodat het niet ));
+- [x] (vansh) aankoop knop feature afmaken en verkoop + share ook maken (ook met een limiet van kopen (zodat het niet ));
 - [ ] bij inloggen een kleine knop voor inloggen;
 - [ ] analyse pagina maken voor organisator (voor alle organisators voor te zien welke items/locatie populair zijn);
 - [ ] wachtwoord veranderen backend mogelijk maken (profiel settings pagina) (pop up animatie ook! -> zie voorbeeld bij inlog/registreren);
