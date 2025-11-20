@@ -12,6 +12,7 @@
 - [ ] feature 1: puntensysteem en iets winnen (gratis festcoin )
 - [ ] feature 2: (nog te bedenken)
 - [ ] tailwind classes overzichtelijker maken? (als laatste houden)
+- [ ] klantennummer standaard lengte geven (7)
 
 ## 3 browser API's die we hebben
 
