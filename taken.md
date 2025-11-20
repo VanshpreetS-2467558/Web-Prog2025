@@ -1,40 +1,27 @@
-## TO-DO:
+## to-do:
 
-- stay logged knop feature bij inloggen
-- analyse pagina maken voor organisators (check doelstellingen) (computer screen only, dus niet op gsm) (nog geen front-end)
-- knoppen laten werken voor geld kopen/verkopen/ sharen (knop zorgt gwn voor + of - (geen stripe nodig))
-- wachtwoord veranderen mogelijk maken bij profiel settings pagina
-- organisator = evenement aanmaken (db/backend..) en als die er is, mogelijkheid tot tijd in stellen wnr evenement actief is en koop-locaties toevoegen en items ook kunnen toevoegen per koop-locatie
-- zorgen dat alle evenementen met live status te zien zijn bij bezoeker, en als er op geklikt wordt bevestigings pop up en dan pagina met de menu lijst.
-- menu lijst actually werkend krijgen en dat QR-codes kunnen aangemaken
-- organisators kunnen werknemer accounts toevoegen die bij inloggen kunnen kiezen op welke locatie dat ze staan en dat ze dan kunnen scannen (en kunnen beperkte live data zien tijdens evenement)
-- qr-code bevestiging gescanned kunnen worden via werknemer accoutn (nog geen front-end hiervoor) die daadwerkelijk werkt
-- data somehow bijhouden voor de dashboard pagina , en ook analyse pagina (check doelstelling)
-- budget alarm feature bij bezoekers (doelstelling) per categorie (drank, eten, other,..)
-- 2 goeie features implementeren (feature 1 = ?? , feature 2: punten systeem)
-- tailwind classes overzichtelijker maken? (utilities bij public aangemaakt en gebruik maken van tailwind.config)
-
-## productie / docker
-
-- process.env.DEPLOYMENT docker entry point is enkel voor development dus kunnen we zo uittesten ig
-- bij productie mag die regel weg, is gewoon bij uittesten of het werkt als we klaar zijn
-
-## vragen (prof of general)
-
-- CSRF toepassen nodig? (auth, qrcodes?,..)
-- extra feature als ingelogd dan is logo href naar dashboard en niet home (goeie of nie?)
-- organisatoren kunnen maar 1 event aanmaken per organisator account!
-
-## EJS is snel gemaakt maar moet nog veranderen (wist nie hoe ik da moest doen zonder backend honestly)
-
-- orgEventBeheer.ejs (bij partial: role)
+[-] (vansh) aankoop knop feature afmaken en verkoop + share ook maken (ook met een limiet van kopen (zodat het niet ));
+[] bij inloggen een kleine knop voor inloggen;
+[] analyse pagina maken voor organisator (voor alle organisators voor te zien welke items/locatie populair zijn);
+[] wachtwoord veranderen backend mogelijk maken (profiel settings pagina) (pop up animatie ook! -> zie voorbeeld bij inlog/registreren);
+[] (vansh) evenementen maken mogelijk maken voor organisator (mogelijkheid tot tijd in stellen wnr evenement actief is en koop-locaties toevoegen en items ook kunnen toevoegen per koop-locatie) (zorgen dat alle evenementen met live status te zien zijn bij bezoeker, en als er op geklikt wordt bevestigings pop up en dan pagina met de menu lijs);
+[] menu lijst actually werkend krijgen en dat QR-codes kunnen aangemaken;
+[] vendors pagina + werking voor organisator (subaccounts met id en wachtwoord) (front-end: pagina is kolom met toevoegen en verwijderen van vendors: naam, id, locatie) (vendors kolom per evenement!!) (lijst van evenementen en per evenement een vendor lijst/kolom) (vendors account is heel nieuwe interface ! (heel beperkt, enkel pagina voor scannen en bestelling aflezen en pagina met beperkte analyse van hoeveel items hij heeft aangeboden + ... voor personal intrest));
+[] data showen bij dashboard van user/org
+[] budget alarm feature bij bezoekers (doelstelling) per categorie (drank, eten, other,..)
+[] feature 1: puntensysteem en iets winnen (gratis festcoin )
+[] feature 2: (nog te bedenken)
+[] tailwind classes overzichtelijker maken? (als laatste houden)
 
 ## 3 browser API's die we hebben
 
-- fetch
-- niks
-- niks
+- fetch (geimplementeerd)
+- camera voor qr code (?) (nog niet)
+- Browser storage (?) (nog niet)
+- Notificaties (?) (nog niet)
+- Canvas (?) (nog niet)
 
 ## externe API
 
-- niks
+- niks (zien we nog)
+- (als we niks hebben gwn stripe)
