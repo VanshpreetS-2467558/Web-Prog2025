@@ -32,7 +32,8 @@ document.getElementById("koopform").addEventListener("submit", async (e) => {
     if(result.success){
         showNotification("Succesvol " + buyAmount + " festcoins toegevoegd.");
         document.getElementById("buyAmount").value="";
-        updateFestCoins()
+        document.getElementById("festCoinsSaldo").textContent = result.newAmount;
+        document.getElementById("festCoinsHeader").textContent = result.newAmount;
 
     } else{
         errorMsg.textContent = result.error;

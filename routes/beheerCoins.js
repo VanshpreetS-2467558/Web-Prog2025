@@ -1,5 +1,5 @@
 import express from "express";
-import { checkUserId, updateCoins } from "../utils/dbHulpfuncties.js";
+import {updateCoins } from "../utils/dbHulpfuncties.js";
 
 const beheerCoinsRouter = express.Router();
 
@@ -16,14 +16,14 @@ beheerCoinsRouter.post("/addAmount", async (req, res) => {
     // check validity
     if (!buyAmount) return res.json({success: false, error: "Geen waarde meegegeven."});
     if (buyAmount <= 0) return res.json({success: false, error: "Waarde moet positief zijn."});
+    if (buyAmount > 500) return res.json({succes: false, error: "Max. 500 FestCoins per transactie toegestaan."});
     if (!user) return res.json({success: false, error: "Geen user ingelogd."});
-    //if (!checkUserId({user : user.id})) return res.json({success: false, error: "Ongeldige user ID."});
 
     try {
         const result = updateCoins({value : buyAmount, user});
         if (result){
-            res.json({success: true});
-            req.session.user = { id: user.id, name: user.name, role: user.role , festCoins: user.FestCoins, email: user.email};
+            req.session.user.festCoins = result;
+            res.json({success: true, newAmount: req.session.user.festCoins});
         }
     } 
     catch (err) {

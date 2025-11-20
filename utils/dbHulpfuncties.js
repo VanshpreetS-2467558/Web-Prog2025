@@ -19,10 +19,6 @@ export function createUser({role, name, email, phone, password, FestCoins}){
     `).run(role, name, email.trim().toLowerCase(), phone, password, FestCoins);
 }
 
-// checkt of user id bestaat
-export function checkUserId({id}){
-    return db.prepare("SELECT * FROM users WHERE id = ?").get(id);
-}
 
 // update de hoeveelheid coins
 export function updateCoins({value, user}){
