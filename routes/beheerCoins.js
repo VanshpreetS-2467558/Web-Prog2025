@@ -5,6 +5,10 @@ const beheerCoinsRouter = express.Router();
 
 // Voeg coins toe
 
+beheerCoinsRouter.get('/api/festCoins', (req, res) => {
+    res.json({ festCoins: req.session.user?.festCoins || 0 });
+});
+
 beheerCoinsRouter.post("/addAmount", async (req, res) => {
     const {buyAmount} = req.body;
     const user = req.session.user;
@@ -19,7 +23,7 @@ beheerCoinsRouter.post("/addAmount", async (req, res) => {
         const result = updateCoins({value : buyAmount, user});
         if (result){
             res.json({success: true});
-            req.session.user.festCoins = result;
+            req.session.user = { id: user.id, name: user.name, role: user.role , festCoins: user.FestCoins, email: user.email};
         }
     } 
     catch (err) {

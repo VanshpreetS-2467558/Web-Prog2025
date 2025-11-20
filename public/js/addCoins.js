@@ -32,7 +32,7 @@ document.getElementById("koopform").addEventListener("submit", async (e) => {
     if(result.success){
         showNotification("Succesvol " + buyAmount + " festcoins toegevoegd.");
         document.getElementById("buyAmount").value="";
-        updateUserCoins(result.newValue, user.id);
+        updateFestCoins()
 
     } else{
         errorMsg.textContent = result.error;
@@ -41,7 +41,7 @@ document.getElementById("koopform").addEventListener("submit", async (e) => {
 
 // notificatie tonen
 function showNotification(message) {
-    const notif = document.getElementById("register-notificatie");
+    const notif = document.getElementById("koop-notificatie");
     notif.textContent = message;
     notif.classList.remove("opacity-0");
 
@@ -50,10 +50,3 @@ function showNotification(message) {
     }, 1500);
 }
 
-
-
-function updateUserCoins(newValue, userId) {
-    document.querySelectorAll(`.userCoins[data-user-id="${userId}"]`).forEach(el => {
-        el.textContent = newValue;
-    });
-}
