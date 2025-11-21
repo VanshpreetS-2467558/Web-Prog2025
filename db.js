@@ -18,7 +18,14 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
     email TEXT UNIQUE,
     phone TEXT,
     password TEXT,
-    FestCoins INTEGER DEFAULT NULL
+    festCoins INTEGER DEFAULT NULL
   ) STRICT
 `).run();
+
+  db.prepare(`
+    UPDATE sqlite_sequence 
+    SET seq = 2426904 
+    WHERE name = 'users'`).run();
 }
+
+

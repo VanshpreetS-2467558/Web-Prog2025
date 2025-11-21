@@ -38,3 +38,7 @@
 ## externe API
 
 - niks
+
+TAKEN:
+
+[] notificaties enkel in header doen want is toch 1 hetzelfde...

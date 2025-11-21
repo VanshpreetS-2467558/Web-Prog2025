@@ -11,26 +11,38 @@ export function emailExists(email){
     return !!getUserByEmail(email);
 }
 
+export function getUserById(id){
+    return db.prepare("SELECT * FROM users WHERE id = ?").get(id);
+}
+
+export function idExists(id){
+    return !!getUserById(id);
+}
+
 // maakt user aan
-export function createUser({role, name, email, phone, password, FestCoins}){
+export function createUser({role, name, email, phone, password, festCoins}){
     return db.prepare(`
-        INSERT INTO users (role, name, email, phone, password, FestCoins) 
+        INSERT INTO users (role, name, email, phone, password, festCoins) 
         VALUES (?, ?, ?, ?, ?, ?)
-    `).run(role, name, email.trim().toLowerCase(), phone, password, FestCoins);
+    `).run(role, name, email.trim().toLowerCase(), phone, password, festCoins);
 }
 
 
 // update de hoeveelheid coins
-export function updateCoins({value, user}){
-    const row = db.prepare("SELECT FestCoins FROM users WHERE id = ?").get(user.id);
-    const current = Number(row.FestCoins) || 0; // fallback naar 0
-    const updatedValue = current + Number(value);
-    
-    try {db.prepare("UPDATE users SET FestCoins = ? WHERE id = ?").run(updatedValue, user.id);
-        return updatedValue;
-    }
-    catch (err){
+export function updateCoins({ value, user }) {
+    try {
+        db.prepare(`
+            UPDATE users
+            SET festCoins = festCoins + ?
+            WHERE id = ? AND (festCoins + ?) >= 0
+        `).run(value, user.id, value);
+
+        const row = db.prepare("SELECT festCoins FROM users WHERE id = ?").get(user.id);
+        return row.festCoins;
+
+    } catch (err) {
         console.error(err);
         return false;
     }
 }
+

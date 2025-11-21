@@ -65,7 +65,7 @@ authenticationRouter.post("/login", async (req, res) => {
   if (!match) return res.json({ success: false, error: "E-mail of wachtwoord is fout." });
   
   // sessie opslaan en redirect
-  req.session.user = { id: user.id, name: user.name, role: user.role , festCoins: user.FestCoins, email: user.email};
+  req.session.user = { id: user.id, name: user.name, role: user.role , festCoins: user.festCoins, email: user.email};
   res.json({ success: true });
 });
 
