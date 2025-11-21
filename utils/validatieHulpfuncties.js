@@ -21,5 +21,10 @@ export async function isPasswordCorrect(password, hash){
     return await bcrypt.compare(password, hash);
 }
 
-
-
+export function checkUserAndAmount(user,amount,max=null){
+    if (!user) return "Geen user ingelogd.";
+    if (!amount) return "Geen waarde meegegeven.";
+    if (amount <= 0) return "Waarde moet positief zijn.";
+    if (max !== null && amount > max) return "Waarde overschrijdt limiet.";
+    return null;
+}

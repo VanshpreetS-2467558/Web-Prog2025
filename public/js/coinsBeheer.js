@@ -1,5 +1,15 @@
 import { showNotification } from "./headerScripts.js";
 
+// hulpfunctie voor display te updaten
+function updateFestCoinDisplay(newAmount){
+    document.getElementById("festCoinsSaldo").textContent = newAmount;
+    document.getElementById("festCoinsHeader").textContent = "FestCoins: " + newAmount;
+    document.getElementById("festCoinsLimitsell").textContent = "Beschikbaar: " + newAmount +  " FestCoins";
+    document.getElementById("festCoinsLimitsell2").textContent = "Beschikbaar: " + newAmount +  " FestCoins";
+    document.getElementById("shareAmount").max = newAmount;
+    document.getElementById("sellAmount").max = newAmount;
+}
+
 // functie voor het kopen van FestCoins
 document.getElementById("koopform").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -14,20 +24,12 @@ document.getElementById("koopform").addEventListener("submit", async (e) => {
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ buyAmount }),
                 });
-
     const result = await res.json();
 
     if(result.success){
-        showNotification("Succesvol " + buyAmount + " festcoins toegevoegd.");
+        showNotification(`Succesvol ${buyAmount} FestCoins toegevoegd.`);
         document.getElementById("buyAmount").value="";
-        document.getElementById("festCoinsSaldo").textContent = result.newAmount;
-        document.getElementById("festCoinsHeader").textContent = result.newAmount;
-        document.getElementById("festCoinsLimitsell").textContent = "Beschikbaar: " + result.newAmount +  " FestCoins";
-        document.getElementById("festCoinsLimitsell2").textContent = "Beschikbaar: " + result.newAmount +  " FestCoins";
-        document.getElementById("sellAmount").max = result.newAmount;
-        document.getElementById("shareAmount").max = result.newAmount;
-
-
+        updateFestCoinDisplay(result.newAmount);
     } else{
         errorMsg.textContent = result.error;
     }
@@ -47,25 +49,16 @@ document.getElementById("verkoopform").addEventListener("submit", async (e) => {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ sellAmount }),
     });
-
     const result = await res.json();
 
     if(result.success){
-        showNotification("Succesvol " + sellAmount + " FestCoins teruggestort.");
+        showNotification(`Succesvol ${sellAmount} FestCoins teruggestort.`);
         document.getElementById("sellAmount").value = "";
-        document.getElementById("festCoinsSaldo").textContent = result.newAmount;
-        document.getElementById("festCoinsHeader").textContent = result.newAmount;
-        document.getElementById("festCoinsLimitsell").textContent = "Beschikbaar: " + result.newAmount +  " FestCoins";
-        document.getElementById("festCoinsLimitsell2").textContent = "Beschikbaar: " + result.newAmount +  " FestCoins";
-        document.getElementById("shareAmount").max = result.newAmount;
-        document.getElementById("sellAmount").max = result.newAmount;
-
+        updateFestCoinDisplay(result.newAmount);
     } else{
         errorMsg.textContent = result.error;
     }
-
 });
-
 
 document.getElementById("shareform").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -82,19 +75,13 @@ document.getElementById("shareform").addEventListener("submit", async (e) => {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ shareAmount, shareReceiver }),
     });
-
     const result = await res.json();
 
     if(result.success){
-        showNotification("Succesvol " + shareAmount + " FestCoins gestuurd!");
+        showNotification(`Succesvol ${shareAmount} FestCoins gestuurd!`);
         document.getElementById("shareAmount").value = "";
         document.getElementById("shareReceiver").value = "";
-        document.getElementById("festCoinsSaldo").textContent = result.newAmount;
-        document.getElementById("festCoinsHeader").textContent = result.newAmount;
-        document.getElementById("festCoinsLimitsell").textContent = "Beschikbaar: " + result.newAmount +  " FestCoins";
-        document.getElementById("festCoinsLimitsell2").textContent = "Beschikbaar: " + result.newAmount +  " FestCoins";
-        document.getElementById("shareAmount").max = result.newAmount;
-        document.getElementById("sellAmount").max = result.newAmount;
+        updateFestCoinDisplay(result.newAmount);
     } else{
         errorMsg.textContent = result.error;
     }

@@ -67,4 +67,3 @@ export function transferCoins({fromUser, toUser, amount}){
         return {success: false};
     }
 }
-
