@@ -1,4 +1,4 @@
-
+import { showNotification } from "./headerScripts.js";
 
 // functie voor het kopen van FestCoins
 document.getElementById("koopform").addEventListener("submit", async (e) => {
@@ -108,16 +108,4 @@ document.getElementById("shareform").addEventListener("submit", async (e) => {
     }
 
 });
-
-
-// notificatie tonen
-function showNotification(message) {
-    const notif = document.getElementById("notificatieVerkoop");
-    notif.textContent = message;
-    notif.classList.remove("opacity-0");
-
-    setTimeout(()=> {
-        notif.classList.add("opacity-0");
-    }, 1500);
-}
 
