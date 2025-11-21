@@ -1,5 +1,5 @@
 import express from "express";
-import {updateCoins, idExists ,getUserById} from "../utils/dbHulpfuncties.js";
+import {updateCoins, idExists ,getUserById, transferCoins} from "../utils/dbHulpfuncties.js";
 
 const beheerCoinsRouter = express.Router();
 
@@ -65,13 +65,10 @@ beheerCoinsRouter.post("/shareAmount", async (req, res) =>{
     if(!idExists(shareReceiver)) return res.json({success: false, error: "Er bestaat geen account met ID: " + shareReceiver});
 
     try{
-        const resultUser = updateCoins({value: -shareAmount, user});
-        const resultReceiver = updateCoins({value: shareAmount, user: receiver});
-
-        if (!resultUser) throw new Error("FestCoins update voor jou mislukt. Probeer het later opnieuw.");
-        if (!resultReceiver) throw new Error("FestCoins update voor ontvanger mislukt. Probeer het later opnieuw.");
+        const result = transferCoins({fromUser: user, toUser: receiver, amount: shareAmount});
+        if (!result.success) return res.json({ success: false, error: "Festcoins versturen mislukt!" });
     
-        req.session.user.festCoins = resultUser;
+        req.session.user.festCoins = result.newAmount;
         res.json({success: true , newAmount: req.session.user.festCoins })
         
     } catch(err) {

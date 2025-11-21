@@ -6,23 +6,14 @@ document.getElementById("koopform").addEventListener("submit", async (e) => {
     const buyAmount = parseInt(document.getElementById("buyAmount").value);
     const errorMsg = document.getElementById("errorMsgKoop")
 
-    let res;
+    if(!buyAmount) return errorMsg.textContent = "Geef een waarde in.";
+    if (buyAmount <= 0) return errorMsg.textContent = "Geef een waarde groter dan nul in.";
 
-    if (buyAmount){
-        if (buyAmount > 0){
-            res = await fetch("/addAmount", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ buyAmount }),
-            });
-        }
-        else {
-            return errorMsg.textContent = "Geef een waarde groter dan nul in.";
-        }
-    }
-    else {
-        return errorMsg.textContent = "Geef een waarde in.";
-    }
+    const res = await fetch("/addAmount", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ buyAmount }),
+                });
 
     const result = await res.json();
 
@@ -97,6 +88,7 @@ document.getElementById("shareform").addEventListener("submit", async (e) => {
     if(result.success){
         showNotification("Succesvol " + shareAmount + " FestCoins gestuurd!");
         document.getElementById("shareAmount").value = "";
+        document.getElementById("shareReceiver").value = "";
         document.getElementById("festCoinsSaldo").textContent = result.newAmount;
         document.getElementById("festCoinsHeader").textContent = result.newAmount;
         document.getElementById("festCoinsLimitsell").textContent = "Beschikbaar: " + result.newAmount +  " FestCoins";
@@ -106,6 +98,4 @@ document.getElementById("shareform").addEventListener("submit", async (e) => {
     } else{
         errorMsg.textContent = result.error;
     }
-
 });
-

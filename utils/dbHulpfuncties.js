@@ -34,8 +34,8 @@ export function updateCoins({ value, user }) {
         db.prepare(`
             UPDATE users
             SET festCoins = festCoins + ?
-            WHERE id = ? AND (festCoins + ?) >= 0
-        `).run(value, user.id, value);
+            WHERE id = ?
+        `).run(value, user.id);
 
         const row = db.prepare("SELECT festCoins FROM users WHERE id = ?").get(user.id);
         return row.festCoins;
@@ -43,6 +43,28 @@ export function updateCoins({ value, user }) {
     } catch (err) {
         console.error(err);
         return false;
+    }
+}
+
+export function transferCoins({fromUser, toUser, amount}){
+    try{
+        
+        db.prepare('BEGIN TRANSACTION').run();
+
+        const fromResult = updateCoins({value: -amount, user: fromUser});
+        if(fromResult ===false) throw new Error("Niet genoeg FestCoins of update mislukt.");
+
+        const toResult = updateCoins({ value: amount, user: toUser, db });
+        if (toResult === false) throw new Error("Update ontvanger mislukt"); 
+
+        db.prepare('COMMIT').run();
+        return {success: true, newAmount: fromResult};
+
+    } catch{
+
+        db.prepare('ROLLBACK').run();
+        console.error(err);
+        return {success: false};
     }
 }
 
