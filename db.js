@@ -10,15 +10,23 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
   db.pragma("foreign_keys = true;");
   db.pragma("temp_store = memory;");
 
- db.prepare(`
-  CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    role TEXT,
-    name TEXT,
-    email TEXT UNIQUE,
-    phone TEXT,
-    password TEXT,
-    FestCoins INTEGER DEFAULT NULL
-  ) STRICT
-`).run();
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      role TEXT,
+      name TEXT,
+      email TEXT UNIQUE,
+      phone TEXT,
+      password TEXT,
+      festCoins INTEGER DEFAULT NULL
+      ) STRICT
+    `).run();
+
+  // voor id
+  const row = db.prepare("SELECT seq FROM sqlite_sequence WHERE name = 'users'").get();
+  if (!row) {
+      db.prepare("INSERT INTO sqlite_sequence(name, seq) VALUES('users', 2426909)").run();
+  }
 }
+
+

@@ -1,4 +1,4 @@
-
+import {showNotification} from "./headerScripts.js";
 
 
 // oogje effect bij wachtwoord 
@@ -41,13 +41,5 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     }
 });
 
-// notificatie tonen bij inloggen
-function showNotification(message) {
-    const notif = document.getElementById("inlog-notificatie");
-    notif.textContent = message;
-    notif.classList.remove("opacity-0");
 
-    setTimeout(()=> {
-        notif.classList.add("opacity-0");
-    }, 1500);
-}
+

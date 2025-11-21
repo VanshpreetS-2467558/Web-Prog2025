@@ -9,13 +9,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const res = await fetch("/logout", { method: "POST" });
 
         if (res.ok) {
-            const notif = document.getElementById("uitlog-notificatie");
-            notif.textContent = "Succesvol uitgelogd!"
-            notif.classList.remove("opacity-0");
-            setTimeout(() => {
-                notif.classList.add("opacity-0");
-                window.location.href = "/home";
-            }, 400);
+            showNotification("Succesvol uitgelogd!");
+            setTimeout(() => window.location.href = "/home", 1000);
         }
     });
 });
+
+export function showNotification(message) {
+    const notif = document.getElementById("notificatie");
+    notif.textContent = message;
+    notif.classList.remove("opacity-0");
+
+    setTimeout(()=> {
+        notif.classList.add("opacity-0");
+    }, 1500);
+}
