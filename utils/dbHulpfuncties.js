@@ -67,3 +67,33 @@ export function transferCoins({fromUser, toUser, amount}){
         return {success: false};
     }
 }
+
+// returnt hashed wachtwoord op basis van id
+export function getPasswordById(id){
+    try{
+        const password = db.prepare('SELECT password FROM users WHERE id == ?').get(id);
+        if (!password) throw new Error ("Account bestaat niet.");
+
+        return {success: true, password: password.password};
+
+    } catch (err) {
+        console.error(err);
+        return {success: false, err};
+    }
+}
+
+
+// past wachtwoord aan op basis van id
+export function changePasswordById(id, password){
+    try{
+        db.prepare(`
+            UPDATE users
+            SET password = ?
+            WHERE id = ?
+        `).run(password, id);
+
+    } catch (err) {
+        console.error(err);
+        return {success: false, err};
+    }
+}

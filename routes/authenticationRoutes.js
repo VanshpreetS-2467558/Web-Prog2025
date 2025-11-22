@@ -1,7 +1,7 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import { isValidEmail, isValidPhone, isStrongPassword, isPasswordCorrect } from "../utils/validatieHulpfuncties.js";
-import { emailExists, getUserByEmail, createUser } from "../utils/dbHulpfuncties.js";
+import { emailExists, getUserByEmail, createUser, getPasswordById, changePasswordById } from "../utils/dbHulpfuncties.js";
 
 
 const authenticationRouter = express.Router();
@@ -47,7 +47,7 @@ authenticationRouter.post("/register", async (req, res) => {
 });
 
 
-// loging POST
+// login POST
 authenticationRouter.post("/login", async (req, res) => {
 
   // vraagt gegevens van form html
@@ -68,5 +68,32 @@ authenticationRouter.post("/login", async (req, res) => {
   req.session.user = { id: user.id, name: user.name, role: user.role , festCoins: user.festCoins, email: user.email};
   res.json({ success: true });
 });
+
+
+// passwordChange POST
+authenticationRouter.post("/passwordChange", async (req, res) => {
+  const user = req.session.user;
+  const {password, newPassword, confirmPassword} = req.body;
+  const currentPasswordObject = (await getPasswordById(user.id));
+  const currentPassword = currentPasswordObject.password;
+
+  // check validity
+  try  {
+    if(newPassword != confirmPassword) return res.json({ success: false, error: "Wachtwoorden komen niet overeen."});
+    if(!isStrongPassword(newPassword)) return res.json({ success: false, error: "Wachtwoord is niet sterk genoeg."});
+    const match = await isPasswordCorrect(password, currentPassword);
+    if(!match) return res.json({ success: false, error: "Wachtwoord incorrect."});
+
+    // update wachtwoord in database
+    const hashedPass = await bcrypt.hash(newPassword, 10);
+    await changePasswordById(user.id, hashedPass);
+    return res.json({success: true});
+
+  } 
+  catch(err) {
+    console.error(err);
+    return res.json({success: false, error: "internal server error"});
+  }
+})
 
 export default authenticationRouter;
