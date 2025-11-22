@@ -90,8 +90,24 @@ export function changePasswordById(id, password){
             UPDATE users
             SET password = ?
             WHERE id = ?
-        `).run(password, id);
+            `).run(password, id);
+        return {success: true}
 
+    } catch (err) {
+        console.error(err);
+        return {success: false, err};
+    }
+}
+
+
+export function updateNameById(id, name){
+        try{
+            db.prepare(`
+            UPDATE users
+            SET name = ?
+            WHERE id = ?
+            `).run(name, id);
+            return {success: true}
     } catch (err) {
         console.error(err);
         return {success: false, err};

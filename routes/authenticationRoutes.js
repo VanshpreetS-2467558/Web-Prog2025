@@ -1,7 +1,7 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import { isValidEmail, isValidPhone, isStrongPassword, isPasswordCorrect } from "../utils/validatieHulpfuncties.js";
-import { emailExists, getUserByEmail, createUser, getPasswordById, changePasswordById } from "../utils/dbHulpfuncties.js";
+import { emailExists, getUserByEmail, createUser, getPasswordById, changePasswordById, updateNameById } from "../utils/dbHulpfuncties.js";
 
 
 const authenticationRouter = express.Router();
@@ -75,18 +75,21 @@ authenticationRouter.post("/passwordChange", async (req, res) => {
   const user = req.session.user;
   const {password, newPassword, confirmPassword} = req.body;
   const currentPasswordObject = (await getPasswordById(user.id));
+  if (!currentPasswordObject || !currentPasswordObject.password) return res.json({success: false, error: "Account bestaat niet."});
   const currentPassword = currentPasswordObject.password;
+  
 
   // check validity
   try  {
-    if(newPassword != confirmPassword) return res.json({ success: false, error: "Wachtwoorden komen niet overeen."});
+    if(newPassword !== confirmPassword) return res.json({ success: false, error: "Wachtwoorden komen niet overeen."});
     if(!isStrongPassword(newPassword)) return res.json({ success: false, error: "Wachtwoord is niet sterk genoeg."});
     const match = await isPasswordCorrect(password, currentPassword);
     if(!match) return res.json({ success: false, error: "Wachtwoord incorrect."});
 
-    // update wachtwoord in database
+    // update wachtwoord in database en check of het successvol is
     const hashedPass = await bcrypt.hash(newPassword, 10);
-    await changePasswordById(user.id, hashedPass);
+    const result = await changePasswordById(user.id, hashedPass);
+    if (!(result.success)) return res.json({success: false, error: "internal server error"});
     return res.json({success: true});
 
   } 
@@ -96,4 +99,27 @@ authenticationRouter.post("/passwordChange", async (req, res) => {
   }
 })
 
-export default authenticationRouter;
+
+// nameChange POST
+authenticationRouter.post("/nameChange", async (req, res) => {
+  console.log("namechange backend triggered");
+  const {name} = req.body;
+  const oldname = req.session.user.name;
+  const id = req.session.user.id;
+
+  try {
+    // check of naam veranderd is
+    if (oldname === name) return res.json({success: false, error: "Naam is niet veranderd."});
+
+    // check of update successvol is
+    const result = await updateNameById(id, name);
+    if (!(result.success)) return res.json({success: false, error: "internal server error"});
+    return res.json({success: true});
+  } catch (err){
+    console.error(err);
+    return res.json({success: false, error: "internal server error"});
+}
+})
+
+
+export default authenticationRouter;  

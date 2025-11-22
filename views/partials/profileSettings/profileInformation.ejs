@@ -1,6 +1,4 @@
-
 <div class="max-w-4xl mx-auto p-6">
-  
   <div class="space-y-4">
     <div>
       <h1 class="text-3xl font-bold text-gray-900">Profielinstellingen</h1>
@@ -8,41 +6,44 @@
     </div>
 
     <!-- Personal Information Card -->
-    <div class="border rounded-2xl shadow-sm p-6">
+    <form id="profileInfoUpdater" class="border rounded-2xl shadow-sm p-6">
       <div class="mb-4">
-        <div class="flex items-center gap-2 mb-1">
-          <h2 class="text-lg font-semibold">Persoonlijke Informatie</h2>
-        </div>
+        <h2 class="text-lg font-semibold">Persoonlijke Informatie</h2>
       </div>
 
       <div class="space-y-4">
-          <div class="space-y-1">
-              <div for="name" class="block font-medium text-gray-700">Klantennummer (Id)</div>
-              <div class="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"><%= user.id%></div>
-          </div>
+        <!-- Klantennummer (ID) - Non-editable -->
+        <div class="space-y-1">
+          <label for="id" class="block font-medium text-gray-700">Klantennummer (Id)</label>
+          <input id="id" type="text" value="<%= user.id %>" readonly
+                 class="border rounded-lg px-3 py-2 w-full bg-gray-100 text-gray-500 cursor-not-allowed focus:outline-none">
+        </div>
 
-          <div class="space-y-1">
-              <label for="name" class="block font-medium text-gray-700">Naam</label>
-              <input id="name" name="name" type="text" placeholder="Artuur"
-                  class="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value="<%= user.name || '' %>">
-          </div>
+        <!-- Naam - Editable -->
+        <div class="space-y-1">
+          <label for="name" class="block font-medium text-gray-700">Naam</label>
+          <input id="name" name="name" type="text" placeholder="Artuur"
+                 class="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                 value="<%= user.name || '' %>">
+        </div>
 
-          <div class="space-y-1">
-              <label for="email" class="block font-medium text-gray-700">E-mailadres</label>
-              <input id="email" name="email" type="email" placeholder="email@example.com"
-                  class="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value="<%= user.email || '' %>">
-          </div>
+        <!-- E-mailadres - Non-editable -->
+        <div class="space-y-1">
+          <label for="email" class="block font-medium text-gray-700">E-mailadres</label>
+          <input id="email" type="email" value="<%= user.email || '' %>" readonly
+                 class="border rounded-lg px-3 py-2 w-full bg-gray-100 text-gray-500 cursor-not-allowed focus:outline-none">
+        </div>
 
-        <button class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700">
-          Profiel Bewerken
-        </button>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-          Profiel opslaan
-        </button>
+        <!-- Buttons -->
+        <div class="flex gap-2 mt-4">
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            Profiel opslaan
+          </button>
+          <p id="errorMsg" class="font-thin text-red-600 "></p>
+        </div>
       </div>
-    </div>
+    </form>
   </div>
 </div>
 
+<script type="module" src="/js/profileInfoUpdate.js"></script>
