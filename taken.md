@@ -11,6 +11,7 @@
 - [ ] feature 1: puntensysteem en iets winnen (gratis festcoin )
 - [ ] feature 2: (nog te bedenken)
 - [ ] tailwind classes overzichtelijker maken? (als laatste houden)
+- [ ] delete account database functie aanpassen zodra alle tables toegevoegd zijn
 
 ## 3 browser API's die we hebben
 
