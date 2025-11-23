@@ -1,4 +1,4 @@
-import { showNotification } from "./headerScripts.js";
+
 
 document.getElementById("deleteAccountBtn").addEventListener("click", async (e) => {
     e.preventDefault();

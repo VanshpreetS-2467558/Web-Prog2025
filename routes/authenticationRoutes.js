@@ -136,10 +136,10 @@ authenticationRouter.post("/deleteAccount", async (req, res) =>{
     req.session.destroy(err => {
     if (err) {
       console.error("Error destroying session:", err);
-      return res.status(500).send("Er is iets misgegaan, kon niet uitloggen.");
+      return res.json({success: false, error:"Kon sessie niet vernietigen."});
     }
     res.clearCookie('connect.sid');
-    res.redirect("/home");
+    return res.json({success: true});
   });
 
   } catch (err){

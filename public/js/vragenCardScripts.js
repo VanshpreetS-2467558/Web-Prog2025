@@ -16,6 +16,9 @@ function toggle(btn) {
     if (!isOpen) {
       content.style.maxHeight = content.scrollHeight + 'px';
       content.classList.add('open');
-      btn.querySelector('span').classList.add('rotate-180');
+      btn.querySelector('span').classList.toggle('rotate-180');
     }
 }
+
+// functie globaal zodat onclick werkt
+window.toggle = toggle;
