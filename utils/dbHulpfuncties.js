@@ -67,3 +67,67 @@ export function transferCoins({fromUser, toUser, amount}){
         return {success: false};
     }
 }
+
+// returnt hashed wachtwoord op basis van id
+export function getPasswordById(id){
+    try{
+        const password = db.prepare('SELECT password FROM users WHERE id == ?').get(id);
+        if (!password) throw new Error ("Account bestaat niet.");
+
+        return {success: true, password: password.password};
+
+    } catch (err) {
+        console.error(err);
+        return {success: false, err};
+    }
+}
+
+
+// past wachtwoord aan op basis van id
+export function changePasswordById(id, password){
+    try{
+        db.prepare(`
+            UPDATE users
+            SET password = ?
+            WHERE id = ?
+            `).run(password, id);
+        return {success: true}
+
+    } catch (err) {
+        console.error(err);
+        return {success: false, err};
+    }
+}
+
+
+// past naam aan op basis van id
+export function updateNameById(id, name){
+        try{
+            db.prepare(`
+            UPDATE users
+            SET name = ?
+            WHERE id = ?
+            `).run(name, id);
+            return {success: true}
+    } catch (err) {
+        console.error(err);
+        return {success: false, err};
+    }
+}
+
+
+// delete account op basis van id
+// pas aan zodra meerdere tables beschikbaar zijn
+export function deleteUserById(id) {
+    try {
+        db.prepare(`
+            DELETE FROM users
+            WHERE id = ?
+        `).run(id);
+
+        return { success: true };
+    } catch (err) {
+        console.error(err);
+        return { success: false, err };
+    }
+}
