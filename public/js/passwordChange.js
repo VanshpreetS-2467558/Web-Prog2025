@@ -6,9 +6,12 @@ document.getElementById("passwordChange").addEventListener("submit", async (e) =
     const password = document.getElementById("password").value;
     const newPassword = document.getElementById("newPassword").value;
     const confirmPassword = document.getElementById("confirmPassword").value;
+    const errorMsgPass = document.getElementById("errorMsgPass");
 
-    if(newPassword != confirmPassword) return errorMsg.textContent = "Wachtwoorden komen niet overeen.";
-    if(!(isStrongPassword(newPassword))) return errorMsg.textContent = "Wachtwoord is niet sterk genoeg.";
+    if(!newPassword || !confirmPassword || !password) return errorMsgPass.textContent = "Vul alle velden in!";
+    if(newPassword != confirmPassword) return errorMsgPass.textContent = "Wachtwoorden komen niet overeen.";
+    if(newPassword === password) return errorMsgPass.textContent = "Nieuwe wachtwoord mag niet overeen komen met je huidige wachtwoord.";
+    if(!(isStrongPassword(newPassword))) return errorMsgPass.textContent = "Wachtwoord is niet sterk genoeg.";
 
     const res = await fetch("/passwordChange", {
                     method: "POST",
@@ -23,7 +26,7 @@ document.getElementById("passwordChange").addEventListener("submit", async (e) =
         document.getElementById("newPassword").value="";
         document.getElementById("confirmPassword").value="";
     } else{
-        errorMsg.textContent = result.error;
+        errorMsgPass.textContent = result.error;
     }
 });
 

@@ -5,6 +5,7 @@ document.getElementById("profileInfoUpdater").addEventListener("submit", async (
     console.log("test")
     e.preventDefault();
     const name = document.getElementById("name").value;
+    const errorMsgInfo = document.getElementById("errorMsgInfo");
     const res = await fetch("/nameChange", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
@@ -17,6 +18,6 @@ document.getElementById("profileInfoUpdater").addEventListener("submit", async (
         document.getElementById("name").value=name;
         document.getElementById("username").textContent = name;
     } else{
-        errorMsg.textContent = result.error;
+        errorMsgInfo.textContent = result.error;
     }
 });

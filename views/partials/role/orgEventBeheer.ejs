@@ -33,7 +33,7 @@
       </button>
 
       <!-- Event Form Modal -->
-      <div id="newEventModal" class="fixed inset-0 bg-black/50 flex hidden justify-center items-start pt-20 z-50">
+      <div id="newEventModal" class="fixed inset-0 bg-black/50 flex justify-center items-start pt-20 z-50 hidden">
         <div class="bg-white rounded-xl p-6 w-full max-w-2xl">
           <h3 class="text-xl font-semibold mb-2">Nieuw Evenement Aanmaken</h3>
           <p class="text-gray-500 mb-4">Vul de gegevens van je evenement in</p>
@@ -107,7 +107,7 @@
         </div>
 
         <!-- New Section Modal -->
-        <div id="newSectionModal" class="hidden fixed inset-0 bg-black/50 flex justify-center items-start pt-20 z-50">
+        <div id="newSectionModal" class="fixed inset-0 bg-black/50 flex justify-center items-start pt-20 z-50 hidden">
           <div class="bg-white rounded-xl p-6 w-full max-w-md">
             <h3 class="text-xl font-semibold mb-2">Nieuwe Locatie</h3>
             <p class="text-gray-500 mb-4">Voeg een nieuwe locatie toe (bijv. Bar 1, Tent 2)</p>
@@ -139,7 +139,7 @@
                 </div>
 
                 <!-- New Item Modal -->
-                <div id="newItemModal-<%= section.id %>" class="hidden fixed inset-0 bg-black/50 flex justify-center items-start pt-20 z-50">
+                <div id="newItemModal-<%= section.id %>" class="fixed inset-0 bg-black/50 flex justify-center items-start pt-20 z-50 hidden">
                   <div class="bg-white rounded-xl p-6 w-full max-w-md">
                     <h3 class="text-xl font-semibold mb-2">Nieuw Item voor <%= section.name %></h3>
                     <form action="/items/add" method="POST" class="grid gap-4">
