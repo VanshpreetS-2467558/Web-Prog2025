@@ -15,6 +15,7 @@ document.getElementById("profileInfoUpdater").addEventListener("submit", async (
     if(result.success){
         showNotification(`Naam succesvol veranderd`);
         document.getElementById("name").value=name;
+        document.getElementById("username").textContent = name;
     } else{
         errorMsg.textContent = result.error;
     }

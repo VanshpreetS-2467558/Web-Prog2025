@@ -1,7 +1,7 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import { isValidEmail, isValidPhone, isStrongPassword, isPasswordCorrect } from "../utils/validatieHulpfuncties.js";
-import { emailExists, getUserByEmail, createUser, getPasswordById, changePasswordById, updateNameById } from "../utils/dbHulpfuncties.js";
+import { emailExists, getUserByEmail, createUser, getPasswordById, changePasswordById, updateNameById, deleteUserById } from "../utils/dbHulpfuncties.js";
 
 
 const authenticationRouter = express.Router();
@@ -102,7 +102,6 @@ authenticationRouter.post("/passwordChange", async (req, res) => {
 
 // nameChange POST
 authenticationRouter.post("/nameChange", async (req, res) => {
-  console.log("namechange backend triggered");
   const {name} = req.body;
   const oldname = req.session.user.name;
   const id = req.session.user.id;
@@ -114,6 +113,7 @@ authenticationRouter.post("/nameChange", async (req, res) => {
     // check of update successvol is
     const result = await updateNameById(id, name);
     if (!(result.success)) return res.json({success: false, error: "internal server error"});
+    req.session.user.name = name;
     return res.json({success: true});
   } catch (err){
     console.error(err);
@@ -122,4 +122,30 @@ authenticationRouter.post("/nameChange", async (req, res) => {
 })
 
 
-export default authenticationRouter;  
+// deleteAccount POST
+authenticationRouter.post("/deleteAccount", async (req, res) =>{
+  try {
+    // calls database function
+    const result = await deleteUserById(req.session.user.id);
+    // checks for success
+    if (!result.success){
+      console.log(result.error);
+      return res.json({success: false, error: "internal server error"});
+    }
+    // if successfull log out and redirect to homepage
+    req.session.destroy(err => {
+    if (err) {
+      console.error("Error destroying session:", err);
+      return res.status(500).send("Er is iets misgegaan, kon niet uitloggen.");
+    }
+    res.clearCookie('connect.sid');
+    res.redirect("/home");
+  });
+
+  } catch (err){
+    console.log(err);
+    return res.json({success: false, error: "internal server error"});
+  }
+})
+
+export default authenticationRouter;

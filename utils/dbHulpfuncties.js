@@ -100,6 +100,7 @@ export function changePasswordById(id, password){
 }
 
 
+// past naam aan op basis van id
 export function updateNameById(id, name){
         try{
             db.prepare(`
@@ -111,5 +112,22 @@ export function updateNameById(id, name){
     } catch (err) {
         console.error(err);
         return {success: false, err};
+    }
+}
+
+
+// delete account op basis van id
+// pas aan zodra meerdere tables beschikbaar zijn
+export function deleteUserById(id) {
+    try {
+        db.prepare(`
+            DELETE FROM users
+            WHERE id = ?
+        `).run(id);
+
+        return { success: true };
+    } catch (err) {
+        console.error(err);
+        return { success: false, err };
     }
 }
