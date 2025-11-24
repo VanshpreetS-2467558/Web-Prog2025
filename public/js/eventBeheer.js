@@ -23,12 +23,10 @@ document.getElementById("eventAanmaakForm").addEventListener("submit", async (e)
         const result = await res.json();
 
         if(result.success){
-            showNotification("Evenement succesvol aangemaakt!");
+            sessionStorage.setItem('showNotification', "Evenement succesvol aangemaakt!");
             form.reset();
             document.getElementById('EventAanmaakTab').classList.add('hidden');
-            setTimeout(() => { ////////////////////////////////////////////////////////////////////// ajax ofzo want moet tegoei reloaden
-                window.location.reload();
-            }, 500);
+            window.location.reload();
         } else{
             alert("Fout bij aanmaken: " + result.error);
         }
@@ -70,7 +68,8 @@ document.getElementById("addLocationForm").addEventListener("submit", async (e) 
         if (result.success) {
             document.getElementById("addLocationForm").reset();
             document.getElementById("addLocationSection").classList.add("hidden");
-            showNotification("Locatie succesvol toegevoegd!");
+            sessionStorage.setItem('showNotification', "Locatie succesvol toegevoegd!");
+            window.location.reload();
         } else {
             errorMsg.textContent = result.error;
         }
@@ -102,8 +101,8 @@ document.getElementById("itemForm").addEventListener("submit", async (e) => {
         if (result.success) {
             document.getElementById("itemForm").reset();
             document.getElementById("addItemForm").classList.add("hidden");
-            showNotification("Item succesvol toegevoegd!");
-            setTimeout(() => window.location.reload(), 500);
+            sessionStorage.setItem('showNotification', "Item succesvol toegevoegd!");
+            window.location.reload();
         } else {
             errorMsg.textContent = result.error;
         }
@@ -114,3 +113,93 @@ document.getElementById("itemForm").addEventListener("submit", async (e) => {
 });
 
 
+
+window.openEventDetail = function(id) {
+  document.getElementById("eventListView").classList.add("hidden");
+  document.getElementById("eventDetailView").classList.remove("hidden");
+
+  document.querySelectorAll(".eventDetailContent").forEach(el => el.classList.add("hidden"));
+  const detail = document.getElementById(`eventDetail-${id}`);
+  if(detail) detail.classList.remove("hidden");
+}
+
+window.closeEventDetail = function() {
+  document.getElementById("eventDetailView").classList.add("hidden");
+  document.getElementById("eventListView").classList.remove("hidden");
+
+  document.querySelectorAll(".eventDetailContent").forEach(el => el.classList.add("hidden"));
+}
+
+window.deleteEvent = async function(id) {
+    if(!confirm("Weet je zeker dat je dit evenement wilt verwijderen?")) return;
+
+    try{
+        const res = await fetch("/deleteEvent", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }) 
+        });
+        const result = await res.json();
+        if(result.success){
+            sessionStorage.setItem('showNotification', "Evenement verwijderd!");
+            closeEventDetail();
+            const eventDiv = document.querySelector(`#eventDetail-${id}`);
+            if(eventDiv) eventDiv.remove();
+            window.location.reload();
+        } else {
+            alert("Fout bij verwijderen: " + result.error);
+        }
+    } catch(err){
+        console.error(err);
+        alert("Er is iets misgegaan.");
+    }
+}
+
+window.deleteItem = async function(id) {
+    if(!confirm("Weet je zeker dat je dit Item wilt verwijderen?")) return;
+
+    try{
+        const res = await fetch("/deleteItem", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }) 
+        });
+        const result = await res.json();
+        if(result.success){
+            sessionStorage.setItem('showNotification', "Item verwijderd!");
+            const itemDiv = document.getElementById(`item-${id}`);
+            if(itemDiv) itemDiv.remove();
+            window.location.reload();
+        } else {
+            alert("Fout bij verwijderen: " + result.error);
+        }
+    } catch(err){
+        console.error(err);
+        alert("Er is iets misgegaan.");
+    }
+}
+
+
+window.deleteStation = async function(id) {
+    if(!confirm("Weet je zeker dat je dit Item wilt verwijderen?")) return;
+
+    try{
+        const res = await fetch("/deleteStation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }) 
+        });
+        const result = await res.json();
+        if(result.success){
+            sessionStorage.setItem('showNotification', "Locatie verwijderd!");
+            const stationDiv = document.getElementById(`station-${id}`);
+            if(stationDiv) stationDiv.remove();
+            window.location.reload();
+        } else {
+            alert("Fout bij verwijderen: " + result.error);
+        }
+    } catch(err){
+        console.error(err);
+        alert("Er is iets misgegaan.");
+    }
+}

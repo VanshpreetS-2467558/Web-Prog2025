@@ -1,5 +1,3 @@
-import {showNotification} from "./headerScripts.js";
-
 
 // oogje effect bij wachtwoord 
 const toggle = document.getElementById("togglePassword");
@@ -33,8 +31,9 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     const data = await res.json();
 
     if(data.success) {
-        showNotification("succesvol ingelogd!");
-        setTimeout(() => window.location.href = "/dashboard", 1000);
+        sessionStorage.setItem('showNotification', "succesvol ingelogd!");
+        window.location.href
+        window.location.replace("/dashboard");
     } else {
         errorMsg.textContent = data.error;
         document.getElementById("wachtwoord").value = "";

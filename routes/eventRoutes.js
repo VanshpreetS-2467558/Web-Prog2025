@@ -1,5 +1,5 @@
 import express from "express";
-import {checkNameEvent, createEvent} from "../utils/dbHulpfuncties.js";
+import {checkNameEvent, createEvent, deleteEvent, deleteItem, deleteLocation} from "../utils/dbHulpfuncties.js";
 import {requireLogin} from "../middleware/requireLogin.js";
 
 import { db } from "../db.js";
@@ -7,26 +7,24 @@ import { db } from "../db.js";
 const eventRouter = express.Router();
 
 // event beheren pagina
-eventRouter.get("/event-management",requireLogin("organisator") ,(req,res)=>{
-
-    const orgId = req.session.user.id;
-
-    const events = db.prepare("SELECT * FROM events WHERE organisatorid = ?").all(orgId);
-    if(events.length === 0) return res.render("pages/orgEvent", { events: null });
-
-    events.forEach(event => {
-        const stations = db.prepare("SELECT * FROM stations WHERE eventId = ?").all(event.id);
- 
-        stations.forEach(station => {
-            station.items = db.prepare("SELECT * FROM items WHERE locationId = ?").all(station.id)
+eventRouter.get("/event-management", requireLogin("organisator"), (req, res) => {
+    try {
+        const orgId = req.session.user.id;
+        const events = db.prepare("SELECT * FROM events WHERE organisatorid = ?").all(orgId) || [];
+        events.forEach(event => {
+            const stations = db.prepare("SELECT * FROM stations WHERE eventId = ?").all(event.id) || [];
+            stations.forEach(station => {
+                station.items = db.prepare("SELECT * FROM items WHERE locationId = ?").all(station.id) || [];
+            });
+            event.stations = stations;
         });
-
-        event.stations = stations;
-    });
-
-
-    res.render("pages/orgEvent", {events});
+        res.render("pages/orgEvent", { events });
+    } catch(err) {
+        console.error(err);
+        res.render("pages/orgEvent", { events: [] });
+    }
 });
+
 
 
 // event aanmaken
@@ -93,6 +91,40 @@ eventRouter.post("/addItem", async (req, res) => {
     } catch(err) {
         console.error(err);
         res.json({ success: false, error: "Er is iets misgegaan bij het toevoegen van het item." });
+    }
+});
+
+
+eventRouter.post("/deleteEvent", async (req, res) => {
+    const { id } = req.body;
+    try {
+        deleteEvent(id);
+        res.json({ success: true });
+    } catch(err) {
+        console.error(err);
+        res.json({ success: false, error: "Kon het event niet verwijderen. Probeer het later opnieuw." });
+    }
+});
+
+eventRouter.post("/deleteItem", async (req, res) => {
+    const {id} = req.body;
+    try{
+        deleteItem(id);
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.json({ success: false, error: "Kon het item niet verwijderen. Probeer het later opnieuw." })
+    }
+});
+
+eventRouter.post("/deleteStation", async (req, res) => {
+    const {id} = req.body;
+    try{
+        deleteLocation(id);
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.json({ success: false, error: "Kon het locatie niet verwijderen. Probeer het later opnieuw." })
     }
 });
 

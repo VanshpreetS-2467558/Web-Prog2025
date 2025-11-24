@@ -146,3 +146,59 @@ export function createEvent({ organisatorid, name, location, description, startD
             VALUES (?, ?, ?, ?, ?, ?)
         `).run(organisatorid, name, location, description || "", startDate, endDate);
 }
+
+// delete event 
+export function deleteEvent(id) {
+    try{
+        // eerst alle items van stations van event verwijderen
+        db.prepare(`
+            DELETE FROM items 
+            WHERE locationId IN (SELECT id FROM stations WHERE eventId = ?)
+        `).run(id);
+
+        // stations verwijderen
+        db.prepare(`
+            DELETE FROM stations 
+            WHERE eventId = ?
+        `).run(id);
+
+        // event zelf verwijderen
+        db.prepare(`
+            DELETE FROM events 
+            WHERE id = ?
+        `).run(id);
+        return {success: true};
+    } catch (err) {
+        console.error(err);
+        return { success: false, err };
+    }
+}
+
+
+export function deleteItem(id){
+    try{
+        db.prepare(`
+            DELETE FROM items 
+            WHERE id = ?
+        `).run(id);
+    } catch(err){
+        console.error(err);
+        return { success: false, err };
+    }
+}
+
+export function deleteLocation(id){
+    try{
+        db.prepare(`
+            DELETE FROM items 
+            WHERE locationId = ?
+        `).run(id);
+        db.prepare(`
+            DELETE FROM stations 
+            WHERE id = ?
+        `).run(id);
+    } catch(err){
+        console.error(err);
+        return { success: false, err };
+    }
+}
