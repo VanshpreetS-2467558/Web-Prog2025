@@ -7,6 +7,7 @@ document.getElementById("eventAanmaakForm").addEventListener("submit", async (e)
     // data ophalen
     const form = e.target;
     const data = Object.fromEntries(new FormData(form));
+    const errorMsgEvent = document.getElementById("errorMsgEvent");
 
     // datum en tijd samenvoegen in data
     data.startDate = `${data.startDate}T${data.startTime}`;
@@ -28,11 +29,11 @@ document.getElementById("eventAanmaakForm").addEventListener("submit", async (e)
             document.getElementById('EventAanmaakTab').classList.add('hidden');
             window.location.reload();
         } else{
-            alert("Fout bij aanmaken: " + result.error);
+            errorMsgEvent.textContent = result.error;
         }
     } catch (err){
         console.error("Fetch error: ", err);
-        alert("Er is iets misgegaan, probeer het later opnieuw.");
+        errorMsgEvent.textContent = "Er is iets misgegaan, probeer het later opnieuw.";
     }
 });
 
@@ -42,8 +43,9 @@ window.openAddLocationModel = function(eventId) {
     document.getElementById("addLocationSection").classList.remove("hidden");
 };
 
-window.openAddItemModel = function(sectionId) {
+window.openAddItemModel = function(sectionId, eventId) {
     document.getElementById("sectionIdInput").value = sectionId;
+    document.getElementById("eventIdInput").value = eventId;
     document.getElementById("addItemForm").classList.remove("hidden");
 };
 
@@ -69,6 +71,7 @@ document.getElementById("addLocationForm").addEventListener("submit", async (e) 
             document.getElementById("addLocationForm").reset();
             document.getElementById("addLocationSection").classList.add("hidden");
             sessionStorage.setItem('showNotification', "Locatie succesvol toegevoegd!");
+            sessionStorage.setItem('openEventId', eventId);
             window.location.reload();
         } else {
             errorMsg.textContent = result.error;
@@ -84,6 +87,7 @@ document.getElementById("itemForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const errorMsg = document.getElementById("errorMsgAddItem");
     const sectionId = document.getElementById("sectionIdInput").value;
+    const eventId = document.getElementById("eventIdInput").value;
     const name = document.getElementById("itemName").value;
     const price = parseInt(document.getElementById("itemPrice").value);
     const stock = parseInt(document.getElementById("itemStock").value);
@@ -102,6 +106,7 @@ document.getElementById("itemForm").addEventListener("submit", async (e) => {
             document.getElementById("itemForm").reset();
             document.getElementById("addItemForm").classList.add("hidden");
             sessionStorage.setItem('showNotification', "Item succesvol toegevoegd!");
+            sessionStorage.setItem('openEventId', eventId);
             window.location.reload();
         } else {
             errorMsg.textContent = result.error;
@@ -155,7 +160,7 @@ window.deleteEvent = async function(id) {
     }
 }
 
-window.deleteItem = async function(id) {
+window.deleteItem = async function(id, eventId) {
     if(!confirm("Weet je zeker dat je dit Item wilt verwijderen?")) return;
 
     try{
@@ -167,6 +172,7 @@ window.deleteItem = async function(id) {
         const result = await res.json();
         if(result.success){
             sessionStorage.setItem('showNotification', "Item verwijderd!");
+            sessionStorage.setItem('openEventId', eventId);
             const itemDiv = document.getElementById(`item-${id}`);
             if(itemDiv) itemDiv.remove();
             window.location.reload();
@@ -180,7 +186,7 @@ window.deleteItem = async function(id) {
 }
 
 
-window.deleteStation = async function(id) {
+window.deleteStation = async function(id, eventId) {
     if(!confirm("Weet je zeker dat je dit Item wilt verwijderen?")) return;
 
     try{
@@ -192,6 +198,7 @@ window.deleteStation = async function(id) {
         const result = await res.json();
         if(result.success){
             sessionStorage.setItem('showNotification', "Locatie verwijderd!");
+            sessionStorage.setItem('openEventId', eventId);
             const stationDiv = document.getElementById(`station-${id}`);
             if(stationDiv) stationDiv.remove();
             window.location.reload();
@@ -202,4 +209,13 @@ window.deleteStation = async function(id) {
         console.error(err);
         alert("Er is iets misgegaan.");
     }
+}
+
+
+
+// checkt welke event open moet blijven bij reload
+const openEventId = sessionStorage.getItem('openEventId');
+if(openEventId){
+    window.openEventDetail(openEventId);
+    sessionStorage.removeItem('openEventId');
 }

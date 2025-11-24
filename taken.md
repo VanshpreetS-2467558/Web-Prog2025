@@ -15,8 +15,9 @@
 ## 3 browser API's die we hebben
 
 - fetch (geimplementeerd)
+- sessionStorage (geimplementeerd)
+-
 - camera voor qr code (?) (nog niet)
-- Browser storage (?) (nog niet)
 - Notificaties (?) (nog niet)
 - Canvas (?) (nog niet)
 
@@ -28,3 +29,11 @@
 ## vragen?
 
 - maakt het uit voor onze forms dat we geen action en method hebben maar frontend js die backend aanroept?
+
+## nog te doen bij eventmaken
+
+- naam description en tijd aanpasbaar via een andere knop
+- errors juist fixen bij event want nu met alert
+- bij locatie dat het automatisch aanvult
+- datum mag enkel in toekomst zijn EN start-datum < end-datum
+- isLive ook legit aanpassen dat het werkt. en laten zien bij bezoekers tab

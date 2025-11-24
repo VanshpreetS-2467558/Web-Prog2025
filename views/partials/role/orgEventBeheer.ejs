@@ -96,7 +96,7 @@
                 <div class="flex justify-between items-center mb-2">
                   <h4 class="font-semibold"><%= st.name %></h4>
                   <button class="bg-pink-500 px-2 py-1 rounded-lg text-sm text-white hover:bg-gray-300"
-                          onclick="openAddItemModel('<%= st.id %>')">
+                          onclick="openAddItemModel('<%= st.id %>' ,'<%= event.id %>' )">
                     + Item
                   </button>
                 </div>
@@ -111,14 +111,14 @@
                           <p class="font-semibold text-base"><%= it.price %> FestCoins</p>
                           <p class="text-sm text-gray-500">Voorraad: <%= it.stock %></p>
                         </div>
-                        <button class="px-1 py-1" onclick="deleteItem('<%= it.id %>')">
+                        <button class="px-1 py-1" onclick="deleteItem('<%= it.id %>', '<%= event.id %>')">
                           <img src="/assets/icons/delete.png" alt="Delete" class="w-6 h-6">
                         </button>
                       </div>
                     <% }) %>
                   </div>
                 <% } %>
-                <button class="bg-red-600 text-white px-2 py-1 rounded-lg hover:bg-red-700 mt-10" onclick="deleteStation('<%= st.id %>')">Locatie verwijderen</button>
+                <button class="bg-red-600 text-white px-2 py-1 rounded-lg hover:bg-red-700 mt-10" onclick="deleteStation('<%= st.id %>', '<%= event.id %>')">Locatie verwijderen</button>
               </div>
             <% }) %>
           </div>

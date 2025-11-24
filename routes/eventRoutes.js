@@ -35,13 +35,13 @@ eventRouter.post("/createEvent", async (req, res) =>{
 
         // validation
         if(!name || !location || !startDate || !endDate) return res.json({ success: false, error: "Vul alle verplichte velden in." });
-        if(checkNameEvent(name)) return res.json({ success: false, error: "Er bestaat al een event met deze naam." });
+        if(checkNameEvent(name)) return res.json({ success: false, error: "Er bestaat al een evenement met deze naam." });
 
         const result = createEvent({ organisatorid, name, location, description, startDate, endDate });
         if (result.changes > 0) {   
             res.json({ success: true});
         } else{
-            res.json({ success: false, error: "Kon het event niet aanmaken." });
+            res.json({ success: false, error: "Kon het evenement niet aanmaken." });
         }
 
     }catch (err){
