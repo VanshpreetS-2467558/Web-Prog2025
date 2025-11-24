@@ -10,6 +10,7 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
   db.pragma("foreign_keys = true;");
   db.pragma("temp_store = memory;");
 
+  // user table
   db.prepare(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,10 +19,48 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       email TEXT UNIQUE,
       phone TEXT,
       password TEXT,
-      festCoins INTEGER DEFAULT NULL
+      festCoins INTEGER
       ) STRICT
-    `).run();
+  `).run();
+  
+  // event gerichte tabellen// 
+  // event tabel
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      organisatorid INTEGER,
+      name TEXT,
+      location TEXT,
+      description TEXT,
+      startDate TEXT,
+      endDate TEXT,
+      isLive INTEGER DEFAULT 0,
+      FOREIGN KEY(organisatorid) REFERENCES users(id)
+    ) STRICT
+  `).run();
+  // verkoop locaties (standjes, bar,..) table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS stations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      eventId INTEGER,
+      name TEXT,
+      FOREIGN KEY(eventId) REFERENCES events(id)
+    ) STRICT
+  `).run();
+  // items table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      locationId INTEGER,
+      name TEXT,
+      price INTEGER,
+      stock INTEGER,
+      FOREIGN KEY(locationId) REFERENCES stations(id)
+    ) STRICT
+  `).run();
 
+
+  
   // voor id
   const row = db.prepare("SELECT seq FROM sqlite_sequence WHERE name = 'users'").get();
   if (!row) {

@@ -1,0 +1,25 @@
+<!-- Modal -->
+<div id="addLocationSection" class="fixed inset-0 bg-black/50 flex items-start justify-center pt-20 z-50 hidden">
+  <div class="bg-white p-6 rounded-xl w-80">
+
+    <h2 class="text-xl font-semibold mb-3">Nieuwe Locatie</h2>
+
+    <form id="addLocationForm">
+        <input type="hidden" id="eventIdInput"> 
+
+        <label class="text-sm">Locatie naam</label>
+        <input type="text" id="locationName" class="w-full border rounded p-2 mb-3">
+
+        <div class="flex justify-between gap-2">
+            <button class="bg-red-500 text-white px-4 py-2 rounded-lg w-full hover:bg-red-700" type="button" onclick="document.getElementById('addLocationSection').classList.add('hidden')">Annuleren</button>
+            <button 
+                type="submit"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-700">
+                Toevoegen
+            </button>
+        </div>
+        <p id="errorMsgAddLoc" class="font-thin text-red-600"></p>
+    </form>
+
+  </div>
+</div>

@@ -97,7 +97,7 @@ authenticationRouter.post("/passwordChange", async (req, res) => {
     console.error(err);
     return res.json({success: false, error: "internal server error"});
   }
-})
+});
 
 
 // nameChange POST
@@ -119,7 +119,7 @@ authenticationRouter.post("/nameChange", async (req, res) => {
     console.error(err);
     return res.json({success: false, error: "internal server error"});
 }
-})
+});
 
 
 // deleteAccount POST
@@ -146,6 +146,6 @@ authenticationRouter.post("/deleteAccount", async (req, res) =>{
     console.log(err);
     return res.json({success: false, error: "internal server error"});
   }
-})
+});
 
 export default authenticationRouter;

@@ -1,6 +1,6 @@
 ## to-do:
 
-- [ ] bij inloggen een kleine knop voor inloggen;
+- [ ] bij inloggen een kleine knop voor blijf ingelogd;
 - [ ] analyse pagina maken voor organisator (voor alle organisators voor te zien welke items/locatie populair zijn);
 - [x] (vansh) evenementen maken mogelijk maken voor organisator (mogelijkheid tot tijd in stellen wnr evenement actief is en koop-locaties toevoegen en items ook kunnen toevoegen per koop-locatie) (zorgen dat alle evenementen met live status te zien zijn bij bezoeker, en als er op geklikt wordt bevestigings pop up en dan pagina met de menu lijs);
 - [ ] menu lijst actually werkend krijgen en dat QR-codes kunnen aangemaken;
@@ -24,3 +24,7 @@
 
 - niks (zien we nog)
 - (als we niks hebben gwn stripe)
+
+## vragen?
+
+- maakt het uit voor onze forms dat we geen action en method hebben maar frontend js die backend aanroept?

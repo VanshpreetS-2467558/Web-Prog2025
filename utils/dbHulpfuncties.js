@@ -102,13 +102,13 @@ export function changePasswordById(id, password){
 
 // past naam aan op basis van id
 export function updateNameById(id, name){
-        try{
-            db.prepare(`
-            UPDATE users
-            SET name = ?
-            WHERE id = ?
-            `).run(name, id);
-            return {success: true}
+    try{
+        db.prepare(`
+        UPDATE users
+        SET name = ?
+        WHERE id = ?
+        `).run(name, id);
+        return {success: true}
     } catch (err) {
         console.error(err);
         return {success: false, err};
@@ -117,7 +117,7 @@ export function updateNameById(id, name){
 
 
 // delete account op basis van id
-// pas aan zodra meerdere tables beschikbaar zijn
+// pas aan zodra meerdere tables beschikbaar zijn ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 export function deleteUserById(id) {
     try {
         db.prepare(`
@@ -130,4 +130,19 @@ export function deleteUserById(id) {
         console.error(err);
         return { success: false, err };
     }
+}
+
+
+
+// checken of event naam al in gebruik is
+export function checkNameEvent(name){
+    return !!db.prepare("SELECT id FROM events WHERE name = ?").get(name);
+}
+
+// create event
+export function createEvent({ organisatorid, name, location, description, startDate, endDate }){
+    return db.prepare(`
+            INSERT INTO events (organisatorid, name, location, description, startDate, endDate)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `).run(organisatorid, name, location, description || "", startDate, endDate);
 }
