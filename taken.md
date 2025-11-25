@@ -16,7 +16,6 @@
 
 - fetch (geimplementeerd)
 - sessionStorage (geimplementeerd)
--
 - camera voor qr code (?) (nog niet)
 - Notificaties (?) (nog niet)
 - Canvas (?) (nog niet)
@@ -37,3 +36,7 @@
 - bij locatie dat het automatisch aanvult
 - datum mag enkel in toekomst zijn EN start-datum < end-datum
 - isLive ook legit aanpassen dat het werkt. en laten zien bij bezoekers tab
+- deleteUserById moet ook eventuele events verwijderen moest role=organisator hebben
+- is input hidden wel veilig?
+
+- const errorMsg = document.getElementById("errorMsgEditBtn");

@@ -37,17 +37,55 @@ document.getElementById("eventAanmaakForm").addEventListener("submit", async (e)
     }
 });
 
+function setInputValue(id, value) {
+  const element = document.getElementById(id);
+  if(element) element.value = value || "";
+}
+
+
+window.openAddEditModel = async function(eventId){
+    const errorMsg = document.getElementById("errorMsgEditBtn");
+    try{
+        const res = await fetch(`/findEvent?eventId=${encodeURIComponent(eventId)}`);
+        if(!res.ok) throw new Error(`HTTP error: ${res.status}`);
+        const result = await res.json();
+        if(result.success){
+            const event = result.event;
+
+            setInputValue("eventIdInput", event.id);
+            setInputValue("newName", event.name);
+            setInputValue("newLocation", event.location);
+            setInputValue("newDescription", event.description);
+            const start = new Date(event.startDate);
+            const end = new Date(event.endDate);
+            if(!isNaN(start)) {
+            setInputValue("newStartDate", start.toISOString().slice(0,10));
+            setInputValue("NewStartTime", start.toTimeString().slice(0,5));
+            }
+            if(!isNaN(end)) {
+            setInputValue("newEndDate", end.toISOString().slice(0,10));
+            setInputValue("NewEndTime", end.toTimeString().slice(0,5));
+            }
+            document.getElementById("editInfoEvent").classList.remove("hidden");
+        } else return alert(result.error);
+    } catch(err){
+        console.error("Fetch error: ", err);
+        errorMsg.textContent = "Er is iets misgegaan, probeer het later opnieuw."
+    }
+}
 
 window.openAddLocationModel = function(eventId) {
     document.getElementById("eventIdInput").value = eventId;
     document.getElementById("addLocationSection").classList.remove("hidden");
 };
 
+
 window.openAddItemModel = function(sectionId, eventId) {
     document.getElementById("sectionIdInput").value = sectionId;
     document.getElementById("eventIdInput").value = eventId;
     document.getElementById("addItemForm").classList.remove("hidden");
 };
+
 
 
 // Locatie form
@@ -219,3 +257,59 @@ if(openEventId){
     window.openEventDetail(openEventId);
     sessionStorage.removeItem('openEventId');
 }
+
+// info event edit form
+document.getElementById("editEventForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const errorMsg = document.getElementById("errorMsgEditForm");
+    const eventId = document.getElementById("eventIdInput").value;
+    try{
+        const res = await fetch(`/findEvent?eventId=${encodeURIComponent(eventId)}`);
+        const result = await res.json();
+        const currentEvent = result.event;
+
+        const updatedFields = {};
+
+        const name = document.getElementById("newName").value;
+        if(name !== currentEvent.name) updatedFields.name = name;
+        const location = document.getElementById("newLocation").value;
+        if(location !== currentEvent.location) updatedFields.location = location;
+
+        const description = document.getElementById("newDescription").value;
+        if(description !== currentEvent.description) updatedFields.description = description;
+
+        const startDate = document.getElementById("newStartDate").value;
+        const startTime = document.getElementById("NewStartTime").value;
+        const start = `${startDate}T${startTime}`;
+        if(start !== currentEvent.startDate) updatedFields.startDate = start;
+
+        const endDate = document.getElementById("newEndDate").value;
+        const endTime = document.getElementById("NewEndTime").value;
+        const end = `${endDate}T${endTime}`;
+        if(end !== currentEvent.endDate) updatedFields.endDate = end;
+        
+        if(Object.keys(updatedFields).length === 0){
+            showNotification("Er zijn geen wijzigingen aangebracht.");
+            return;
+        }
+
+        const res2 = await fetch("/updateEventDetails", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ eventId, updatedFields  }) 
+        });
+        const resultUpdate = await res2.json();
+        if(resultUpdate.success){
+            sessionStorage.setItem('showNotification', "Event succesvol bijgewerkt!");
+            sessionStorage.setItem('openEventId', eventId);
+            document.getElementById("editInfoEvent").classList.add("hidden");
+            window.location.reload();
+        } else {
+            errorMsg.textContent = resultUpdate.error;
+        }
+    } catch(err){
+        console.error(err);
+        errorMsg.textContent = "Er is iets misgegaan, probeer het later opnieuw.";
+
+    }
+});

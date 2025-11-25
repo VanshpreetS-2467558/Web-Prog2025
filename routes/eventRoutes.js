@@ -1,5 +1,5 @@
 import express from "express";
-import {checkNameEvent, createEvent, deleteEvent, deleteItem, deleteLocation} from "../utils/dbHulpfuncties.js";
+import {checkNameEvent, createEvent, deleteEvent, deleteItem, deleteLocation, searchEventById, updateEventById} from "../utils/dbHulpfuncties.js";
 import {requireLogin} from "../middleware/requireLogin.js";
 
 import { db } from "../db.js";
@@ -24,8 +24,6 @@ eventRouter.get("/event-management", requireLogin("organisator"), (req, res) => 
         res.render("pages/orgEvent", { events: [] });
     }
 });
-
-
 
 // event aanmaken
 eventRouter.post("/createEvent", async (req, res) =>{
@@ -125,6 +123,37 @@ eventRouter.post("/deleteStation", async (req, res) => {
     } catch (err) {
         console.error(err);
         res.json({ success: false, error: "Kon het locatie niet verwijderen. Probeer het later opnieuw." })
+    }
+});
+
+
+eventRouter.get("/findEvent", async (req,res)=>{
+    const eventId = parseInt(req.query.eventId);
+    if(isNaN(eventId)) return res.json({ success:false, error:"Ongeldig event ID." });
+    try{
+        const result = searchEventById(eventId);
+        res.json({success:true, event: result})
+    } catch(err){
+        console.error(err);
+        res.json({ success: false, error: "Fout bij zoeken van event details, probeer het later opnieuw." })
+    }
+});
+
+eventRouter.post("/updateEventDetails", async (req, res) => {
+    const {eventId , updatedFields} = req.body;
+    if(!eventId || Object.keys(updatedFields).length === 0) return res.json({success: false, error: "Geen updates opgegeven."});
+
+    if(updatedFields.name){
+        const nameCheck = checkNameEvent(updatedFields.name);
+        if(nameCheck) return res.json({ success: false, error: "Er bestaat al een evenement met deze naam." });
+    }
+
+    try{
+        const result = updateEventById(eventId, updatedFields);
+        res.json({ success: true});
+    } catch (err) {
+        console.error(err);
+        res.json({ success: false, error: "Er is iets fout gegaan, probeer het later opnieuw." });
     }
 });
 

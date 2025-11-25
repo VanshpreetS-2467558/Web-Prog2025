@@ -136,7 +136,7 @@ export function deleteUserById(id) {
 
 // checken of event naam al in gebruik is
 export function checkNameEvent(name){
-    return !!db.prepare("SELECT id FROM events WHERE name = ?").get(name);
+    return !!db.prepare("SELECT id FROM events WHERE LOWER(name) = LOWER(?)").get(name);
 }
 
 // create event
@@ -201,4 +201,27 @@ export function deleteLocation(id){
         console.error(err);
         return { success: false, err };
     }
+}
+
+
+export function searchEventById(eventId){
+    return db.prepare("SELECT * FROM events WHERE id = ?").get(eventId);
+}
+
+
+export function updateEventById(eventId, updatedFields){
+    const fields = [];
+    const values = [];
+
+    for (const key in updatedFields) {
+        fields.push(`${key} = ?`);
+        values.push(updatedFields[key]);
+    }
+
+    values.push(eventId);
+
+    const sql = `UPDATE events SET ${fields.join(", ")} WHERE id = ?`;
+
+    return db.prepare(sql).run(values);
+
 }
