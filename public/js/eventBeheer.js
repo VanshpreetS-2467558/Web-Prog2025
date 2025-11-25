@@ -307,3 +307,74 @@ if(openEventId){
     window.openEventDetail(openEventId);
     sessionStorage.removeItem('openEventId');
 }
+
+//datum werking , kan geen verleden datum keizen en beginDatum < endDatum
+window.addEventListener("DOMContentLoaded", () => {
+    const now = new Date();
+    const todayStr = now.toISOString().split("T")[0];
+
+    const forms = [
+        { startDate: "startDate", startTime: "startTime", endDate: "endDate", endTime: "endTime" },
+        { startDate: "newStartDate", startTime: "NewStartTime", endDate: "newEndDate", endTime: "NewEndTime" }
+    ];
+
+    forms.forEach(f => {
+        const sDate = document.getElementById(f.startDate);
+        const sTime = document.getElementById(f.startTime);
+        const eDate = document.getElementById(f.endDate);
+        const eTime = document.getElementById(f.endTime);
+
+        if(!sDate || !sTime || !eDate || !eTime) return;
+
+        sDate.setAttribute("min", todayStr);
+        eDate.setAttribute("min", todayStr);
+
+        function updateEndConstraints() {
+            if(!sDate.value || !sTime.value) return;
+
+            const startDT = new Date(`${sDate.value}T${sTime.value}`);
+            let endDT = new Date(`${eDate.value || sDate.value}T${eTime.value || sTime.value}`);
+
+            // Als eind < start of gelijk → zet eind = start + 1 minuut
+            if(endDT <= startDT) {
+                endDT = new Date(startDT.getTime() + 60000); // +1 minuut
+                eDate.value = endDT.toISOString().split("T")[0];
+                eTime.value = endDT.toTimeString().slice(0,5);
+            }
+
+            eDate.setAttribute("min", sDate.value);
+
+            // Als zelfde dag → eindtijd > starttijd
+            if(eDate.value === sDate.value) {
+                eTime.setAttribute("min", new Date(startDT.getTime() + 60000).toTimeString().slice(0,5));
+            } else {
+                eTime.removeAttribute("min");
+            }
+        }
+
+        sDate.addEventListener("change", updateEndConstraints);
+        sTime.addEventListener("change", updateEndConstraints);
+        eDate.addEventListener("change", updateEndConstraints);
+        eTime.addEventListener("change", updateEndConstraints);
+    });
+
+    // Extra check bij submit
+    ["eventAanmaakForm", "editEventForm"].forEach(id => {
+        const form = document.getElementById(id);
+        if(!form) return;
+        form.addEventListener("submit", e => {
+            const sDate = form.querySelector('input[type="date"][id*="start"]');
+            const sTime = form.querySelector('input[type="time"][id*="start"]');
+            const eDate = form.querySelector('input[type="date"][id*="end"]');
+            const eTime = form.querySelector('input[type="time"][id*="end"]');
+
+            const startDT = new Date(`${sDate.value}T${sTime.value}`);
+            const endDT = new Date(`${eDate.value}T${eTime.value}`);
+
+            if(endDT <= startDT) {
+                e.preventDefault();
+                alert("De eindtijd moet strikt na de starttijd liggen.");
+            }
+        });
+    });
+});

@@ -25,14 +25,13 @@
 - Photon
 - (als we niks hebben gwn stripe)
 
-## vragen?
+## vragen aan assistent?
 
 - maakt het uit voor onze forms dat we geen action en method hebben maar frontend js die backend aanroept?
+- maakt het uit dat onze evenbeheer.js fkn lang is?
+- maakt het uit als we confirm gebruiken? (bij delete -> event feature)
 
 ## nog te doen bij eventmaken
 
-- datum mag enkel in toekomst zijn EN start-datum < end-datum
 - isLive ook legit aanpassen dat het werkt. en laten zien bij bezoekers tab
 - deleteUserById moet ook eventuele events verwijderen moest role=organisator hebben
-
-- const errorMsg = document.getElementById("errorMsgEditBtn");
