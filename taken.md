@@ -34,7 +34,3 @@
 ## algemeen vraag
 
 - page moet reloaden bij live event te zien
-
-## nog te doen bij eventmaken
-
-- bezoekers event lijst fixen
