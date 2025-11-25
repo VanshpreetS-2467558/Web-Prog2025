@@ -1,7 +1,7 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import { isValidEmail, isValidPhone, isStrongPassword, isPasswordCorrect } from "../utils/validatieHulpfuncties.js";
-import { emailExists, getUserByEmail, createUser, getPasswordById, changePasswordById, updateNameById, deleteUserById } from "../utils/dbHulpfuncties.js";
+import { emailExists, getUserByEmail, createUser, getPasswordById, changePasswordById, updateNameById, deleteUserById, changePasswordByEmail} from "../utils/dbHulpfuncties.js";
 
 
 const authenticationRouter = express.Router();
@@ -148,4 +148,24 @@ authenticationRouter.post("/deleteAccount", async (req, res) =>{
   }
 })
 
+
+// resetWachtwoord POST
+authenticationRouter.post("/resetWachtwoord", async (req, res) =>{
+  const {email, newPassword, confirmPassword} = req.body;
+  console.log("test " + email + newPassword);
+  try{
+    if (!emailExists(email)) return res.json({success: false, error: "email bestaat niet"});
+    if(newPassword !== confirmPassword) return res.json({ success: false, error: "Wachtwoorden komen niet overeen."});
+    if(!isStrongPassword(newPassword)) return res.json({ success: false, error: "Wachtwoord is niet sterk genoeg."});
+    const hashedPass = await bcrypt.hash(newPassword, 10);
+    const result = await changePasswordByEmail(email, hashedPass);
+    if (!(result.success)) return res.json({success: false, error: "internal server error"});
+    return res.json({success: true});
+
+
+  } catch (err){
+    console.log(err);
+    return res.json({success: false, error: "internal server error"});
+  }
+})
 export default authenticationRouter;

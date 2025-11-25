@@ -131,3 +131,19 @@ export function deleteUserById(id) {
         return { success: false, err };
     }
 }
+
+// past wachtwoord aan op basis van email
+export function changePasswordByEmail(email, password){
+    try{
+        db.prepare(`
+            UPDATE users
+            SET password = ?
+            WHERE email = ?
+            `).run(password, email);
+        return {success: true}
+
+    } catch (err) {
+        console.error(err);
+        return {success: false, err};
+    }
+}

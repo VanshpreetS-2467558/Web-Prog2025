@@ -82,6 +82,10 @@ router.get("/profile", requireLogin() ,(request,response)=>{
   response.render("pages/profielSettings");
 });
 
+// wachtwoord vergeten pagina
+router.get("/wachtwoord-vergeten", (request,response)=>{
+  response.render("pages/wachtwoordVergeten");
+});
 
 
 export default router;

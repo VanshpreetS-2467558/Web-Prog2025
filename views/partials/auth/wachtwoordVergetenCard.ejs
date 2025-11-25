@@ -1,0 +1,41 @@
+
+
+    <div class="flex items-center justify-center min-h-screen bg-gray-100">
+        <div class="bg-white p-10 rounded-lg shadow-md w-full max-w-sm">
+            <div class="mb-4">
+                <div class="flex items-center gap-2 mb-1">
+                    <!-- logo -->
+                    <a href="/home" class="text-5xl font-bold bg-gradientkleurR bg-clip-text text-transparent">
+                        FestCoin
+                    </a>
+                </div>
+                <h2 class="text-xl font-semibold mt-3 mb-2">Wachtwoord Vergeten</h2>
+            </div>
+
+            <form id="forgotPassword" class="space-y-4">
+                <div class="space-y-1">
+                    <label for="email" class="block font-medium text-gray-700">Email</label>
+                    <input id="email" type="email"
+                            class="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="space-y-1">
+                    <label for="newPassword" class="block font-medium text-gray-700">Nieuw Wachtwoord</label>
+                    <input id="newPassword" type="password" placeholder="••••••••"
+                            class="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="space-y-1">
+                    <label for="confirmPassword" class="block font-medium text-gray-700">Bevestig Nieuw Wachtwoord</label>
+                    <input id="confirmPassword" type="password" placeholder="••••••••"
+                            class="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <button type="submit" class="w-full bg-gradientkleurR text-white py-2 rounded hover:bg-blue-600 transitio">
+                    Wachtwoord Wijzigen
+                </button>
+                <p id="errorMsgPass" class="font-thin text-red-600 "></p>
+            </form>
+        </div>
+    </div>
+
+<script type="module" src="/js/forgotPassword.js"></script>
