@@ -34,7 +34,6 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       description TEXT,
       startDate TEXT,
       endDate TEXT,
-      isLive INTEGER DEFAULT 0,
       FOREIGN KEY(organisatorid) REFERENCES users(id)
     ) STRICT
   `).run();

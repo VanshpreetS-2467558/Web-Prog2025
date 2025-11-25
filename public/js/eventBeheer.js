@@ -42,6 +42,7 @@ function setInputValue(id, value) {
   if(element) element.value = value || "";
 }
 
+window.originalLocation = "";
 window.openAddEditModel = async function(eventId){
     const errorMsg = document.getElementById("errorMsgGeneral");
     try{
@@ -50,7 +51,7 @@ window.openAddEditModel = async function(eventId){
         const result = await res.json();
         if(result.success){
             const event = result.event;
-
+            originalLocation = event.location;
             setInputValue("eventIdInput", event.id);
             setInputValue("newName", event.name);
             setInputValue("newLocation", event.location);
@@ -378,3 +379,5 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+
+

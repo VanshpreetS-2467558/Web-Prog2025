@@ -31,7 +31,10 @@
 - maakt het uit dat onze evenbeheer.js fkn lang is?
 - maakt het uit als we confirm gebruiken? (bij delete -> event feature)
 
+## algemeen vraag
+
+- page moet reloaden bij live event te zien
+
 ## nog te doen bij eventmaken
 
-- isLive ook legit aanpassen dat het werkt. en laten zien bij bezoekers tab
 - deleteUserById moet ook eventuele events verwijderen moest role=organisator hebben

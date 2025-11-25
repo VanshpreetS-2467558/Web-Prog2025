@@ -1,3 +1,4 @@
+
 function setupPhotonAutocomplete(inputId, suggestionsId) {
     const input = document.getElementById(inputId);
     const suggestionsList = document.getElementById(suggestionsId);
@@ -62,7 +63,9 @@ document.getElementById("eventAanmaakForm").addEventListener("submit", e => {
 
 // Bewerken form submit
 document.getElementById("editEventForm").addEventListener("submit", e => {
-    if(!getSelectedEdit()) {
+    const newLocation = document.getElementById("newLocation").value;
+    const originalLocation = window.originalLocation;
+    if (newLocation !== originalLocation && !getSelectedEdit()) {
         e.preventDefault();
         alert("Kies een locatie uit de lijst!");
     }

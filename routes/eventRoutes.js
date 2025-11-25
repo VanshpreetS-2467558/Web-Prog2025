@@ -11,7 +11,16 @@ eventRouter.get("/event-management", requireLogin("organisator"), (req, res) => 
     try {
         const orgId = req.session.user.id;
         const events = db.prepare("SELECT * FROM events WHERE organisatorid = ?").all(orgId) || [];
+
+        const now = new Date();
+
+
         events.forEach(event => {
+            
+            const start = new Date(event.startDate);
+            const end = new Date(event.endDate);
+            event.isLive = now >= start && now < end;
+
             const stations = db.prepare("SELECT * FROM stations WHERE eventId = ?").all(event.id) || [];
             stations.forEach(station => {
                 station.items = db.prepare("SELECT * FROM items WHERE locationId = ?").all(station.id) || [];
@@ -22,6 +31,27 @@ eventRouter.get("/event-management", requireLogin("organisator"), (req, res) => 
     } catch(err) {
         console.error(err);
         res.render("pages/orgEvent", { events: [] });
+    }
+});
+
+// evenementen lijst pagina bij bezoekers
+eventRouter.get("/evenementen", requireLogin("bezoeker"), (req, res) => {
+    try {
+        const now = new Date();
+
+        let events = db.prepare("SELECT * FROM events").all() || [];
+
+        // filter op live
+        events = events.filter(event => {
+            const start = new Date(event.startDate);
+            const end = new Date(event.endDate);
+            return now >= start && now < end;
+        });
+
+        res.render("pages/eventLijst", { events });
+    } catch (err) {
+        console.error(err);
+        res.render("pages/eventLijst", { events: [] });
     }
 });
 

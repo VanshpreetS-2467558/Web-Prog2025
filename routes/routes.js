@@ -62,11 +62,6 @@ router.get("/dashboard", requireLogin() ,(request,response)=>{
   response.render("pages/dashboard");
 });
 
-// evenementen lijst pagina
-router.get("/evenementen",requireLogin("bezoeker") ,(request,response)=>{
-  response.render("pages/eventLijst");
-});
-
 // wallet pagina (bezoeker)
 router.get("/wallet", requireLogin("bezoeker") ,(request,response)=>{
   response.render("pages/walletBeheer");
