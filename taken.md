@@ -31,12 +31,9 @@
 
 ## nog te doen bij eventmaken
 
-- naam description en tijd aanpasbaar via een andere knop
-- errors juist fixen bij event want nu met alert
 - bij locatie dat het automatisch aanvult
 - datum mag enkel in toekomst zijn EN start-datum < end-datum
 - isLive ook legit aanpassen dat het werkt. en laten zien bij bezoekers tab
 - deleteUserById moet ook eventuele events verwijderen moest role=organisator hebben
-- is input hidden wel veilig?
 
 - const errorMsg = document.getElementById("errorMsgEditBtn");

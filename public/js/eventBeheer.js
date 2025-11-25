@@ -1,5 +1,11 @@
 import {showNotification} from "./headerScripts.js";
 
+// checkt welke event open moet blijven bij reload
+const openEventId = sessionStorage.getItem('openEventId');
+if(openEventId){
+    window.openEventDetail(openEventId);
+    sessionStorage.removeItem('openEventId');
+}
 
 document.getElementById("eventAanmaakForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -42,9 +48,8 @@ function setInputValue(id, value) {
   if(element) element.value = value || "";
 }
 
-
 window.openAddEditModel = async function(eventId){
-    const errorMsg = document.getElementById("errorMsgEditBtn");
+    const errorMsg = document.getElementById("errorMsgGeneral");
     try{
         const res = await fetch(`/findEvent?eventId=${encodeURIComponent(eventId)}`);
         if(!res.ok) throw new Error(`HTTP error: ${res.status}`);
@@ -67,10 +72,10 @@ window.openAddEditModel = async function(eventId){
             setInputValue("NewEndTime", end.toTimeString().slice(0,5));
             }
             document.getElementById("editInfoEvent").classList.remove("hidden");
-        } else return alert(result.error);
+        } else return errorMsg.textContent =result.error;
     } catch(err){
         console.error("Fetch error: ", err);
-        errorMsg.textContent = "Er is iets misgegaan, probeer het later opnieuw."
+        errorMsg.textContent = "Er is iets misgegaan, probeer het later opnieuw.";
     }
 }
 
@@ -79,14 +84,11 @@ window.openAddLocationModel = function(eventId) {
     document.getElementById("addLocationSection").classList.remove("hidden");
 };
 
-
 window.openAddItemModel = function(sectionId, eventId) {
     document.getElementById("sectionIdInput").value = sectionId;
     document.getElementById("eventIdInput").value = eventId;
     document.getElementById("addItemForm").classList.remove("hidden");
 };
-
-
 
 // Locatie form
 document.getElementById("addLocationForm").addEventListener("submit", async (e) => {
@@ -155,8 +157,6 @@ document.getElementById("itemForm").addEventListener("submit", async (e) => {
     }
 });
 
-
-
 window.openEventDetail = function(id) {
   document.getElementById("eventListView").classList.add("hidden");
   document.getElementById("eventDetailView").classList.remove("hidden");
@@ -175,7 +175,7 @@ window.closeEventDetail = function() {
 
 window.deleteEvent = async function(id) {
     if(!confirm("Weet je zeker dat je dit evenement wilt verwijderen?")) return;
-
+    const errorMsg = document.getElementById("errorMsgDelete");
     try{
         const res = await fetch("/deleteEvent", {
             method: "POST",
@@ -190,16 +190,17 @@ window.deleteEvent = async function(id) {
             if(eventDiv) eventDiv.remove();
             window.location.reload();
         } else {
-            alert("Fout bij verwijderen: " + result.error);
+            errorMsg.textContent = "Fout bij verwijderen: " + result.error;
         }
     } catch(err){
         console.error(err);
-        alert("Er is iets misgegaan.");
+        errorMsg.textContent = "Er is iets misgegaan bij het verwijderen, probeer het later opnieuw.";
     }
 }
 
 window.deleteItem = async function(id, eventId) {
     if(!confirm("Weet je zeker dat je dit Item wilt verwijderen?")) return;
+    const errorMsg = document.getElementById("errorMsgItem");
 
     try{
         const res = await fetch("/deleteItem", {
@@ -215,17 +216,17 @@ window.deleteItem = async function(id, eventId) {
             if(itemDiv) itemDiv.remove();
             window.location.reload();
         } else {
-            alert("Fout bij verwijderen: " + result.error);
+            errorMsg.textContent = "Fout bij verwijderen: " + result.error;
         }
     } catch(err){
         console.error(err);
-        alert("Er is iets misgegaan.");
+        errorMsg.textContent = "Er is iets misgegaan, kon item niet verwijderen.";
     }
 }
 
-
 window.deleteStation = async function(id, eventId) {
     if(!confirm("Weet je zeker dat je dit Item wilt verwijderen?")) return;
+    const errorMsg = document.getElementById("errorMsgStation");
 
     try{
         const res = await fetch("/deleteStation", {
@@ -241,21 +242,12 @@ window.deleteStation = async function(id, eventId) {
             if(stationDiv) stationDiv.remove();
             window.location.reload();
         } else {
-            alert("Fout bij verwijderen: " + result.error);
+            errorMsg.textContent = "Fout bij verwijderen: " + result.error;
         }
     } catch(err){
         console.error(err);
-        alert("Er is iets misgegaan.");
+        errorMsg.textContent = "Er is iets misgegaan.";
     }
-}
-
-
-
-// checkt welke event open moet blijven bij reload
-const openEventId = sessionStorage.getItem('openEventId');
-if(openEventId){
-    window.openEventDetail(openEventId);
-    sessionStorage.removeItem('openEventId');
 }
 
 // info event edit form

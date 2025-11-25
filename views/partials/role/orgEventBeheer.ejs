@@ -21,7 +21,7 @@
     <% } else { %>
 
       <!-- Header + knop -->
-      <div class="flex justify-between mb-6">
+      <div class="flex justify-between">
         <h2 class="text-3xl font-bold bg-gradientkleurBR bg-clip-text text-transparent">Evenementen:</h2>
         <button 
           class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600"
@@ -29,6 +29,7 @@
           Nieuw Evenement
         </button>
       </div>
+      <p id="errorMsgDelete" class="font-thin text-red-600 mb-6"></p>
 
       <div class="space-y-6">
 
@@ -71,6 +72,8 @@
     </button>
 
     <% events.forEach(event => { %>
+      <p id="errorMsgGeneral" class="font-thin text-red-600"></p>
+
       <div class="eventDetailContent hidden" id="eventDetail-<%= event.id %>">
         <div class="border-2 border-purple-600 rounded-2xl p-4 mb-4">
           <div class="flex justify-between">
@@ -80,7 +83,6 @@
                       onclick="openAddEditModel('<%= event.id %>')">
                 Event Info Bewerken
               </button>
-              <p id="errorMsgEditBtn" class="font-thin text-red-600"></p>
             </div>
           </div>
           <p class="text-gray-500 mb-4"><%= event.location %></p>
@@ -103,16 +105,18 @@
           <% if(!event.stations || event.stations.length === 0) { %>
             <p class="text-gray-500 text-sm mb-6">Nog geen locaties toegevoegd</p>
           <% } else { %>
+            <p id="errorMsgStation" class="font-thin text-red-600">testItem</p>
             <div class="grid gap-4">
               <% event.stations.forEach(st => { %>
                 <div id="station-<%= st.id %>" class="border border-purple-500 rounded-xl p-4">
-                  <div class="flex justify-between items-center mb-2">
+                  <div class="flex justify-between items-center">
                     <h4 class="font-semibold"><%= st.name %></h4>
                     <button class="bg-purple-500 px-2 py-1 rounded-lg text-sm text-white hover:bg-gray-300"
                             onclick="openAddItemModel('<%= st.id %>' ,'<%= event.id %>' )">
                       + Item
                     </button>
                   </div>
+                  <p id="errorMsgItem" class="font-thin text-red-600 mb-2"></p>
                   <% if(!st.items || st.items.length === 0) { %>
                     <p class="text-gray-500 text-sm">Nog geen items</p>
                   <% } else { %>
