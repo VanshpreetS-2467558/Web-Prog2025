@@ -22,7 +22,7 @@
 
 ## externe API
 
-- niks (zien we nog)
+- Photon
 - (als we niks hebben gwn stripe)
 
 ## vragen?
@@ -31,7 +31,6 @@
 
 ## nog te doen bij eventmaken
 
-- bij locatie dat het automatisch aanvult
 - datum mag enkel in toekomst zijn EN start-datum < end-datum
 - isLive ook legit aanpassen dat het werkt. en laten zien bij bezoekers tab
 - deleteUserById moet ook eventuele events verwijderen moest role=organisator hebben
