@@ -1,11 +1,5 @@
 import {showNotification} from "./headerScripts.js";
 
-// checkt welke event open moet blijven bij reload
-const openEventId = sessionStorage.getItem('openEventId');
-if(openEventId){
-    window.openEventDetail(openEventId);
-    sessionStorage.removeItem('openEventId');
-}
 
 document.getElementById("eventAanmaakForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -200,7 +194,7 @@ window.deleteEvent = async function(id) {
 
 window.deleteItem = async function(id, eventId) {
     if(!confirm("Weet je zeker dat je dit Item wilt verwijderen?")) return;
-    const errorMsg = document.getElementById("errorMsgItem");
+    const errorMsg = document.getElementById(`errorMsgItem-${eventId}`);
 
     try{
         const res = await fetch("/deleteItem", {
@@ -226,7 +220,7 @@ window.deleteItem = async function(id, eventId) {
 
 window.deleteStation = async function(id, eventId) {
     if(!confirm("Weet je zeker dat je dit Item wilt verwijderen?")) return;
-    const errorMsg = document.getElementById("errorMsgStation");
+    const errorMsg = document.getElementById(`errorMsgStation-${eventId}`);
 
     try{
         const res = await fetch("/deleteStation", {
@@ -259,6 +253,7 @@ document.getElementById("editEventForm").addEventListener("submit", async (e) =>
         const res = await fetch(`/findEvent?eventId=${encodeURIComponent(eventId)}`);
         const result = await res.json();
         const currentEvent = result.event;
+
 
         const updatedFields = {};
 
@@ -305,3 +300,10 @@ document.getElementById("editEventForm").addEventListener("submit", async (e) =>
 
     }
 });
+
+// checkt welke event open moet blijven bij reload
+const openEventId = sessionStorage.getItem('openEventId');
+if(openEventId){
+    window.openEventDetail(openEventId);
+    sessionStorage.removeItem('openEventId');
+}

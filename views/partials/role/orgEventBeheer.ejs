@@ -71,8 +71,9 @@
       ← Terug
     </button>
 
+    <p id="errorMsgGeneral" class="font-thin text-red-600"></p>
     <% events.forEach(event => { %>
-      <p id="errorMsgGeneral" class="font-thin text-red-600"></p>
+      
 
       <div class="eventDetailContent hidden" id="eventDetail-<%= event.id %>">
         <div class="border-2 border-purple-600 rounded-2xl p-4 mb-4">
@@ -105,7 +106,7 @@
           <% if(!event.stations || event.stations.length === 0) { %>
             <p class="text-gray-500 text-sm mb-6">Nog geen locaties toegevoegd</p>
           <% } else { %>
-            <p id="errorMsgStation" class="font-thin text-red-600">testItem</p>
+            <p id="errorMsgStation-<%= event.id %>" class="font-thin text-red-600"></p>
             <div class="grid gap-4">
               <% event.stations.forEach(st => { %>
                 <div id="station-<%= st.id %>" class="border border-purple-500 rounded-xl p-4">
@@ -116,7 +117,7 @@
                       + Item
                     </button>
                   </div>
-                  <p id="errorMsgItem" class="font-thin text-red-600 mb-2"></p>
+                  <p id="errorMsgItem-<%= event.id %>" class="font-thin text-red-600 mb-2"></p>
                   <% if(!st.items || st.items.length === 0) { %>
                     <p class="text-gray-500 text-sm">Nog geen items</p>
                   <% } else { %>
