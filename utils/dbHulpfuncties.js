@@ -120,6 +120,14 @@ export function updateNameById(id, name){
 // pas aan zodra meerdere tables beschikbaar zijn ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 export function deleteUserById(id) {
     try {
+        const user = db.prepare("SELECT * FROM users WHERE id = ?").get(id);
+        if(!user) return { success: false, err: "User niet gevonden." };
+        if(user.role === "organisator"){
+            const events = db.prepare("SELECT id FROM events WHERE organisatorid = ?").all(id);
+            events.forEach(event => {
+                deleteEvent(event.id);
+            });
+        }
         db.prepare(`
             DELETE FROM users
             WHERE id = ?

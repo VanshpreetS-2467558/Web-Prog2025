@@ -37,4 +37,4 @@
 
 ## nog te doen bij eventmaken
 
-- deleteUserById moet ook eventuele events verwijderen moest role=organisator hebben
+- bezoekers event lijst fixen
