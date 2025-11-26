@@ -58,6 +58,18 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
     ) STRICT
   `).run();
 
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS transaction (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      bezoekerId INTEGER,
+      itemId TEXT,
+      date TEXT,
+      handled INTEGER DEFAULT 0,
+      FOREIGN KEY(bezoekerId) REFERENCES users(id),
+      FOREIGN KEY(itemId) REFERENCES items(id),
+    ) STRICT
+  `).run();
+
 
   
   // voor id
