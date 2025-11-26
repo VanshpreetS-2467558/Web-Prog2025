@@ -1,0 +1,206 @@
+<div class="min-h-screen bg-gray-50 pb-24">
+  <!-- Navbar -->
+  <nav class="border-b bg-white shadow-sm sticky top-0 z-10">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div>
+        <h1 class="text-xl font-bold"><%= event.name %></h1>
+        <p class="text-sm text-gray-500">Selecteer items uit het menu</p>
+      </div>
+      <a href="/evenementen" class="px-3 py-2 border rounded-lg bg-red-500 text-white hover:bg-gray-100">Verlaat evenement</a>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <div class="container mx-auto px-4 py-6">
+    <!-- Tabs -->
+    <div class="w-full">
+      <div class="flex gap-2 overflow-x-auto mb-6 border-b pb-2">
+        <% stations.forEach((section, i) => { %>
+          <button class="px-4 py-2 rounded <% if(i===0){ %>bg-blue-500 text-white<% } else { %>bg-gray-200<% } %>"
+                  data-tab="<%= section.id %>">
+            <%= section.name %>
+          </button>
+        <% }) %>
+      </div>
+
+      <% stations.forEach((section, i) => { %>
+        <div class="tab-content <% if(i!==0){ %>hidden<% } %>" data-tab-content="<%= section.id %>">
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <% section.items.forEach(item => { %>
+              <div class="border rounded-lg bg-white shadow-sm p-4 flex flex-col justify-between">
+                <div class="flex justify-between items-start mb-2">
+                  <h3 class="font-bold text-2xl"><%= item.name %></h3>
+                  <span class="px-2 py-1 text-xs font-medium rounded <%= item.stock > 50 ? 'bg-gray-200 text-gray-700' : 'bg-red-100 text-red-700' %>">
+                    <%= item.stock %> op voorraad
+                  </span>
+                </div>
+                <div class="flex justify-between items-center mt-2">
+                  <p class="text-2xl font-bold bg-gradientkleurBR bg-clip-text text-transparent"><%= item.price %> FestCoins</p>
+                  <button class="flex items-center px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                          onclick="addToCartItem(<%= JSON.stringify({...item, sectionName: section.name}) %>)">
+                    + Toevoegen
+                  </button>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+<!-- Fixed Cart Bar -->
+<div id="cartContainer" class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4 z-20">
+  <div class="container mx-auto">
+    <p id="emptyCartMsg" class="text-center text-gray-500">Winkelwagen is leeg</p>
+    <div id="cartItems" class="space-y-4 hidden"></div>
+
+    <div class="flex gap-2 mt-2 hidden" id="cartButtons">
+      <button id="groupPotBtn" class="flex-1 px-4 py-2 border rounded hover:bg-gray-100" onclick="openGroup()">Groepspot (0 items)</button>
+      <button id="qrBtn" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="openQR()">QR Code (€0.00)</button>
+    </div>
+  </div>
+</div>
+
+<!-- QR Code Modal -->
+<div id="qrDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-30">
+  <div class="bg-white rounded-lg max-w-md w-full p-6">
+    <h2 class="text-xl font-bold mb-2">Jouw Bestelling QR Code</h2>
+    <p class="text-gray-500 mb-4">Laat deze QR code scannen bij het kraampje (geldig 15 minuten)</p>
+    <div class="bg-gray-200 w-64 h-64 flex items-center justify-center mx-auto mb-4">QR CODE</div>
+    <div class="flex justify-between font-semibold text-lg">
+      <span>Totaal:</span>
+      <span id="qrTotal">€0.00</span>
+    </div>
+    <p id="qrItems" class="text-sm text-gray-500 text-center mt-2">0 items in bestelling</p>
+    <button onclick="document.getElementById('qrDialog').classList.add('hidden')" class="mt-4 px-4 py-2 bg-gray-200 rounded">Sluiten</button>
+  </div>
+</div>
+
+<!-- Groepspot Modal -->
+<div id="groupDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-30">
+  <div class="bg-white rounded-lg max-w-md w-full p-6 space-y-4">
+    <h2 class="text-xl font-bold">Groepspot Aanmaken</h2>
+    <p class="text-gray-500">Deel de kosten met je vrienden</p>
+    <div class="bg-gray-100 p-4 rounded">
+      <p class="text-sm text-gray-500 mb-1">Totaal te betalen:</p>
+      <p class="text-3xl font-bold" id="groupTotal">€0.00</p>
+      <p class="text-sm text-gray-500 mt-1" id="groupItems">0 items</p>
+    </div>
+    <p class="font-medium mb-2">Laat vrienden scannen om bij te dragen:</p>
+    <div class="bg-white p-6 rounded-lg mx-auto w-fit border-2 border-dashed">
+      <div class="w-48 h-48 bg-gray-200 flex items-center justify-center">QR CODE</div>
+    </div>
+    <div class="space-y-3">
+      <div class="flex justify-between items-center p-3 bg-gray-100 rounded">
+        <span class="text-sm">Jouw bijdrage:</span>
+        <input type="number" class="w-24 px-3 py-1 border rounded text-right" placeholder="0">
+      </div>
+      <div class="flex justify-between items-center p-3 bg-green-50 rounded">
+        <span class="text-sm font-medium">Nog te betalen:</span>
+        <span class="font-bold text-green-600" id="groupRemaining">€0.00</span>
+      </div>
+    </div>
+    <button class="w-full bg-gray-300 rounded p-2" disabled>Wachten op vrienden...</button>
+    <button onclick="document.getElementById('groupDialog').classList.add('hidden')" class="mt-2 px-4 py-2 bg-gray-200 rounded w-full">Sluiten</button>
+  </div>
+</div>
+
+<script>
+  // --- Tabs ---
+  document.querySelectorAll('[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tabId = btn.dataset.tab;
+      document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('bg-blue-500','text-white'));
+      btn.classList.add('bg-blue-500','text-white');
+      document.querySelectorAll('[data-tab-content]').forEach(c => c.classList.add('hidden'));
+      document.querySelector(`[data-tab-content="${tabId}"]`).classList.remove('hidden');
+    });
+  });
+
+  // --- Modals ---
+  function openQR() { document.getElementById('qrDialog').classList.remove('hidden'); }
+  function openGroup() { document.getElementById('groupDialog').classList.remove('hidden'); }
+
+  // --- Cart ---
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+  function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
+
+  function renderCart() {
+    const cartItems = document.getElementById('cartItems');
+    const emptyMsg = document.getElementById('emptyCartMsg');
+    const cartButtons = document.getElementById('cartButtons');
+
+    if(cart.length === 0) {
+      cartItems.classList.add('hidden');
+      emptyMsg.classList.remove('hidden');
+      cartButtons.classList.add('hidden');
+    } else {
+      cartItems.innerHTML = cart.map(item => `
+        <div class="flex justify-between items-center bg-gray-100 p-2 rounded">
+          <div class="flex-1">
+            <p class="font-medium">${item.name}</p>
+            <p class="text-xs text-gray-500">${item.sectionName || ''}</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="px-2 py-1 border rounded text-sm" onclick="removeFromCart(${item.id})">-</button>
+            <span class="font-medium w-8 text-center">${item.quantity}x</span>
+            <button class="px-2 py-1 bg-blue-500 text-white rounded text-sm" onclick='addToCartItem(${JSON.stringify(item)})'>+</button>
+            <p class="font-semibold text-right bg-gradientkleurBR bg-clip-text text-transparent">${(item.price * item.quantity)} FestCoins</p>
+          </div>
+        </div>
+      `).join('');
+      cartItems.classList.remove('hidden');
+      emptyMsg.classList.add('hidden');
+      cartButtons.classList.remove('hidden');
+    }
+  }
+
+  function updateCartTotals() {
+    const totalPrice = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
+
+    document.getElementById('qrTotal').textContent = `${totalPrice} FestCoins`;
+    document.getElementById('qrItems').textContent = `${totalItems} items in bestelling`;
+    document.getElementById('groupPotBtn').textContent = `Groepspot (${totalItems} items)`;
+    document.getElementById('qrBtn').textContent = `QR Code (${totalPrice} FestCoins)`;
+  }
+
+  function updateGroupDialog() {
+    const totalPrice = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
+    document.getElementById('groupTotal').textContent = `${totalPrice} FestCoins`;
+    document.getElementById('groupItems').textContent = `${totalItems} items`;
+    document.getElementById('groupRemaining').textContent = `${totalPrice} FestCoins`;
+  }
+
+  function addToCartItem(item) {
+    let existing = cart.find(i => i.id === item.id);
+    if(existing) existing.quantity++;
+    else cart.push({...item, quantity: 1});
+    saveCart();
+    renderCart();
+    updateCartTotals();
+    updateGroupDialog();
+  }
+
+  function removeFromCart(itemId) {
+    const idx = cart.findIndex(i => i.id === itemId);
+    if(idx === -1) return;
+    cart[idx].quantity--;
+    if(cart[idx].quantity <= 0) cart.splice(idx, 1);
+    saveCart();
+    renderCart();
+    updateCartTotals();
+    updateGroupDialog();
+  }
+
+  // Init
+  renderCart();
+  updateCartTotals();
+  updateGroupDialog();
+</script>

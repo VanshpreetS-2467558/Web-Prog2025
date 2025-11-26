@@ -8,6 +8,7 @@ import session from "express-session";
 import logger from "./middleware/debug.js"
 import sessionMiddleware from "./middleware/session.js";
 import transactionRouter from "./routes/transactionRoutes.js";
+import eventListRouter from "./routes/eventListRoutes.js";
 
 
 
@@ -57,6 +58,7 @@ app.use("/", authenticationRouter);
 app.use("/", beheerCoinsRouter);
 app.use("/", eventRouter);
 app.use("/", transactionRouter);
+app.use("/", eventListRouter);
 
 // Middleware for unknown routes
 app.use((request, response, next) => {

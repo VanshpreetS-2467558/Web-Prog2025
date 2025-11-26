@@ -1,8 +1,8 @@
 <section class="container mx-auto py-10">
     <div class="mb-6 flex justify-between items-center">
         <div>
-            <h2 class="text-3xl font-bold mb-2">Live Evenementen</h2>
-            <p class="text-muted-foreground">Klik op het evenement waar je aanwezig bent!</p>
+            <h2 class="text-3xl font-bold mb-2 ">Live Evenementen</h2>
+            <p class="text-muted-foreground text-sm">Klik op het evenement waar je aanwezig bent!</p>
         </div>
         <div class="relative">
             <input type="text" id="searchInput" name="search" placeholder="Zoek evenement..." class="w-72 border border-gray-400 rounded-lg px-3 py-2 pl-8 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
@@ -15,7 +15,7 @@
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <% if (events.length > 0) { %>
             <% events.forEach(event => { %>
-                <div class="eventCard border rounded-2xl p-4 hover:shadow-lg transition-shadow cursor-pointer">
+                <a href="/events/<%= event.id %>" class="eventCard border rounded-2xl p-4 hover:shadow-lg transition-shadow cursor-pointer">
                     <div class="flex justify-between items-start mb-2">
                         <span class="bg-green-500 text-white text-xs px-2 py-1 rounded">Live</span>
                         <p class="text-sm text-gray-500"><%= event.attendees || 0 %> bezoekers</p>
@@ -34,7 +34,7 @@
                     </div>
 
                     <p class="text-sm mt-4 mb-4"><%= event.description %></p>
-                </div>
+                </a>
             <% }) %>
         <% } else { %>
             <div class="border rounded-2xl py-12 text-center text-gray-500">
@@ -44,5 +44,5 @@
     </div>
 </section>
 
-
 <script type="module" src="/js/eventListSearchScript.js"></script>
+<script type="module" src="/js/eventListScripts.js"></script>

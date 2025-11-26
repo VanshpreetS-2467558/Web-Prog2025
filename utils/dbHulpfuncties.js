@@ -256,7 +256,7 @@ export function getItemStockById(id){
     return db.prepare("SELECT stock FROM items WHERE id = ?").get(id);
 }
 
-export function getNameStockById(id){
+export function getItemNameById(id){
     return db.prepare("SELECT name FROM items WHERE id = ?").get(id);
 }
 
