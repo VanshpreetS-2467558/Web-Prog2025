@@ -247,3 +247,26 @@ export function updateEventById(eventId, updatedFields){
     return db.prepare(sql).run(values);
 
 }
+
+export function getItemPriceById(id){
+    return db.prepare("SELECT price FROM items WHERE id = ?").get(id);
+}
+
+export function getItemStockById(id){
+    return db.prepare("SELECT stock FROM items WHERE id = ?").get(id);
+}
+
+export function getNameStockById(id){
+    return db.prepare("SELECT name FROM items WHERE id = ?").get(id);
+}
+
+export function getFestcoinsById(id){
+    return db.prepare("SELECT festCoins FROM users WHERE id = ?").get(id);
+}
+
+export function addTransaction(userId, itemId, date){
+    return db.prepare(`
+        INSERT INTO transactions (bezoekerId, itemId, date) 
+        VALUES (?, ?, ?)
+        `).run(userId, itemId, date);
+}

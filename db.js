@@ -59,14 +59,14 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
   `).run();
 
   db.prepare(`
-    CREATE TABLE IF NOT EXISTS transaction (
+    CREATE TABLE IF NOT EXISTS transactions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       bezoekerId INTEGER,
       itemId TEXT,
-      date TEXT,
+      date INTEGER,
       handled INTEGER DEFAULT 0,
       FOREIGN KEY(bezoekerId) REFERENCES users(id),
-      FOREIGN KEY(itemId) REFERENCES items(id),
+      FOREIGN KEY(itemId) REFERENCES items(id)
     ) STRICT
   `).run();
 
