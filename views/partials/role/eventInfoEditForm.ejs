@@ -1,0 +1,43 @@
+<div id="editInfoEvent" class="fixed inset-0 bg-black/50 flex items-start justify-center pt-20 z-50 hidden">
+  <div class="bg-white p-6 rounded-xl w-80">
+    <h2 class="text-xl font-semibold mb-3">Evenement info bewerken</h2>
+
+    <form id="editEventForm" class="space-y-4">
+        <input type="hidden" id="eventIdInput">
+
+        <div>
+            <label class="text-sm">Event Naam</label>
+            <input type="text" id="newName" class="w-full border rounded p-2 mb-2">
+        </div>
+        <div>
+            <label class="text-sm">Evenement locatie</label>
+            <input type="text" id="newLocation" autocomplete="off" class="w-full border rounded p-2 mb-2">
+            <ul id="suggestionsEdit" class="border rounded-md mt-1 hidden"></ul>
+        </div>
+        <div>
+            <label class="text-sm">Evenement Beschrijving</label>
+            <input type="text" id="newDescription" class="w-full border rounded p-2 mb-4">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="grid gap-2">
+                <label for="startDate">Start Datum & Tijd</label>                    
+                <input type="date" id="newStartDate" name="newStartDate" class="border rounded-lg px-3 py-2">
+                <input type="time" id="NewStartTime" name="NewStartTime" class="border rounded-lg px-3 py-2">
+            </div>
+        </div>
+        <div class="grid gap-2">
+            <label for="endDate">Eind Datum & Tijd</label>
+            <input type="date" id="newEndDate" name="newEndDate" class="border rounded-lg px-3 py-2">
+            <input type="time" id="NewEndTime" name="NewEndTime" class="border rounded-lg px-3 py-2">
+        </div>
+        <div class="flex justify-between gap-5">
+            <button type="button" class="bg-red-500 text-white px-4 py-2 rounded-lg w-full hover:bg-red-700"
+                    onclick="document.getElementById('editInfoEvent').classList.add('hidden')">
+            Annuleren
+            </button>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-700">Bewerken</button>
+        </div>
+        <p id="errorMsgEditForm" class="font-thin text-red-600"></p>
+    </form>
+  </div>
+</div>

@@ -102,13 +102,13 @@ export function changePasswordById(id, password){
 
 // past naam aan op basis van id
 export function updateNameById(id, name){
-        try{
-            db.prepare(`
-            UPDATE users
-            SET name = ?
-            WHERE id = ?
-            `).run(name, id);
-            return {success: true}
+    try{
+        db.prepare(`
+        UPDATE users
+        SET name = ?
+        WHERE id = ?
+        `).run(name, id);
+        return {success: true}
     } catch (err) {
         console.error(err);
         return {success: false, err};
@@ -117,9 +117,17 @@ export function updateNameById(id, name){
 
 
 // delete account op basis van id
-// pas aan zodra meerdere tables beschikbaar zijn
+// pas aan zodra meerdere tables beschikbaar zijn ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 export function deleteUserById(id) {
     try {
+        const user = db.prepare("SELECT * FROM users WHERE id = ?").get(id);
+        if(!user) return { success: false, err: "User niet gevonden." };
+        if(user.role === "organisator"){
+            const events = db.prepare("SELECT id FROM events WHERE organisatorid = ?").all(id);
+            events.forEach(event => {
+                deleteEvent(event.id);
+            });
+        }
         db.prepare(`
             DELETE FROM users
             WHERE id = ?
@@ -146,4 +154,96 @@ export function changePasswordByEmail(email, password){
         console.error(err);
         return {success: false, err};
     }
+}
+
+// checken of event naam al in gebruik is
+export function checkNameEvent(name){
+    return !!db.prepare("SELECT id FROM events WHERE LOWER(name) = LOWER(?)").get(name);
+}
+
+// create event
+export function createEvent({ organisatorid, name, location, description, startDate, endDate }){
+    return db.prepare(`
+            INSERT INTO events (organisatorid, name, location, description, startDate, endDate)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `).run(organisatorid, name, location, description || "", startDate, endDate);
+}
+
+// delete event 
+export function deleteEvent(id) {
+    try{
+        // eerst alle items van stations van event verwijderen
+        db.prepare(`
+            DELETE FROM items 
+            WHERE locationId IN (SELECT id FROM stations WHERE eventId = ?)
+        `).run(id);
+
+        // stations verwijderen
+        db.prepare(`
+            DELETE FROM stations 
+            WHERE eventId = ?
+        `).run(id);
+
+        // event zelf verwijderen
+        db.prepare(`
+            DELETE FROM events 
+            WHERE id = ?
+        `).run(id);
+        return {success: true};
+    } catch (err) {
+        console.error(err);
+        return { success: false, err };
+    }
+}
+
+
+export function deleteItem(id){
+    try{
+        db.prepare(`
+            DELETE FROM items 
+            WHERE id = ?
+        `).run(id);
+    } catch(err){
+        console.error(err);
+        return { success: false, err };
+    }
+}
+
+export function deleteLocation(id){
+    try{
+        db.prepare(`
+            DELETE FROM items 
+            WHERE locationId = ?
+        `).run(id);
+        db.prepare(`
+            DELETE FROM stations 
+            WHERE id = ?
+        `).run(id);
+    } catch(err){
+        console.error(err);
+        return { success: false, err };
+    }
+}
+
+
+export function searchEventById(eventId){
+    return db.prepare("SELECT * FROM events WHERE id = ?").get(eventId);
+}
+
+
+export function updateEventById(eventId, updatedFields){
+    const fields = [];
+    const values = [];
+
+    for (const key in updatedFields) {
+        fields.push(`${key} = ?`);
+        values.push(updatedFields[key]);
+    }
+
+    values.push(eventId);
+
+    const sql = `UPDATE events SET ${fields.join(", ")} WHERE id = ?`;
+
+    return db.prepare(sql).run(values);
+
 }

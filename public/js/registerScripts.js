@@ -1,6 +1,3 @@
-import { showNotification } from "./headerScripts.js";
-
-
 
 // register ajax/fetch 
 document.getElementById("registratieform").addEventListener("submit", async (e) => {
@@ -18,12 +15,13 @@ document.getElementById("registratieform").addEventListener("submit", async (e) 
     const result = await res.json();
 
     if(result.success){
-        showNotification("Account succesvol aangemaakt!");
-        setTimeout(() => window.location.href = "/dashboard", 1000);
+        sessionStorage.setItem('showNotification', "Account succesvol aangemaakt!");
+        window.location.replace("/dashboard");
     } else{
         errorMsg.textContent = result.error;
     }
 });
+
 
 
 

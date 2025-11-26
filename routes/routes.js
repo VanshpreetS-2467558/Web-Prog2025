@@ -62,20 +62,11 @@ router.get("/dashboard", requireLogin() ,(request,response)=>{
   response.render("pages/dashboard");
 });
 
-// evenementen lijst pagina
-router.get("/evenementen",requireLogin("bezoeker") ,(request,response)=>{
-  response.render("pages/eventLijst");
-});
-
 // wallet pagina (bezoeker)
 router.get("/wallet", requireLogin("bezoeker") ,(request,response)=>{
   response.render("pages/walletBeheer");
 });
 
-// event beheren pagina
-router.get("/event-management",requireLogin("organisator") ,(request,response)=>{
-  response.render("pages/orgEvent");
-});
 
 // profiel pagina
 router.get("/profile", requireLogin() ,(request,response)=>{

@@ -24,3 +24,12 @@ export function showNotification(message) {
         notif.classList.add("opacity-0");
     }, 1500);
 }
+
+
+window.addEventListener('DOMContentLoaded', () => {
+    const msg = sessionStorage.getItem('showNotification');
+    if(msg){
+        showNotification(msg);
+        sessionStorage.removeItem('showNotification'); // opschonen
+    }
+});
