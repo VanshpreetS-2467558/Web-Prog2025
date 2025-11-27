@@ -1,6 +1,6 @@
 ## Test accounts
 
-bezoeker: email: bezoeker@gmail.com - wachtwoord: Qwerty123@
+bezoeker: email: bezoeker123@gmail.com - wachtwoord: Qwerty123@
 organisator: email: org@gmail.com - wachtwoord: Qwerty123@
 
 # Web programming project skeleton
