@@ -63,10 +63,22 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       bezoekerId INTEGER,
       itemId TEXT,
-      date INTEGER,
+      date TEXT DEFAULT CURRENT_TIMESTAMP,
       handled INTEGER DEFAULT 0,
       FOREIGN KEY(bezoekerId) REFERENCES users(id),
       FOREIGN KEY(itemId) REFERENCES items(id)
+    ) STRICT
+  `).run();
+  
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS event_visitors (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      eventId INTEGER,
+      userId INTEGER,
+      visitTime TEXT DEFAULT CURRENT_TIMESTAMP,
+      leftAt TEXT DEFAULT NULL,
+      FOREIGN KEY(eventId) REFERENCES events(id),
+      FOREIGN KEY(userId) REFERENCES users(id)
     ) STRICT
   `).run();
 

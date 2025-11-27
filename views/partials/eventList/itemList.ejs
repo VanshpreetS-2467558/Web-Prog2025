@@ -6,11 +6,13 @@
         <h1 class="text-xl font-bold"><%= event.name %></h1>
         <p class="text-sm text-gray-500">Selecteer items uit het menu</p>
       </div>
-      <a href="/evenementen" 
-        class="px-3 py-2 border rounded-lg bg-red-500 text-white hover:bg-red-400"
-        onclick="localStorage.removeItem('cart'); localStorage.removeItem('currentStation')">
-        Verlaat evenement
-      </a>
+      <form action="/events/<%= event.id %>/leave" method="POST" class="inline">
+        <button type="submit" 
+                class="px-3 py-2 border rounded-lg bg-red-500 text-white hover:bg-red-400"
+                onclick="localStorage.removeItem('cart'); localStorage.removeItem('currentStation')">
+          Verlaat evenement
+        </button>
+      </form>
     </div>
   </nav>
 
