@@ -35,12 +35,18 @@
                     </button>
                 </div>
             </div>
-
-            <!-- wachtwoord vergeten -->
-            <div class="text-right text-sm">
-                <a href="/wachtwoord-vergeten" class="text-blue-500 hover:underline">Wachtwoord vergeten?</a>
+            
+            <div class="flex justify-between items-center">
+                <!-- ingelogd blijven -->
+                <label>
+                    Blijf ingelogd
+                    <input type="checkbox" name="keepLoggedIn" id="keepLoggedIn" value="1">
+                </label>
+                <!-- wachtwoord vergeten -->
+                <div class="text-sm">
+                    <a href="/wachtwoord-vergeten" class="text-blue-500 hover:underline">Wachtwoord vergeten?</a>
+                </div>
             </div>
-
             <!-- Inloggen knop-->
             <button type="submit" class="w-full bg-gradientkleurR text-white py-2 rounded hover:bg-blue-600 transition">
                 Inloggen

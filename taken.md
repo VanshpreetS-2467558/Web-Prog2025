@@ -1,6 +1,5 @@
 ## to-do:
 
-- [ ] bij inloggen een kleine knop voor blijf ingelogd;
 - [ ] analyse pagina maken voor organisator (voor alle organisators voor te zien welke items/locatie populair zijn);
 - [ ] employees pagina + werking voor organisator (subaccounts met id en wachtwoord) (front-end: pagina is kolom met toevoegen en verwijderen van vendors: naam, id, locatie) (vendors kolom per evenement!!) (lijst van evenementen en per evenement een vendor lijst/kolom) (vendors account is heel nieuwe interface ! (heel beperkt, enkel pagina voor scannen en bestelling aflezen en pagina met beperkte analyse van hoeveel items hij heeft aangeboden + ... voor personal intrest));
 - [ ] data showen bij dashboard van user/org

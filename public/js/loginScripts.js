@@ -19,13 +19,14 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
     const email = document.getElementById("email").value;
     const password = document.getElementById("wachtwoord").value;
+    const keepLoggedIn = document.getElementById("keepLoggedIn").value;
     const errorMsg = document.getElementById("errorMsg");
 
 
     const res = await fetch("/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, keepLoggedIn })
     });
 
     const data = await res.json();

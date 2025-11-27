@@ -21,7 +21,7 @@ authenticationRouter.post("/logout", (req, res) => {
 
 // register POST
 authenticationRouter.post("/register", async (req, res) => {
-  const {role, name, email, phone, password, confirmPassword} = req.body;
+  const {role, name, email, phone, password, confirmPassword, keepLoggedIn} = req.body;
 
   // check of alle velden zijn ingevuld
   if (!role || !name || !email || !phone || !password || !confirmPassword)
@@ -38,6 +38,11 @@ authenticationRouter.post("/register", async (req, res) => {
     const hashedPass = await bcrypt.hash(password, 10);
     const festCoins =  0;
     const newUser = createUser({role, name, email, phone, password: hashedPass, festCoins});
+
+    if(keepLoggedIn === "1"){
+      req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 dagen
+    } 
+
     req.session.user = {id: newUser.lastInsertRowid, name , role, festCoins, email};
     res.json({success: true});
   } catch (err) {
@@ -51,8 +56,7 @@ authenticationRouter.post("/register", async (req, res) => {
 authenticationRouter.post("/login", async (req, res) => {
 
   // vraagt gegevens van form html
-  const { email, password } = req.body;
-
+  const { email, password, keepLoggedIn } = req.body;
   // checkt of het een geldige email is
   if (!isValidEmail(email)) return res.json({ success: false, error: "Ongeldig e-mailadres" });
 
@@ -64,9 +68,14 @@ authenticationRouter.post("/login", async (req, res) => {
   const match = await isPasswordCorrect(password, user.password);
   if (!match) return res.json({ success: false, error: "E-mail of wachtwoord is fout." });
   
+  if(keepLoggedIn === "1"){
+    req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 dagen
+  } 
+  
   // sessie opslaan en redirect
   req.session.user = { id: user.id, name: user.name, role: user.role , festCoins: user.festCoins, email: user.email};
-  res.json({ success: true });
+  res.json({ success: true });  
+
 });
 
 
