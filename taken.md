@@ -2,7 +2,6 @@
 
 - [ ] bij inloggen een kleine knop voor blijf ingelogd;
 - [ ] analyse pagina maken voor organisator (voor alle organisators voor te zien welke items/locatie populair zijn);
-- [ ] menu lijst actually werkend krijgen en dat QR-codes kunnen aangemaken;
 - [ ] employees pagina + werking voor organisator (subaccounts met id en wachtwoord) (front-end: pagina is kolom met toevoegen en verwijderen van vendors: naam, id, locatie) (vendors kolom per evenement!!) (lijst van evenementen en per evenement een vendor lijst/kolom) (vendors account is heel nieuwe interface ! (heel beperkt, enkel pagina voor scannen en bestelling aflezen en pagina met beperkte analyse van hoeveel items hij heeft aangeboden + ... voor personal intrest));
 - [ ] data showen bij dashboard van user/org
 - [ ] budget alarm feature bij bezoekers (doelstelling) per categorie (drank, eten, other,..)
@@ -39,7 +38,3 @@
 ## algemeen vraag
 
 - page moet reloaden bij live event te zien
-
-## to do van bezoeker implementatie:
-
-- code cleanen!
