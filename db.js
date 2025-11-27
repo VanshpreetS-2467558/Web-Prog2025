@@ -19,7 +19,7 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       email TEXT UNIQUE,
       phone TEXT,
       password TEXT,
-      festCoins INTEGER
+      festCoins INTEGER NOT NULL DEFAULT 0
       ) STRICT
   `).run();
   
@@ -65,20 +65,19 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       itemId TEXT,
       date TEXT DEFAULT CURRENT_TIMESTAMP,
       handled INTEGER DEFAULT 0,
-      FOREIGN KEY(bezoekerId) REFERENCES users(id),
+      FOREIGN KEY(bezoekerId) REFERENCES users(id) ON DELETE SET NULL
       FOREIGN KEY(itemId) REFERENCES items(id)
-    ) STRICT
+    ) 
   `).run();
   
+
   db.prepare(`
     CREATE TABLE IF NOT EXISTS event_visitors (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       eventId INTEGER,
-      userId INTEGER,
       visitTime TEXT DEFAULT CURRENT_TIMESTAMP,
       leftAt TEXT DEFAULT NULL,
-      FOREIGN KEY(eventId) REFERENCES events(id),
-      FOREIGN KEY(userId) REFERENCES users(id)
+      FOREIGN KEY(eventId) REFERENCES events(id)
     ) STRICT
   `).run();
 

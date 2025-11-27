@@ -65,32 +65,30 @@
 
     <div class="flex gap-2 mt-2 hidden" id="cartButtons">
       <button id="groupPotBtn" class="flex-1 px-4 py-2 border rounded hover:bg-gray-100" onclick="openGroup()">Groepspot (0 items)</button>
-      <button id="qrBtn" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="openQR()">QR Code (€0.00)</button>
+      <button id="orderBtn" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="openOrderPopup()">Bestel (0 FestCoins)</button>
+    </div>
+
+    <div class="flex gap-2 mt-2 hidden" id="qrButtonContainer">
+      <button id="qrActiveBtn" class="flex-1 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" onclick="openQRActiveOrder()">QR-bestelling (Actieve bestelling)</button>
     </div>
   </div>
 </div>
 
-<!-- bestel Code Modal -->
+<!-- Bestel popup -->
 <div id="bestelDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-30">
   <div class="bg-white rounded-lg max-w-md w-full p-6">
     <h2 class="text-xl font-bold mb-4">Jouw Bestelling</h2>
-    <!-- Items overzicht -->
-    <div id="orderItems" class="space-y-2 max-h-64 overflow-y-auto mb-4">
-      <!-- items komen hier dynamisch -->
-    </div>
-    <!-- Totaal -->
+    <div id="orderItems" class="space-y-2 max-h-64 overflow-y-auto mb-4"></div>
     <div class="flex justify-between font-semibold text-lg mb-4">
       <span>Totaal:</span>
       <span id="orderTotal" class="bg-gradientkleurBR bg-clip-text text-transparent">0 FestCoins</span>
     </div>
-    <!-- Knoppen -->
     <button class="w-full bg-blue-600 text-white py-2 rounded mb-2" onclick="placeOrder()">Bestel</button>
     <button onclick="document.getElementById('bestelDialog').classList.add('hidden')" class="w-full py-2 bg-gray-200 rounded">Sluiten</button>
   </div>
 </div>
 
-
-<!-- Groepspot Modal -->
+<!-- Groepspot popup -->
 <div id="groupDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-30">
   <div class="bg-white rounded-lg max-w-md w-full p-6 space-y-4">
     <h2 class="text-2xl font-bold bg-gradientkleurBR bg-clip-text text-transparent">Groepspot Aanmaken</h2>
@@ -119,30 +117,38 @@
   </div>
 </div>
 
+<!-- QR Active Order popup -->
+<div id="qrDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-30">
+  <div class="bg-white rounded-lg max-w-md w-full p-6">
+    <h2 class="text-xl font-bold mb-4">Actieve bestelling</h2>
+    <p id="qrOrderItems" class="mb-4"></p>
+    <p id="qrOrderTotal" class="font-bold mb-4"></p>
+    <!-- Devmode afhandelen knop -->
+    <button class="w-full bg-green-500 text-white py-2 rounded mb-2" onclick="handleActiveOrder()">AFHANDELEN (devmode)</button>
+    <button onclick="document.getElementById('qrDialog').classList.add('hidden')" class="w-full py-2 bg-gray-200 rounded">Sluiten</button>
+  </div>
+</div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // --- State ---
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    let currentStation = localStorage.getItem('currentStation') || null;
+document.addEventListener('DOMContentLoaded', () => {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let activeOrder = JSON.parse(localStorage.getItem('activeOrder')) || null;
+  let currentStation = localStorage.getItem('currentStation') || null;
 
-    // --- Helpers ---
-    function saveCart() {
-      localStorage.setItem('cart', JSON.stringify(cart));
-    }
+  function saveCart(){ localStorage.setItem('cart', JSON.stringify(cart)); }
+  function saveActiveOrder(){ localStorage.setItem('activeOrder', JSON.stringify(activeOrder)); }
 
-    function renderCart() {
-      const cartItems = document.getElementById('cartItems');
-      const emptyMsg = document.getElementById('emptyCartMsg');
-      const cartButtons = document.getElementById('cartButtons');
+  function renderCart(){
+    const cartItems = document.getElementById('cartItems');
+    const emptyMsg = document.getElementById('emptyCartMsg');
+    const cartButtons = document.getElementById('cartButtons');
+    const qrButtonContainer = document.getElementById('qrButtonContainer');
 
-      if (!cart || cart.length === 0) {
-        cartItems.classList.add('hidden');
-        emptyMsg.classList.remove('hidden');
-        cartButtons.classList.add('hidden');
-        return;
-      }
-
+    if(!cart || cart.length===0){
+      cartItems.classList.add('hidden');
+      emptyMsg.classList.remove('hidden');
+      cartButtons.classList.add('hidden');
+    } else {
       cartItems.innerHTML = cart.map(item => `
         <div class="flex justify-between items-center bg-gray-100 p-2 rounded">
           <div class="flex-1">
@@ -153,152 +159,156 @@
             <button class="px-2 py-1 border rounded text-sm" onclick="removeFromCart(${item.id})">-</button>
             <span class="font-medium w-8 text-center">${item.quantity}x</span>
             <button class="px-2 py-1 bg-blue-500 text-white rounded text-sm" onclick='addToCartItem(${JSON.stringify(item)})'>+</button>
-            <p class="font-semibold text-right bg-gradientkleurBR bg-clip-text text-transparent">${(item.price * item.quantity)} FestCoins</p>
+            <p class="font-semibold text-right bg-gradientkleurBR bg-clip-text text-transparent">${item.price * item.quantity} FestCoins</p>
           </div>
         </div>
       `).join('');
-
       cartItems.classList.remove('hidden');
       emptyMsg.classList.add('hidden');
-      cartButtons.classList.remove('hidden');
+      if(!activeOrder) cartButtons.classList.remove('hidden');
     }
 
-    function updateCartTotals() {
-      const totalPrice = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-      const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
-
-      const qrTotalEl = document.getElementById('qrTotal');
-      const qrItemsEl = document.getElementById('qrItems');
-      const groupPotBtn = document.getElementById('groupPotBtn');
-      const qrBtn = document.getElementById('qrBtn');
-
-      if (qrTotalEl) qrTotalEl.textContent = `${totalPrice} FestCoins`;
-      if (qrItemsEl) qrItemsEl.textContent = `${totalItems} items in bestelling`;
-      if (groupPotBtn) groupPotBtn.textContent = `Groepspot (${totalItems} items)`;
-      if (qrBtn) qrBtn.textContent = `Bestel (${totalPrice} FestCoins)`;
+    if(activeOrder){
+      qrButtonContainer.classList.remove('hidden');
+      cartButtons.classList.add('hidden'); // verberg bestel/groepspot bij actieve bestelling
+    } else {
+      qrButtonContainer.classList.add('hidden');
     }
 
-    function updateGroupDialog() {
-      const totalPrice = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-      const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
-      const groupTotal = document.getElementById('groupTotal');
-      const groupItems = document.getElementById('groupItems');
-      const groupRemaining = document.getElementById('groupRemaining');
+    updateCartTotals();
+  }
 
-      if (groupTotal) groupTotal.textContent = `${totalPrice} FestCoins`;
-      if (groupItems) groupItems.textContent = `${totalItems} items`;
-      if (groupRemaining) groupRemaining.textContent = `${totalPrice} FestCoins`;
+  function updateCartTotals(){
+    const totalPrice = cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
+    const totalItems = cart.reduce((sum,i)=>sum+i.quantity,0);
+
+    const orderBtn = document.getElementById('orderBtn');
+    const groupBtn = document.getElementById('groupPotBtn');
+    if(orderBtn) orderBtn.textContent = `Bestel (${totalPrice} FestCoins)`;
+    if(groupBtn) groupBtn.textContent = `Groepspot (${totalItems} items)`;
+  }
+
+  function updateGroupDialog(){
+    const totalPrice = cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
+    const totalItems = cart.reduce((sum,i)=>sum+i.quantity,0);
+    const groupTotal = document.getElementById('groupTotal');
+    const groupItems = document.getElementById('groupItems');
+    if(groupTotal) groupTotal.textContent = `${totalPrice} FestCoins`;
+    if(groupItems) groupItems.textContent = `${totalItems} items`;
+  }
+
+  window.addToCartItem = function(item){
+    if(activeOrder && !activeOrder.scanned){
+      alert("Je hebt een lopende bestelling! Nieuwe items toevoegen is niet toegestaan.");
+      return;
     }
 
-    // --- Cart ops (exposed to global because used in onclick attributes) ---
-    window.addToCartItem = function(item) {
-      // haal huidige totaal op
-      const currentTotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-
-      // controleer of je genoeg FestCoins hebt
-      if (currentTotal + item.price > <%= user.festCoins %>) {
-        alert("Niet genoeg saldo!");
-        return; // stop hier
-      }
-
-      // toevoegen aan cart
-      const existing = cart.find(i => i.id === item.id);
-      if (existing) existing.quantity++;
-      else cart.push({...item, quantity: 1});
-
-      saveCart();
-      renderCart();
-      updateCartTotals();
-      updateGroupDialog();
-    };
-
-
-    window.removeFromCart = function(itemId) {
-      const idx = cart.findIndex(i => i.id === itemId);
-      if (idx === -1) return;
-      cart[idx].quantity--;
-      if (cart[idx].quantity <= 0) cart.splice(idx, 1);
-      saveCart();
-      renderCart();
-      updateCartTotals();
-      updateGroupDialog();
-    };
-
-    // --- Order dialog (hernoemd en werkt met nieuwe HTML) ---
-    function renderOrderDialog() {
-      const container = document.getElementById('orderItems');
-      const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-      if (!container) return;
-      container.innerHTML = cart.map(item => `
-        <div class="flex justify-between items-center bg-gray-100 p-2 rounded">
-          <p>${item.quantity}x ${item.name}</p>
-          <p class="font-semibold ">${item.price * item.quantity} FestCoins</p>
-        </div>
-      `).join('');
-      const orderTotalEl = document.getElementById('orderTotal');
-      if (orderTotalEl) orderTotalEl.textContent = `${total} FestCoins`;
+    const currentTotal = cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
+    if(currentTotal + item.price > <%= user.festCoins %>){
+      alert("Niet genoeg saldo!");
+      return;
     }
 
-    window.placeOrder = function() {
-      alert("Bestelling geplaatst!");
-      cart = [];
-      saveCart();
-      renderCart();
-      updateCartTotals();
-      updateGroupDialog();
-      const dlg = document.getElementById('bestelDialog');
-      if (dlg) dlg.classList.add('hidden');
-    };
+    const existing = cart.find(i=>i.id===item.id);
+    if(existing) existing.quantity++;
+    else cart.push({...item, quantity:1});
 
-    window.openQR = function() {
-      renderOrderDialog();
-      const dlg = document.getElementById('bestelDialog');
-      if (dlg) dlg.classList.remove('hidden');
-    };
+    saveCart();
+    renderCart();
+    updateGroupDialog();
+  }
 
-    window.openGroup = function() {
-      const dlg = document.getElementById('groupDialog');
-      if (dlg) dlg.classList.remove('hidden');
-    };
+  window.removeFromCart = function(id){
+    const idx = cart.findIndex(i=>i.id===id);
+    if(idx===-1) return;
+    cart[idx].quantity--;
+    if(cart[idx].quantity<=0) cart.splice(idx,1);
+    saveCart();
+    renderCart();
+    updateGroupDialog();
+  }
 
-    // --- Tabs (single unified handler) ---
-    document.querySelectorAll('[data-tab]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const clickedStation = btn.dataset.tab;
+  window.openOrderPopup = function(){
+    const orderItems = document.getElementById('orderItems');
+    orderItems.innerHTML = cart.map(i=>`<p>${i.name} x${i.quantity} - ${i.price*i.quantity} FestCoins</p>`).join('');
+    document.getElementById('orderTotal').textContent = cart.reduce((sum,i)=>sum+i.price*i.quantity,0) + ' FestCoins';
+    document.getElementById('bestelDialog').classList.remove('hidden');
+  }
 
-        // reset cart wanneer van station verandert
-        if (currentStation && currentStation !== clickedStation && cart.length > 0) {
-          alert("Je verandert van station. Winkelmandje wordt geleegd.");
-          cart = [];
-          saveCart();
-          renderCart();
-          updateCartTotals();
-          updateGroupDialog();
-        }
+  window.placeOrder = async function(){
+    if(cart.length===0) return;
 
-        currentStation = clickedStation;
-        localStorage.setItem('currentStation', clickedStation);
+    const itemsDict = {};
+    cart.forEach(i=>itemsDict[i.id]=i.quantity);
 
-        // visuele tab update
-        document.querySelectorAll('[data-tab]').forEach(b => {
-          b.classList.remove('bg-blue-500','text-white');  // verwijder actief
-          b.classList.add('bg-gray-300','text-black');     // zet inactief
-        });
-
-        btn.classList.remove('bg-gray-300','text-black');  // verwijder inactief van geklikte
-        btn.classList.add('bg-blue-500','text-white');     // zet actief
-
-
-        document.querySelectorAll('[data-tab-content]').forEach(c => c.classList.add('hidden'));
-        const content = document.querySelector(`[data-tab-content="${clickedStation}"]`);
-        if (content) content.classList.remove('hidden');
+    try{
+      const res = await fetch("/transaction",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({items:itemsDict})
       });
-    });
+      const data = await res.json();
+      if(!data.success){ alert("Bestelling mislukt: "+data.error); return; }
 
-    // --- Init render ---
+      activeOrder = { items:[...cart], scanned:false };
+      saveActiveOrder();
+
+      cart = [];
+      localStorage.removeItem('cart');
+
+      alert("Bestelling gelukt! Gebruik QR-knop om af te handelen (devmode).");
+
+      renderCart();
+      updateCartTotals();
+      updateGroupDialog();
+      document.getElementById('bestelDialog').classList.add('hidden');
+    } catch(err){
+      console.error(err);
+      alert("Bestelling mislukt: internal error");
+    }
+  }
+
+  window.openQRActiveOrder = function(){
+    if(!activeOrder) return;
+    document.getElementById('qrOrderItems').innerHTML = activeOrder.items.map(i=>`${i.name} x${i.quantity}`).join('<br>');
+    document.getElementById('qrOrderTotal').textContent = activeOrder.items.reduce((sum,i)=>sum+i.price*i.quantity,0) + ' FestCoins';
+    document.getElementById('qrDialog').classList.remove('hidden');
+  }
+
+  window.handleActiveOrder = function(){
+    if(!activeOrder) return;
+    activeOrder.scanned = true;
+    saveActiveOrder();
+    activeOrder = null;
+    localStorage.removeItem('activeOrder');
     renderCart();
     updateCartTotals();
     updateGroupDialog();
-  });
-</script>
+    alert("Bestelling afgehandeld! Je kan nu weer items toevoegen.");
+    document.getElementById('qrDialog').classList.add('hidden');
+  }
 
+  // Tabs
+  document.querySelectorAll('[data-tab]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const clicked = btn.dataset.tab;
+      currentStation = clicked;
+      localStorage.setItem('currentStation',clicked);
+
+      document.querySelectorAll('[data-tab]').forEach(b=>{
+        b.classList.remove('bg-blue-500','text-white');
+        b.classList.add('bg-gray-300','text-black');
+      });
+      btn.classList.add('bg-blue-500','text-white');
+
+      document.querySelectorAll('[data-tab-content]').forEach(c=>c.classList.add('hidden'));
+      const content = document.querySelector(`[data-tab-content="${clicked}"]`);
+      if(content) content.classList.remove('hidden');
+    });
+  });
+
+  renderCart();
+  updateCartTotals();
+  updateGroupDialog();
+});
+</script>

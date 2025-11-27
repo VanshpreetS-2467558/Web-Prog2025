@@ -13,6 +13,7 @@
 - [ ] wachtwoord vergeten rerouten naar wachtwoord succesvol gereset page?
 - [ ] als er tijd over is dark mode
 - [ ] organisator account -> dashboard een dropdown menu maken voor algemene analyse en per evenet analyse
+- [ ] groepspot functie werkend krijgen (hele popup)
 
 ## 3 browser API's die we hebben
 
@@ -39,6 +40,4 @@
 
 ## to do van bezoeker implementatie:
 
-- bestelling plaatsen lukt, (theo transactie werking) EN dat vanboven een knop is met "bestelling" en dat is popup met qr code
-- groepspot functie werkend krijgen (hele popup)
 - code cleanen!

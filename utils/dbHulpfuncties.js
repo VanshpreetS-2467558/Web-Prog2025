@@ -249,24 +249,29 @@ export function updateEventById(eventId, updatedFields){
 }
 
 export function getItemPriceById(id){
-    return db.prepare("SELECT price FROM items WHERE id = ?").get(id);
+    const row = db.prepare("SELECT price FROM items WHERE id = ?").get(id);
+    return row.price;
 }
 
 export function getItemStockById(id){
-    return db.prepare("SELECT stock FROM items WHERE id = ?").get(id);
+    const row = db.prepare("SELECT stock FROM items WHERE id = ?").get(id);
+    return row.stock
 }
 
 export function getItemNameById(id){
-    return db.prepare("SELECT name FROM items WHERE id = ?").get(id);
+    const row = db.prepare("SELECT name FROM items WHERE id = ?").get(id);
+    return row.name;
 }
 
 export function getFestcoinsById(id){
-    return db.prepare("SELECT festCoins FROM users WHERE id = ?").get(id);
+    const row = db.prepare("SELECT festCoins FROM users WHERE id = ?").get(id);
+    return row.festCoins;
 }
 
-export function addTransaction(userId, itemId, date){
+
+export function addTransaction(userId, itemId){
     return db.prepare(`
-        INSERT INTO transactions (bezoekerId, itemId, date) 
-        VALUES (?, ?, ?)
-        `).run(userId, itemId, date);
+        INSERT INTO transactions (bezoekerId, itemId) 
+        VALUES (?, ?)
+        `).run(userId, itemId);
 }

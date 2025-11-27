@@ -8,10 +8,9 @@ const eventListRouter = express.Router();
 
 eventListRouter.get("/events/:id", requireLogin("bezoeker"), (req, res) => {
   const eventId = req.params.id;
-  const userId = req.session.user.id;
 
   // voeg bezoeker toe
-  db.prepare("INSERT INTO event_visitors (eventId, userId) VALUES (?, ?)").run(eventId, userId);
+  db.prepare("INSERT INTO event_visitors (eventId) VALUES (?)").run(eventId);
 
   // Haal event op
   const event = db.prepare("SELECT * FROM events WHERE id = ?").get(eventId);
@@ -27,13 +26,12 @@ eventListRouter.get("/events/:id", requireLogin("bezoeker"), (req, res) => {
 
 eventListRouter.post('/events/:id/leave', requireLogin("bezoeker"), (req, res) => {
   const eventId = req.params.id;
-  const userId = req.session.user.id;
 
   db.prepare(`
     UPDATE event_visitors
     SET leftAt = CURRENT_TIMESTAMP
-    WHERE eventId = ? AND userId = ? AND leftAt IS NULL
-  `).run(eventId, userId);
+    WHERE eventId = ? AND leftAt IS NULL
+  `).run(eventId);
 
   // eventueel cart resetten
   req.session.cart = [];

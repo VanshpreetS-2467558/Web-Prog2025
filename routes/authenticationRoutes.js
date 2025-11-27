@@ -129,7 +129,7 @@ authenticationRouter.post("/deleteAccount", async (req, res) =>{
     const result = await deleteUserById(req.session.user.id);
     // checks for success
     if (!result.success){
-      console.log(result.error);
+      console.log(result.err);
       return res.json({success: false, error: "internal server error"});
     }
     // if successfull log out and redirect to homepage
