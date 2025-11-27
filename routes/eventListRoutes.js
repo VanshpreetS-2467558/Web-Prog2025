@@ -5,12 +5,23 @@ import {requireLogin} from "../middleware/requireLogin.js";
 const eventListRouter = express.Router();
 
 
-
 eventListRouter.get("/events/:id", requireLogin("bezoeker"), (req, res) => {
   const eventId = req.params.id;
+  const userId = req.session.user.id;
 
-  // voeg bezoeker toe
-  db.prepare("INSERT INTO event_visitors (eventId) VALUES (?)").run(eventId);
+  
+  const existingVisit = db.prepare(`
+    SELECT id FROM event_visitors
+    WHERE eventId = ? AND userId = ? AND leftAt IS NULL
+  `).get(eventId, userId);
+
+ 
+  if (!existingVisit) {
+    db.prepare(`
+      INSERT INTO event_visitors (eventId, userId)
+      VALUES (?, ?)
+    `).run(eventId, userId);
+  }
 
   // Haal event op
   const event = db.prepare("SELECT * FROM events WHERE id = ?").get(eventId);
@@ -24,21 +35,23 @@ eventListRouter.get("/events/:id", requireLogin("bezoeker"), (req, res) => {
   res.render("pages/eventShoppingList", { event, stations });
 });
 
-eventListRouter.post('/events/:id/leave', requireLogin("bezoeker"), (req, res) => {
+eventListRouter.post("/events/:id/leave", requireLogin("bezoeker"), (req, res) => {
   const eventId = req.params.id;
+  const userId = req.session.user.id;
 
+  // Update meest recente bezoek dat nog open staat
   db.prepare(`
     UPDATE event_visitors
     SET leftAt = CURRENT_TIMESTAMP
-    WHERE eventId = ? AND leftAt IS NULL
-  `).run(eventId);
+    WHERE eventId = ? AND userId = ? AND leftAt IS NULL
+    ORDER BY visitTime DESC
+    LIMIT 1
+  `).run(eventId, userId);
 
-  // eventueel cart resetten
+  // Eventueel cart resetten
   req.session.cart = [];
-  res.redirect('/evenementen');
+  res.redirect("/evenementen");
 });
-
-
 
 
 export default eventListRouter;

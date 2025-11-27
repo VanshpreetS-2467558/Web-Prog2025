@@ -70,14 +70,15 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
     ) 
   `).run();
   
-
   db.prepare(`
     CREATE TABLE IF NOT EXISTS event_visitors (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       eventId INTEGER,
+      userId INTEGER,
       visitTime TEXT DEFAULT CURRENT_TIMESTAMP,
       leftAt TEXT DEFAULT NULL,
-      FOREIGN KEY(eventId) REFERENCES events(id)
+      FOREIGN KEY(eventId) REFERENCES events(id) ON DELETE CASCADE,
+      FOREIGN KEY(userId) REFERENCES users(id) ON DELETE SET NULL
     ) STRICT
   `).run();
 
