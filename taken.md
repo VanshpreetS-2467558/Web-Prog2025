@@ -1,21 +1,22 @@
 ## to-do:
 
 - [ ] analyse pagina maken voor organisator (voor alle organisators voor te zien welke items/locatie populair zijn);
-- [ ] employees pagina + werking voor organisator (subaccounts met id en wachtwoord) (front-end: pagina is kolom met toevoegen en verwijderen van vendors: naam, id, locatie) (vendors kolom per evenement!!) (lijst van evenementen en per evenement een vendor lijst/kolom) (vendors account is heel nieuwe interface ! (heel beperkt, enkel pagina voor scannen en bestelling aflezen en pagina met beperkte analyse van hoeveel items hij heeft aangeboden + ... voor personal intrest));
+- [ ] employee interface maken zodat role === "employee" ook een interface heeft.
+- [ ] bij organisator account een extra pagina met lijst (per event) waar ze employee accounts kunnen maken (subaccounts met id en wachtwoord die
+      organisator kiest) en organisator kan die subaccounts beheren en verwijderen.
 - [ ] data showen bij dashboard van user/org
 - [ ] budget alarm feature bij bezoekers (doelstelling) per categorie (drank, eten, other,..)
 - [ ] feature 1: puntensysteem en iets winnen (gratis festcoin )
 - [ ] feature 2: als event gedaan is dan disablen en een export pdf maken
 - [ ] tailwind classes overzichtelijker maken? (als laatste houden)
-- [ ] wachtwoord vergeten rerouten naar wachtwoord succesvol gereset page?
 - [ ] als er tijd over is dark mode
-- [ ] organisator account -> dashboard een dropdown menu maken voor algemene analyse en per evenet analyse
-- [ ] groepspot functie werkend krijgen (hele popup)
-- [ ] code cleanen van event beheer en eventList
-- [ ] qr code implementatie fixen
+- [ ] organisator account -> dashboard (hoofdpagina) een dropdown menu maken voor algemene analyse en per event analyse
+- [ ] groepspot functie werkend krijgen (hele popup (vansh: ik doe da wel verder, heb da niet af gekregen))
+- [ ] code cleanen van event beheer en eventList (vansh: same thing ik doe da verder)
+- [ ] qr code implementatie fixen (vansh: same thing lmao ik doe da verder)
 - [ ] (Ga over elke implementatie: als ge iets ziet dat beter kan -> change da na overleg samen)
 
-## 3 browser API's die we hebben
+## 3 browser API's die we hebben (nog 1 nodig tot min. aantal)
 
 - fetch (geimplementeerd)
 - sessionStorage (geimplementeerd)
@@ -23,17 +24,11 @@
 - Notificaties (?) (nog niet)
 - Canvas (?) (nog niet)
 
-## externe API
+## externe API (min. aantal bereikt!)
 
 - Photon
-- (als we niks hebben gwn stripe)
 
 ## vragen aan assistent?
 
-- maakt het uit voor onze forms dat we geen action en method hebben maar frontend js die backend aanroept?
-- maakt het uit dat onze evenbeheer.js fkn lang is?
-- maakt het uit als we confirm gebruiken? (bij delete -> event feature)
-
-## algemeen vraag
-
+- hoeveel aandacht wordt er besteed aan code? is het vooral hoe de website overkomt en onze presentatie die van belang is?
 - page moet reloaden bij live event te zien
