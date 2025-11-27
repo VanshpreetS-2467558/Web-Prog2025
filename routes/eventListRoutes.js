@@ -1,11 +1,12 @@
 import express from "express";
 import { db } from "../db.js";
+import {requireLogin} from "../middleware/requireLogin.js";
 
 const eventListRouter = express.Router();
 
 
 
-eventListRouter.get("/events/:id", (req, res) => {
+eventListRouter.get("/events/:id", requireLogin("bezoeker"), (req, res) => {
   const eventId = req.params.id;
 
   // Haal event op
