@@ -9,11 +9,12 @@
 - [ ] feature 1: puntensysteem en iets winnen (gratis festcoin )
 - [ ] feature 2: als event gedaan is dan disablen en een export pdf maken
 - [ ] tailwind classes overzichtelijker maken? (als laatste houden)
-- [ ] delete account database functie aanpassen zodra alle tables toegevoegd zijn
 - [ ] wachtwoord vergeten rerouten naar wachtwoord succesvol gereset page?
 - [ ] als er tijd over is dark mode
 - [ ] organisator account -> dashboard een dropdown menu maken voor algemene analyse en per evenet analyse
 - [ ] groepspot functie werkend krijgen (hele popup)
+- [ ] code cleanen van event beheer en eventList
+- [ ] qr code implementatie fixen
 
 ## 3 browser API's die we hebben
 
