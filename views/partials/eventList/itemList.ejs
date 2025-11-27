@@ -68,8 +68,8 @@
   </div>
 </div>
 
-<!-- QR Code Modal -->
-<div id="qrDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-30">
+<!-- bestel Code Modal -->
+<div id="bestelDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-30">
   <div class="bg-white rounded-lg max-w-md w-full p-6">
     <h2 class="text-xl font-bold mb-4">Jouw Bestelling</h2>
     <!-- Items overzicht -->
@@ -83,7 +83,7 @@
     </div>
     <!-- Knoppen -->
     <button class="w-full bg-blue-600 text-white py-2 rounded mb-2" onclick="placeOrder()">Bestel</button>
-    <button onclick="document.getElementById('qrDialog').classList.add('hidden')" class="w-full py-2 bg-gray-200 rounded">Sluiten</button>
+    <button onclick="document.getElementById('bestelDialog').classList.add('hidden')" class="w-full py-2 bg-gray-200 rounded">Sluiten</button>
   </div>
 </div>
 
@@ -173,7 +173,7 @@
       if (qrTotalEl) qrTotalEl.textContent = `${totalPrice} FestCoins`;
       if (qrItemsEl) qrItemsEl.textContent = `${totalItems} items in bestelling`;
       if (groupPotBtn) groupPotBtn.textContent = `Groepspot (${totalItems} items)`;
-      if (qrBtn) qrBtn.textContent = `QR Code (${totalPrice} FestCoins)`;
+      if (qrBtn) qrBtn.textContent = `Bestel (${totalPrice} FestCoins)`;
     }
 
     function updateGroupDialog() {
@@ -190,14 +190,26 @@
 
     // --- Cart ops (exposed to global because used in onclick attributes) ---
     window.addToCartItem = function(item) {
+      // haal huidige totaal op
+      const currentTotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+
+      // controleer of je genoeg FestCoins hebt
+      if (currentTotal + item.price > <%= user.festCoins %>) {
+        alert("Niet genoeg saldo!");
+        return; // stop hier
+      }
+
+      // toevoegen aan cart
       const existing = cart.find(i => i.id === item.id);
       if (existing) existing.quantity++;
       else cart.push({...item, quantity: 1});
+
       saveCart();
       renderCart();
       updateCartTotals();
       updateGroupDialog();
     };
+
 
     window.removeFromCart = function(itemId) {
       const idx = cart.findIndex(i => i.id === itemId);
@@ -232,13 +244,13 @@
       renderCart();
       updateCartTotals();
       updateGroupDialog();
-      const dlg = document.getElementById('qrDialog');
+      const dlg = document.getElementById('bestelDialog');
       if (dlg) dlg.classList.add('hidden');
     };
 
     window.openQR = function() {
       renderOrderDialog();
-      const dlg = document.getElementById('qrDialog');
+      const dlg = document.getElementById('bestelDialog');
       if (dlg) dlg.classList.remove('hidden');
     };
 

@@ -36,3 +36,10 @@
 ## algemeen vraag
 
 - page moet reloaden bij live event te zien
+
+## to do van bezoeker implementatie:
+
+- zorgen dat bezoekers bijgehouden worden samen met pop up bij joinen en leaven van event
+- bestelling plaatsen lukt, (theo transactie werking) EN dat vanboven een knop is met "bestelling" en dat is popup met qr code
+- groepspot functie werkend krijgen (hele popup)
+- code cleanen!
