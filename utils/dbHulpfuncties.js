@@ -116,23 +116,9 @@ export function updateNameById(id, name){
 }
 
 
-// delete account op basis van id
-// pas aan zodra meerdere tables beschikbaar zijn ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 export function deleteUserById(id) {
     try {
-        const user = db.prepare("SELECT * FROM users WHERE id = ?").get(id);
-        if(!user) return { success: false, err: "User niet gevonden." };
-        if(user.role === "organisator"){
-            const events = db.prepare("SELECT id FROM events WHERE organisatorid = ?").all(id);
-            events.forEach(event => {
-                deleteEvent(event.id);
-            });
-        }
-        db.prepare(`
-            DELETE FROM users
-            WHERE id = ?
-        `).run(id);
-
+        db.prepare(`DELETE FROM users WHERE id = ?`).run(id);
         return { success: true };
     } catch (err) {
         console.error(err);
@@ -172,23 +158,7 @@ export function createEvent({ organisatorid, name, location, description, startD
 // delete event 
 export function deleteEvent(id) {
     try{
-        // eerst alle items van stations van event verwijderen
-        db.prepare(`
-            DELETE FROM items 
-            WHERE locationId IN (SELECT id FROM stations WHERE eventId = ?)
-        `).run(id);
-
-        // stations verwijderen
-        db.prepare(`
-            DELETE FROM stations 
-            WHERE eventId = ?
-        `).run(id);
-
-        // event zelf verwijderen
-        db.prepare(`
-            DELETE FROM events 
-            WHERE id = ?
-        `).run(id);
+        db.prepare(`DELETE FROM events WHERE id = ?`).run(id);
         return {success: true};
     } catch (err) {
         console.error(err);
@@ -211,14 +181,8 @@ export function deleteItem(id){
 
 export function deleteLocation(id){
     try{
-        db.prepare(`
-            DELETE FROM items 
-            WHERE locationId = ?
-        `).run(id);
-        db.prepare(`
-            DELETE FROM stations 
-            WHERE id = ?
-        `).run(id);
+        db.prepare(`DELETE FROM stations WHERE id = ?`).run(id);
+        return { success: true };
     } catch(err){
         console.error(err);
         return { success: false, err };
@@ -248,6 +212,9 @@ export function updateEventById(eventId, updatedFields){
 
 }
 
+
+// EXTRA NOG NIET GEBRUIKT!!
+
 export function getItemPriceById(id){
     const row = db.prepare("SELECT price FROM items WHERE id = ?").get(id);
     return row.price;
@@ -268,10 +235,3 @@ export function getFestcoinsById(id){
     return row.festCoins;
 }
 
-
-export function addTransaction(userId, itemId){
-    return db.prepare(`
-        INSERT INTO transactions (bezoekerId, itemId) 
-        VALUES (?, ?)
-        `).run(userId, itemId);
-}

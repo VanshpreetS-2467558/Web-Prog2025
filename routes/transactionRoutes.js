@@ -1,5 +1,5 @@
 import express from "express";
-import { getItemPriceById, getItemStockById, getItemNameById, getFestcoinsById, addTransaction, updateCoins } from "../utils/dbHulpfuncties.js";
+import { db } from "../db.js";
 
 const transactionRouter = express.Router();
 
@@ -7,40 +7,73 @@ const transactionRouter = express.Router();
 transactionRouter.post("/transaction", async (req, res) => {
     const user = req.session.user;
     const itemsDict = req.body.items;
-    let totalPrice = 0;
-    
+
     try {
-        // iterate over items and check availability
-        for (const [itemId, itemAmount] of Object.entries(itemsDict)){
-            const itemPrice = getItemPriceById(itemId);
-            const itemStock = getItemStockById(itemId);
-            if (itemAmount > itemStock) {
-                const itemName = getItemNameById(itemId);
-                return res.json({success: false, error: ("Er is niet genoeg van het volgende product beschikbaar: " + itemName)});
-            }
-            totalPrice += itemPrice * itemAmount;
+        db.prepare("BEGIN TRANSACTION").run();
+
+        let totalPrice = 0;
+        const itemsData = [];
+
+        // 1. validate + price calc
+        for (const [itemId, qty] of Object.entries(itemsDict)) {
+            const item = db.prepare("SELECT * FROM items WHERE id = ?").get(itemId);
+
+            if (!item)
+                return res.json({ success: false, error: "Item bestaat niet." });
+
+            if (qty > item.stock)
+                return res.json({ success: false, error: `Niet genoeg voorraad van ${item.name}` });
+
+            totalPrice += item.price * qty;
+
+            itemsData.push({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                qty
+            });
         }
 
-        // check userbalance vs price of order
-        const userBalance = getFestcoinsById(user.id);
-        if (totalPrice > userBalance) return res.json({success: false, error: "U heeft te weinig festcoins."});
+        // 2. balance check
+        const userBalance = db.prepare("SELECT festCoins FROM users WHERE id = ?").get(user.id).festCoins;
+        if (totalPrice > userBalance)
+            return res.json({ success: false, error: "Te weinig FestCoins." });
 
-        // subtract festcoin and log orders
-        const result = updateCoins({value: -totalPrice, user});
-        if (result !== false){
-            req.session.user.festCoins = result;
-        }
-        for (const [itemId, itemAmount] of Object.entries(itemsDict)) {
-            for (let i = 0; i < itemAmount; i++) addTransaction(user.id, itemId);
-        }
-        
-        return res.json({success: true, newAmount: req.session.user.festCoins});
+        // 3. subtract coins
+        db.prepare("UPDATE users SET festCoins = festCoins - ? WHERE id = ?").run(totalPrice, user.id);
+        req.session.user.festCoins -= totalPrice;
 
-    // catch errors
+        // 4. maak één transactie
+        const result = db.prepare(`
+            INSERT INTO transactions (bezoekerId, totalPrice)
+            VALUES (?, ?)
+        `).run(user.id, totalPrice);
+
+        const transactionId = result.lastInsertRowid;
+
+        // 5. voeg alle items toe
+        const insertItem = db.prepare(`
+            INSERT INTO transaction_items (transactionId, itemId, itemName, itemPrice, quantity)
+            VALUES (?, ?, ?, ?, ?)
+        `);
+
+        const updateStock = db.prepare(`UPDATE items SET stock = stock - ? WHERE id = ?`);
+
+        itemsData.forEach(it => {
+            insertItem.run(transactionId, it.id, it.name, it.price, it.qty);
+            updateStock.run(it.qty, it.id);
+        });
+
+        db.prepare("COMMIT").run();
+
+        res.json({success: true, newAmount: req.session.user.festCoins});
+
     } catch (err) {
+        db.prepare("ROLLBACK").run();
         console.log(err);
-        return res.json({success: false, error: "internal server error"});
+        res.json({ success: false, error: "internal server error" });
     }
 });
+
 
 export default transactionRouter;

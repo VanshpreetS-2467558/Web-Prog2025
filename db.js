@@ -34,7 +34,7 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       description TEXT,
       startDate TEXT,
       endDate TEXT,
-      FOREIGN KEY(organisatorid) REFERENCES users(id)
+      FOREIGN KEY(organisatorid) REFERENCES users(id) ON DELETE CASCADE
     ) STRICT
   `).run();
   // verkoop locaties (standjes, bar,..) table
@@ -43,7 +43,7 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       eventId INTEGER,
       name TEXT,
-      FOREIGN KEY(eventId) REFERENCES events(id)
+      FOREIGN KEY(eventId) REFERENCES events(id) ON DELETE CASCADE
     ) STRICT
   `).run();
   // items table
@@ -54,20 +54,32 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       name TEXT,
       price INTEGER,
       stock INTEGER,
-      FOREIGN KEY(locationId) REFERENCES stations(id)
+      FOREIGN KEY(locationId) REFERENCES stations(id) ON DELETE CASCADE
     ) STRICT
   `).run();
-
+  
   db.prepare(`
     CREATE TABLE IF NOT EXISTS transactions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       bezoekerId INTEGER,
-      itemId TEXT,
+      totalPrice INTEGER,
       date TEXT DEFAULT CURRENT_TIMESTAMP,
       handled INTEGER DEFAULT 0,
       FOREIGN KEY(bezoekerId) REFERENCES users(id) ON DELETE SET NULL
-      FOREIGN KEY(itemId) REFERENCES items(id)
-    ) 
+    ) STRICT
+  `).run();
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS transaction_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      transactionId INTEGER,
+      itemId INTEGER,
+      itemName TEXT NOT NULL,
+      itemPrice INTEGER NOT NULL,
+      quantity INTEGER NOT NULL,
+      FOREIGN KEY(transactionId) REFERENCES transactions(id) ON DELETE CASCADE,
+      FOREIGN KEY(itemId) REFERENCES items(id) ON DELETE SET NULL
+      
+    ) STRICT
   `).run();
   
   db.prepare(`
