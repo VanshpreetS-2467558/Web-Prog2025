@@ -15,6 +15,7 @@
 - [ ] groepspot functie werkend krijgen (hele popup)
 - [ ] code cleanen van event beheer en eventList
 - [ ] qr code implementatie fixen
+- [ ] (Ga over elke implementatie: als ge iets ziet dat beter kan -> change da na overleg samen)
 
 ## 3 browser API's die we hebben
 
