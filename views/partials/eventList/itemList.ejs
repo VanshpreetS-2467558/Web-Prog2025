@@ -289,24 +289,42 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Tabs
-  document.querySelectorAll('[data-tab]').forEach(btn=>{
-    btn.addEventListener('click',()=>{
+  document.querySelectorAll('[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
       const clicked = btn.dataset.tab;
+
+      // Reset cart bij station-wissel (met bevestiging)
+      if (cart.length > 0 && clicked !== currentStation) {
+        const confirmReset = confirm("Je gaat naar een ander station. Winkelmandje leegmaken?");
+        if (!confirmReset) return;
+
+        cart = [];
+        saveCart();
+        renderCart();
+        updateGroupDialog();
+      }
+
+      // Station opslaan
       currentStation = clicked;
-      localStorage.setItem('currentStation',clicked);
+      localStorage.setItem('currentStation', clicked);
 
-      document.querySelectorAll('[data-tab]').forEach(b=>{
-        b.classList.remove('bg-blue-500','text-white');
-        b.classList.add('bg-gray-300','text-black');
+
+      // JUISTE TAB-STYLING
+      document.querySelectorAll('[data-tab]').forEach(b => {
+        b.classList.remove('bg-blue-500', 'text-white');
+        b.classList.add('bg-gray-300', 'text-black');
       });
-      btn.classList.add('bg-blue-500','text-white');
 
-      document.querySelectorAll('[data-tab-content]').forEach(c=>c.classList.add('hidden'));
+      btn.classList.remove('bg-gray-300', 'text-black');
+      btn.classList.add('bg-blue-500', 'text-white');
+
+      // Content tonen
+      document.querySelectorAll('[data-tab-content]').forEach(c => c.classList.add('hidden'));
       const content = document.querySelector(`[data-tab-content="${clicked}"]`);
-      if(content) content.classList.remove('hidden');
+      if (content) content.classList.remove('hidden');
     });
   });
-
+  
   renderCart();
   updateCartTotals();
   updateGroupDialog();
