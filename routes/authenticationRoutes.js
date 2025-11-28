@@ -39,9 +39,11 @@ authenticationRouter.post("/register", async (req, res) => {
     const festCoins =  0;
     const newUser = createUser({role, name, email, phone, password: hashedPass, festCoins});
 
-    if(keepLoggedIn === "1"){
+    if(keepLoggedIn){
       req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 dagen
-    } 
+    } else {
+      req.session.cookie.maxAge = 1 * 60 * 60 * 1000; // 1 uur
+    }
 
     req.session.user = {id: newUser.lastInsertRowid, name , role, festCoins, email};
     res.json({success: true});
@@ -57,6 +59,7 @@ authenticationRouter.post("/login", async (req, res) => {
 
   // vraagt gegevens van form html
   const { email, password, keepLoggedIn } = req.body;
+
   // checkt of het een geldige email is
   if (!isValidEmail(email)) return res.json({ success: false, error: "Ongeldig e-mailadres" });
 
@@ -68,9 +71,11 @@ authenticationRouter.post("/login", async (req, res) => {
   const match = await isPasswordCorrect(password, user.password);
   if (!match) return res.json({ success: false, error: "E-mail of wachtwoord is fout." });
   
-  if(keepLoggedIn === "1"){
+  if(keepLoggedIn){
     req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 dagen
-  } 
+  } else {
+    req.session.cookie.maxAge = 1 * 60 * 60 * 1000; // 1 uur
+  }
   
   // sessie opslaan en redirect
   req.session.user = { id: user.id, name: user.name, role: user.role , festCoins: user.festCoins, email: user.email};

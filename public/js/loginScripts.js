@@ -19,7 +19,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
     const email = document.getElementById("email").value;
     const password = document.getElementById("wachtwoord").value;
-    const keepLoggedIn = document.getElementById("keepLoggedIn").value;
+    const keepLoggedIn = document.getElementById("keepLoggedIn").checked;
     const errorMsg = document.getElementById("errorMsg");
 
 

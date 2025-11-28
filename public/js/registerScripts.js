@@ -4,6 +4,7 @@ document.getElementById("registratieform").addEventListener("submit", async (e) 
     e.preventDefault();
     const form = e.target;
     const data = Object.fromEntries(new FormData(form));
+    data.keepLoggedIn = document.getElementById("keepLoggedIn").checked;
     const errorMsg = document.getElementById("errorMsg");
 
     const res = await fetch("/register", {
