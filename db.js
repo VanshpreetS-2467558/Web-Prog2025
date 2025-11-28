@@ -93,7 +93,7 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       FOREIGN KEY(userId) REFERENCES users(id) ON DELETE SET NULL
     ) STRICT
   `).run();
-
+ 
 
   
   // voor id
