@@ -67,7 +67,6 @@ router.get("/wallet", requireLogin("bezoeker") ,(request,response)=>{
   response.render("pages/walletBeheer");
 });
 
-
 // profiel pagina
 router.get("/profile", requireLogin() ,(request,response)=>{
   response.render("pages/profielSettings");
@@ -76,6 +75,11 @@ router.get("/profile", requireLogin() ,(request,response)=>{
 // wachtwoord vergeten pagina
 router.get("/wachtwoord-vergeten", (request,response)=>{
   response.render("pages/wachtwoordVergeten");
+});
+
+// Workstation pagina (employee) voor scannen en werken
+router.get("/workStation", requireLogin() ,(request,response)=>{
+  response.render("pages/workStation");
 });
 
 

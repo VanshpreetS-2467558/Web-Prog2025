@@ -33,7 +33,6 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
     if(data.success) {
         sessionStorage.setItem('showNotification', "succesvol ingelogd!");
-        window.location.href
         window.location.replace("/dashboard");
     } else {
         errorMsg.textContent = data.error;

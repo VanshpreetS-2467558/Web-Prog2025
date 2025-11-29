@@ -22,14 +22,16 @@
             <% if(user.role === "bezoeker") {  %>
                 <a href="wallet" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Beheer FestCoins</a>
                 <a href="/evenementen" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Actieve evenementen</a>
-            <% } else { %>
+            <% } else if(user.role === "organisator") { %>
                 <a href="/event-management" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Mijn Evenement</a>
+            <% } else if(user.role === "employee") { %>
+                <a href="/workStation" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100"><%= user.stationName || "placeholder" %> </a>
             <% } %>
-            <a href="/klantenservice" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">klantenservice</a>
-            <a href="/profile" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Account settings</a>
+                <a href="/klantenservice" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">klantenservice</a>
+                <a href="/profile" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Account settings</a>
         </div>
         <div class="py-1">
-            <form action="/logout" method="POST">
+            <form id="logoutBtn">
                 <button type="submit" class="w-full text-left px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">
                     Uitloggen
                 </button>

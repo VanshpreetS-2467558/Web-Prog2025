@@ -1,0 +1,60 @@
+<div class="flex flex-col min-h-screen bg-gray-100 font-sans">
+
+    <!-- Bovenbalk: Leave knop + Titel -->
+    <div class="flex justify-between items-center px-4 py-3 bg-white shadow">
+        <h1 class="text-3xl font-bold bg-gradientkleurBR bg-clip-text text-transparent">
+            WorkSpace
+        </h1>
+        <a href="/dashboard" class="px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition">
+            Verlaat WorkSpace
+        </a>
+    </div>
+
+    <!-- Camera container vult de rest van scherm -->
+    <div class="relative flex-grow w-full" style="height: calc(100vh - 64px);">
+        <video id="video" autoplay playsinline class="w-full h-full object-cover"></video>
+
+        <!-- Scanvakje overlay -->
+        <div class="absolute top-1/2 left-1/2 w-64 h-64 -translate-x-1/2 -translate-y-1/2 border-4 border-dashed border-green-500 rounded-lg"></div>
+
+        <!-- Output box onderaan video -->
+        <div id="output" class="absolute bottom-10 left-1/2 -translate-x-1/2 bg-white text-gray-900 px-6 py-3 rounded-xl shadow text-center"></div>
+    </div>
+</div>
+
+<%- include("scanPopup")%>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+<script>
+    const video = document.getElementById("video");
+    const output = document.getElementById("output");
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(stream => {
+            video.srcObject = stream;
+            video.play();
+            requestAnimationFrame(scan);
+        })
+        .catch(err => {
+            output.textContent = "Geen toegang tot camera: " + err;
+        });
+
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+
+    function scan() {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+            if (code) {
+                output.textContent = "Gescand: " + code.data;
+            } else {
+                output.textContent = "Klaar om te scannen...";
+            }
+        }
+        requestAnimationFrame(scan);
+    }
+</script>

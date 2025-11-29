@@ -1,0 +1,38 @@
+<!-- views/transactionPopup.ejs -->
+<div id="transactionPopup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 relative min-h-screen flex flex-col justify-between">
+        <!-- Titel -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-green-600 mb-4 text-center">
+                Transactie succesvol opgehaald
+            </h2>
+        </div>
+        <!-- Itemlijst  (placeholder data) -->
+        <div class="mb-8 flex-1 overflow-y-auto text-lg">
+            <p class="font-semibold mb-2">Items van transactie:</p>
+            <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>2x cola</li>
+                <li>1x pintje</li>
+                <li>1x water</li>
+                <li>3x frietjes</li>
+            </ul>
+        </div>
+
+
+        <!-- Bevestig knop -->
+        <div class="flex justify-center mx-auto">
+            <button id="confirmBtn" class="px-8 py-4 text-lg bg-blue-500 text-white rounded-xl shadow hover:bg-blue-600 transition">
+                Bestelling uitgereikt!
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const confirmBtn = document.getElementById("confirmBtn");
+    confirmBtn.addEventListener("click", () => {
+        // Modal sluiten
+        document.getElementById("transactionPopup").classList.add("hidden");
+
+    });
+</script>

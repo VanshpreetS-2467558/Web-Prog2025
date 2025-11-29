@@ -13,8 +13,10 @@
     <!-- body -->
     <main class="py-16">
         <%- include("../partials/profileSettings/profileInformation")%>
+        <% if(!(user.role === "employee")) { %>
         <%- include("../partials/profileSettings/wachtwoordVeranderen")%>
         <%- include("../partials/profileSettings/profielDangerZone")%>
+        <% } %>
     </main>
     
     <!-- footer -->

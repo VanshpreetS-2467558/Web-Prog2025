@@ -42,4 +42,18 @@
         </div>
     </div>
 
+<% } else if(user.role === "employee"){  %>
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <div class="p-8 bg-gradientkleurBR text-white rounded-lg shadow">
+            <p class="text-2xl font-bold mb-2">Totale Omzet (<%= user.stationName || "Placeholder" %>)</p>
+            <div class="text-3xl font-bold mb-1"><%= user.festCoins %></div>
+            <div class="text-1xl font-bold mb-1"><%= user.festCoins %> Euro</div>
+        </div>
+
+        <div class="p-8 bg-gradientkleurBR text-white rounded-lg shadow">
+            <p class="text-2xl font-bold mb-2">Evenement Timer</p>
+            <div class="text-1xl font-bold mb-1">03:30u te gaan</div>
+            <div class="text-1xl font-bold mb-1">22:30 - 03:00</div>
+        </div>
+    </div>
 <% } %>

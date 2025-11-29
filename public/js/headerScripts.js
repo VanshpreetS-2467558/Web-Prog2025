@@ -1,20 +1,4 @@
 
-// pop up voor uitloggen
-document.addEventListener("DOMContentLoaded", () => {
-    const logoutForm = document.querySelector("form[action='/logout']");
-    if (!logoutForm) return;
-
-    logoutForm.addEventListener("submit", async (e) => {
-        e.preventDefault(); // voorkom normale reload
-        const res = await fetch("/logout", { method: "POST" });
-
-        if (res.ok) {
-            showNotification("Succesvol uitgelogd!");
-            setTimeout(() => window.location.href = "/home", 1000);
-        }
-    });
-});
-
 export function showNotification(message) {
     const notif = document.getElementById("notificatie");
     notif.textContent = message;
@@ -30,6 +14,18 @@ window.addEventListener('DOMContentLoaded', () => {
     const msg = sessionStorage.getItem('showNotification');
     if(msg){
         showNotification(msg);
-        sessionStorage.removeItem('showNotification'); // opschonen
+        sessionStorage.removeItem('showNotification');
+    }
+
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) { 
+        logoutBtn.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const res = await fetch("/logout", { method: "POST" });
+            if (res.ok) {
+                sessionStorage.setItem('showNotification', "succesvol uitgelogd!");
+                window.location.href = "/home";
+            }
+        });
     }
 });

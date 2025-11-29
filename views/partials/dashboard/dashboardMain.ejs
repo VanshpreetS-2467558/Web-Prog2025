@@ -4,10 +4,12 @@
         <h1 class="text-3xl font-bold mb-2">Welkom terug, <%= user.name %>!</h1>
         <% if(user.role === "bezoeker") { %>
             <p class="text-gray-600">Bekijk rustig je overzicht.</p>
-        <% } else { %>
+        <% } else if(user.role === "organisator") { %>
             <p class="text-gray-600">Admin Dashboard - Live overzicht van je evenement</p>
+        <% } else if(user.role === "employee") { %>
+            <p class="text-gray-600">Station Dashboard - Live overzicht van locatie: <%= user.stationName || "placeholder" %></p>
         <% } %>
-    </div>
+        </div>
 
     <!-- info kaarten -->
     <%- include("AlgemeneInfo") %>
@@ -17,10 +19,14 @@
         <!-- uitgaven per categorie -->
         <%- include("bezoekerTotaleUitgaven") %>
 
-    <% } else { %>
+    <% } else if(user.role === "organisator") { %>
 
         <!-- Verkopen vandaag -->
         <%- include("orgVerkochte") %>
+
+    <% } else if(user.role === "employee") { %>
+        
+        <%- include("employeeDashboard") %>
 
     <% } %>
 

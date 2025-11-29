@@ -15,7 +15,7 @@ authenticationRouter.post("/logout", (req, res) => {
       return res.status(500).send("Er is iets misgegaan, kon niet uitloggen.");
     }
     res.clearCookie('connect.sid');
-    res.redirect("/home");
+    res.status(200).json({ ok: true });
   });
 });
 

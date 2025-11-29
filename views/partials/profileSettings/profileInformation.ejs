@@ -28,14 +28,16 @@
         </div>
 
         <!-- E-mailadres - Non-editable -->
+        <% if(!(user.role === "employee")) { %>
         <div class="space-y-1">
           <label for="email" class="block font-medium text-gray-700">E-mailadres</label>
           <input id="email" type="email" value="<%= user.email || '' %>" readonly
                  class="border rounded-lg px-3 py-2 w-full bg-gray-100 text-gray-500 cursor-not-allowed focus:outline-none">
         </div>
+        <% } %>
 
         <!-- Buttons -->
-        <div class="flex gap-2 mt-4">
+        <div class="flex gap-2 pt-8">
           <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
             Profiel opslaan
           </button>
