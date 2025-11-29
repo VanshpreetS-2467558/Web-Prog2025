@@ -1,7 +1,7 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import { isValidEmail, isValidPhone, isStrongPassword, isPasswordCorrect } from "../utils/validatieHulpfuncties.js";
-import { emailExists, getUserByEmail, createUser, getPasswordById, changePasswordById, updateNameById, deleteUserById, changePasswordByEmail} from "../utils/dbHulpfuncties.js";
+import { emailExists, getUserByEmail, createUser, getPasswordById, changePasswordById, updateNameById, deleteUserById, changePasswordByEmail, makeEmployeeAccount} from "../utils/dbHulpfuncties.js";
 
 
 const authenticationRouter = express.Router();
@@ -166,7 +166,7 @@ authenticationRouter.post("/deleteAccount", async (req, res) =>{
 // resetWachtwoord POST
 authenticationRouter.post("/resetWachtwoord", async (req, res) =>{
   const {email, newPassword, confirmPassword} = req.body;
-  console.log("test " + email + newPassword);
+
   try{
     if (!emailExists(email)) return res.json({success: false, error: "email bestaat niet"});
     if(newPassword !== confirmPassword) return res.json({ success: false, error: "Wachtwoorden komen niet overeen."});
@@ -182,4 +182,29 @@ authenticationRouter.post("/resetWachtwoord", async (req, res) =>{
     return res.json({success: false, error: "internal server error"});
   }
 })
+
+
+// newEmployee POST
+authenticationRouter.post("/newEmployee", async (req, res) =>{
+  const {name, password, confirmPassword} = req.body;
+  const role = "employee";
+  if ( !name || !password || !confirmPassword) return res.json({ success: false, error: "Vul alle velden in!" });
+
+  // validatie checken
+  if (!isStrongPassword(password)) return res.json({success: false, error: "Wachtwoord is niet sterk genoeg"});
+  if (password !== confirmPassword) return res.json({success: false, error: "Wachtwoorden komen niet overeen"});
+
+  try{
+    // maak account aan
+    const hashedPass = await bcrypt.hash(password, 10);
+    const newUser = makeEmployeeAccount({name, password: hashedPass});
+    newUser.lastInsertRowid
+    res.json({success: true});
+    
+  } catch (err) {
+    console.log(err);
+    return res.json({success: false, error: "internal server error"});
+  }
+})
+
 export default authenticationRouter;

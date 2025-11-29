@@ -78,5 +78,10 @@ router.get("/wachtwoord-vergeten", (request,response)=>{
   response.render("pages/wachtwoordVergeten");
 });
 
+// employeeBeheer pagina
+router.get("/werknemers", requireLogin("organisator"), (request, response) =>{
+  response.render("pages/werknemers");
+})
+
 
 export default router;

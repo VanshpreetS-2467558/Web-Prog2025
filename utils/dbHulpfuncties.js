@@ -235,3 +235,12 @@ export function getFestcoinsById(id){
     return row.festCoins;
 }
 
+
+// under construction
+export function makeEmployeeAccount({name, password}){
+    const result = db.prepare(`
+    INSERT INTO users (role, name, email, phone, password, festCoins) 
+    VALUES ("employee", ?, null, null, ?, null)
+    `).run(name, password);
+    const user = result.lastInsertRowid;
+}
