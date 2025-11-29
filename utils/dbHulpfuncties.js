@@ -244,3 +244,20 @@ export function makeEmployeeAccount({name, password}){
     `).run(name, password);
     const user = result.lastInsertRowid;
 }
+
+export function getEventsById(userId){
+    return db.prepare(`
+        SELECT id, name 
+        FROM events 
+        WHERE organisatorid = ?
+    `).all(userId);
+}
+
+export function getStationsById(userId){
+    return db.prepare(`
+        SELECT s.id, s.name, s.eventId
+        FROM stations s
+        JOIN events e ON s.eventId = e.id
+        WHERE e.organisatorid = ?
+    `).all(userId);
+}
