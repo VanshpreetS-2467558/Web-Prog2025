@@ -1,3 +1,29 @@
+// Modal elements
+const showButton = document.getElementById("showFormWerknemer");
+const closeButton = document.getElementById("closeFormWerknemer");
+const modal = document.getElementById("nieuweWerknemerForm");
+const mainContent = document.getElementById("mainContent");
+
+// Show modal
+showButton.addEventListener("click", () => {
+    modal.classList.remove("hidden");
+    mainContent.classList.add("blur-sm");
+});
+
+// Close modal
+closeButton.addEventListener("click", () => {
+    modal.classList.add("hidden");
+    mainContent.classList.remove("blur-sm");
+});
+
+// Close modal when clicking outside the form
+modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+        modal.classList.add("hidden");
+        mainContent.classList.remove("blur-sm");
+    }
+});
+
 // Data arrays (empty before load)
 let evenementen = [];
 let stations = [];
@@ -22,11 +48,9 @@ async function loadEventData() {
             return;
         }
 
-        // Store lists
         evenementen = data.evenementen || [];
         stations = data.stations || [];
 
-        // Fill first dropdown
         fillEvenementDropdown();
 
     } catch (err) {
@@ -38,10 +62,9 @@ async function loadEventData() {
 function fillEvenementDropdown() {
     const evenementSelect = document.getElementById("evenement");
     evenementSelect.innerHTML = `<option value="">Selecteer een evenement</option>`;
-
     evenementen.forEach(ev => {
         const option = document.createElement("option");
-        option.value = ev.id;      
+        option.value = ev.id;
         option.textContent = ev.name;
         evenementSelect.appendChild(option);
     });
@@ -61,13 +84,12 @@ document.getElementById("evenement").addEventListener("change", () => {
         return;
     }
 
-    // IMPORTANT: use correct field names
     const filtered = stations.filter(st => st.eventId == parseInt(eventId));
 
     stationSelect.innerHTML = `<option value="">Selecteer een station</option>`;
     filtered.forEach(st => {
         const option = document.createElement("option");
-        option.value = st.id;   // station.id
+        option.value = st.id;
         option.textContent = st.name;
         stationSelect.appendChild(option);
     });
@@ -75,7 +97,7 @@ document.getElementById("evenement").addEventListener("change", () => {
     stationWrapper.classList.remove("hidden");
 });
 
-// SUBMIT HANDLER
+// Form submit handler
 document.getElementById("registratieform").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -93,25 +115,23 @@ document.getElementById("registratieform").addEventListener("submit", async (e) 
         return;
     }
 
-    const res = await fetch("/newEmployee", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            name,
-            password,
-            confirmPassword,
-            eventId,
-            stationId
-        }),
-    });
+    try {
+        const res = await fetch("/newEmployee", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ name, password, confirmPassword, eventId, stationId }),
+        });
 
-    const result = await res.json();
+        const result = await res.json();
 
-    if (result.success) {
-        sessionStorage.setItem('showNotification', "Account succesvol aangemaakt!");
-        window.location.href = "/werknemers";
-    } else {
-        errorMsg.textContent = result.error;
+        if (result.success) {
+            sessionStorage.setItem('showNotification', "Account succesvol aangemaakt!");
+            window.location.href = "/werknemers";
+        } else {
+            errorMsg.textContent = result.error;
+        }
+    } catch (err) {
+        errorMsg.textContent = "Fout bij aanmaken account. Probeer opnieuw.";
+        console.error(err);
     }
 });
-

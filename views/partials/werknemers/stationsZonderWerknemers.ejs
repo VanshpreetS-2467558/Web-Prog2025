@@ -1,23 +1,23 @@
-<div class="flex justify-center">
-  <div class="inline-block">
-    <h2 class="text-2xl font-bold mb-4 text-center">Stations zonder werknemers</h2>
+<div class="inline-block">
+  <h2 class="text-2xl font-bold mb-4 text-center">Stations zonder werknemers</h2>
 
-    <div class="overflow-x-auto bg-white rounded-lg shadow-sm">
-      <table id="stations-table" class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Event Naam</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Station Naam</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200">
-          <!-- Rows injected via JS -->
-        </tbody>
-      </table>
-    </div>
+  <table id="stations-table"
+         class="table-auto border-collapse divide-y divide-gray-200 bg-white shadow-sm rounded-lg">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Event Naam</th>
+        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Station Naam</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200">
+      <!-- Rows injected via JS -->
+    </tbody>
+  </table>
 
-    <p id="no-stations" class="mt-4 text-gray-500 hidden text-center">Geen stations zonder werknemers gevonden.</p>
-  </div>
+  <p id="no-stations" class="mt-4 text-gray-500 hidden text-center">
+    Geen stations zonder werknemers gevonden.
+  </p>
 </div>
 
 <script type="module" src="/js/loadStationsWithoutEmployees.js"></script>
+

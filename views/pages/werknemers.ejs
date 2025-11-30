@@ -6,12 +6,13 @@
     <title>Werknemers - FestCoin</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
+
     <!-- header -->
     <%- include("../partials/index/header") %>
 
     <!-- main body -->
-    <main class="pt-16">
+    <main class="flex-grow pt-16 pb-16 px-6">
         <%- include("../partials/werknemers/werknemersBody") %>
     </main>
 
@@ -19,3 +20,4 @@
     <%- include("../partials/index/footer") %>
 </body>
 </html>
+
