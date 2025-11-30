@@ -296,3 +296,21 @@ export function getUserTypeById(employeeId) {
     const row = db.prepare("SELECT role FROM users WHERE id = ?").get(employeeId);
     return row.role;
 }
+
+export function getEmployeeStationNameById(userId) {
+  // Join employees with stations to get the station name
+  const stmt = db.prepare(`
+    SELECT s.name AS stationName
+    FROM employees e
+    JOIN stations s ON e.stationId = s.id
+    WHERE e.userId = ?
+  `);
+
+  const result = stmt.get(userId);
+
+  if (!result) {
+    return null; // no station found for this employee
+  }
+
+  return result.stationName;
+}

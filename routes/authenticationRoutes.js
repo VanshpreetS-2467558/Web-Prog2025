@@ -1,7 +1,8 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import { isValidEmail, isValidPhone, isStrongPassword, isPasswordCorrect } from "../utils/validatieHulpfuncties.js";
-import { emailExists, getUserByEmail, createUser, getPasswordById, changePasswordById, updateNameById, deleteUserById, changePasswordByEmail, makeEmployeeAccount} from "../utils/dbHulpfuncties.js";
+import { emailExists, getUserByEmail, createUser, getPasswordById, changePasswordById, updateNameById, deleteUserById, 
+  changePasswordByEmail, makeEmployeeAccount, idExists, getUserById, getEmployeeStationNameById} from "../utils/dbHulpfuncties.js";
 
 
 const authenticationRouter = express.Router();
@@ -60,11 +61,22 @@ authenticationRouter.post("/login", async (req, res) => {
   // vraagt gegevens van form html
   const { email, password, keepLoggedIn } = req.body;
 
-  // checkt of het een geldige email is
-  if (!isValidEmail(email)) return res.json({ success: false, error: "Ongeldig e-mailadres" });
+  let isId = false;
+  // checkt of het een geldige email of userID is
+  if (!isValidEmail(email)) {
+    if (idExists(email)) isId = true;
+    else return res.json({ success: false, error: "Ongeldig e-mailadres" });
+  }
 
+  let user;
+  if (!isId) {
   // haalt user data op door email
-  const user = getUserByEmail(email);
+   user = getUserByEmail(email);
+  } else {
+   user = getUserById(email);
+  }
+
+  // als er geen user is, stuur error terug
   if (!user) return res.json({ success: false, error: "Dit e-mailadres is nog niet in gebruik. Maak een nieuw account aan." });
   
   // kijkt of wachtwoord matched; anders weer error
@@ -77,10 +89,17 @@ authenticationRouter.post("/login", async (req, res) => {
     req.session.cookie.maxAge = 1 * 60 * 60 * 1000; // 1 uur
   }
   
+  if (user.role != "employee") {
   // sessie opslaan en redirect
   req.session.user = { id: user.id, name: user.name, role: user.role , festCoins: user.festCoins, email: user.email};
   res.json({ success: true });  
-
+  } 
+  else {
+    // sessie opslaan en redirect met stationName
+    const stationName = await getEmployeeStationNameById(user.id);
+    req.session.user = { id: user.id, name: user.name, role: user.role , festCoins: user.festCoins, email: user.email, stationName: stationName};
+    res.json({ success: true });  
+  }
 });
 
 
