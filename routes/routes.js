@@ -77,10 +77,16 @@ router.get("/wachtwoord-vergeten", (request,response)=>{
   response.render("pages/wachtwoordVergeten");
 });
 
+
 // Workstation pagina (employee) voor scannen en werken
 router.get("/workStation", requireLogin() ,(request,response)=>{
   response.render("pages/workStation");
 });
+
+// employeeBeheer pagina
+router.get("/werknemers", requireLogin("organisator"), (request, response) =>{
+  response.render("pages/werknemers");
+})
 
 
 export default router;

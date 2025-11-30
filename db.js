@@ -37,6 +37,7 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       FOREIGN KEY(organisatorid) REFERENCES users(id) ON DELETE CASCADE
     ) STRICT
   `).run();
+
   // verkoop locaties (standjes, bar,..) table
   db.prepare(`
     CREATE TABLE IF NOT EXISTS stations (
@@ -46,6 +47,7 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       FOREIGN KEY(eventId) REFERENCES events(id) ON DELETE CASCADE
     ) STRICT
   `).run();
+
   // items table
   db.prepare(`
     CREATE TABLE IF NOT EXISTS items (
@@ -58,6 +60,7 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
     ) STRICT
   `).run();
   
+  // transactions table
   db.prepare(`
     CREATE TABLE IF NOT EXISTS transactions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,6 +71,8 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       FOREIGN KEY(bezoekerId) REFERENCES users(id) ON DELETE SET NULL
     ) STRICT
   `).run();
+
+  // transaction items table
   db.prepare(`
     CREATE TABLE IF NOT EXISTS transaction_items (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -82,6 +87,7 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
     ) STRICT
   `).run();
   
+  // event visitors table
   db.prepare(`
     CREATE TABLE IF NOT EXISTS event_visitors (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -94,6 +100,17 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
     ) STRICT
   `).run();
  
+  // employees table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS employees (
+      userId INTEGER PRIMARY KEY,
+      eventId INTEGER,
+      stationId INTEGER,
+      FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY(eventId) REFERENCES events(id) ON DELETE CASCADE,
+      FOREIGN KEY(stationId) REFERENCES stations(id) ON DELETE CASCADE
+    ) STRICT
+  `).run();
 
   
   // voor id

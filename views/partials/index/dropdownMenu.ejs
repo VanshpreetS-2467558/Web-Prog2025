@@ -24,6 +24,7 @@
                 <a href="/evenementen" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Actieve evenementen</a>
             <% } else if(user.role === "organisator") { %>
                 <a href="/event-management" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Mijn Evenement</a>
+                <a href="/werknemers" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Werknemer Beheer</a>
             <% } else if(user.role === "employee") { %>
                 <a href="/workStation" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100"><%= user.stationName || "placeholder" %> </a>
             <% } %>
