@@ -1,7 +1,7 @@
 <!-- Verkopen vandaag -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
     <div class="p-6 lg:col-span-2 bg-white rounded-lg shadow">
-        <h2 class="text-2xl font-bold mb-6 flex-items-center gap-2">📈 Verkopen vandaag, locatie <%= user.stationName|| "placeholder" %></h2>
+        <h2 class="text-2xl font-bold mb-6 flex-items-center gap-2">📈 Verkopen vandaag, locatie <%= user.stationName %></h2>
         
         <!-- dummy grafiek -->
         <% const salesData = [
@@ -24,7 +24,7 @@
     </div>
 
     <div class="p-6 bg-white rounded-lg shadow">
-        <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">🛒 Populairste items, <%= user.stationName|| "placeholder" %></h2>
+        <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">🛒 Populairste items, <%= user.stationName %></h2>
         <% const popularItems = [
             { name: 'T-shirt', sold: 50, revenue: 500 },
             { name: 'Pet', sold: 30, revenue: 300 },

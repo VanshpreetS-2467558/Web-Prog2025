@@ -26,7 +26,7 @@
                 <a href="/event-management" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Mijn Evenement</a>
                 <a href="/werknemers" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Werknemer Beheer</a>
             <% } else if(user.role === "employee") { %>
-                <a href="/workStation" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100"><%= user.stationName || "placeholder" %> </a>
+                <a href="/workStation" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100"><%= user.stationName %> </a>
             <% } %>
                 <a href="/klantenservice" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">klantenservice</a>
                 <a href="/profile" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Account settings</a>
