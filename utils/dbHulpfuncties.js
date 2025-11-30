@@ -189,9 +189,16 @@ export function deleteLocation(id){
     }
 }
 
-
 export function searchEventById(eventId){
     return db.prepare("SELECT * FROM events WHERE id = ?").get(eventId);
+}
+
+export function searchStationByEventId(eventId){
+    return db.prepare("SELECT * FROM stations WHERE eventId = ?").all(eventId);
+}
+
+export function searchItemsByStationId(stationId){
+    return db.prepare("SELECT * FROM items WHERE locationId = ?").all(stationId)
 }
 
 
@@ -212,22 +219,83 @@ export function updateEventById(eventId, updatedFields){
 
 }
 
-
-// EXTRA NOG NIET GEBRUIKT!!
-
-export function getItemPriceById(id){
-    const row = db.prepare("SELECT price FROM items WHERE id = ?").get(id);
-    return row.price;
+// adds employee account into users and employees table
+export function makeEmployeeAccount({name, password, eventId, stationId}){
+    const result = db.prepare(`
+    INSERT INTO users (role, name, email, phone, password, festCoins) 
+    VALUES ('employee', ?, null, null, ?, null)
+    `).run(name, password);
+    const user = result.lastInsertRowid;
+    return db.prepare('INSERT INTO employees (userId, eventId, stationId) VALUES (?, ?, ?)').run(user, eventId, stationId);
 }
 
-export function getItemStockById(id){
-    const row = db.prepare("SELECT stock FROM items WHERE id = ?").get(id);
-    return row.stock
+export function getEventsById(userId){
+    return db.prepare(`
+        SELECT id, name 
+        FROM events 
+        WHERE organisatorid = ?
+    `).all(userId);
 }
 
-export function getItemNameById(id){
-    const row = db.prepare("SELECT name FROM items WHERE id = ?").get(id);
-    return row.name;
+export function getStationsById(userId){
+    return db.prepare(`
+        SELECT s.id, s.name, s.eventId
+        FROM stations s
+        JOIN events e ON s.eventId = e.id
+        WHERE e.organisatorid = ?
+    `).all(userId);
+}
+
+export function getEmployeesByOrganisationId(orgId) {
+    return db.prepare(`
+        SELECT 
+            u.id,
+            u.name,
+            e.name AS eventName,
+            s.name AS stationName
+        FROM users u
+        JOIN employees emp ON u.id = emp.userId
+        JOIN events e ON emp.eventId = e.id
+        JOIN stations s ON emp.stationId = s.id
+        WHERE e.organisatorid = ?
+    `).all(orgId);
+}
+
+export function getStationsWithoutEmployeesByOrganisationId(orgId) {
+    return db.prepare(`
+        SELECT s.id, s.name, s.eventId, e.name AS eventName
+        FROM stations s
+        JOIN events e ON s.eventId = e.id
+        WHERE e.organisatorid = ?
+        AND s.id NOT IN (
+            SELECT stationId FROM employees
+            JOIN events ev ON employees.eventId = ev.id
+            WHERE ev.organisatorid = ?
+        )
+    `).all(orgId, orgId);
+}
+
+export function getUserTypeById(employeeId) { 
+    const row = db.prepare("SELECT role FROM users WHERE id = ?").get(employeeId);
+    return row.role;
+}
+
+export function getEmployeeStationNameById(userId) {
+  // Join employees with stations to get the station name
+  const stmt = db.prepare(`
+    SELECT s.name AS stationName
+    FROM employees e
+    JOIN stations s ON e.stationId = s.id
+    WHERE e.userId = ?
+  `);
+
+  const result = stmt.get(userId);
+
+  if (!result) {
+    return null; // no station found for this employee
+  }
+
+  return result.stationName;
 }
 
 export function getFestcoinsById(id){
@@ -235,3 +303,86 @@ export function getFestcoinsById(id){
     return row.festCoins;
 }
 
+
+export function makeTransaction(userId, itemsDict){
+    const itemsData = [];
+    let totalPrice = 0;
+
+    try {
+        db.prepare("BEGIN TRANSACTION").run();
+
+        // 1. validate items + prijs berekenen
+        for (const [itemId, qty] of Object.entries(itemsDict)) {
+            const item = db.prepare("SELECT * FROM items WHERE id = ?").get(itemId);
+            if (!item) throw new Error(`Item ${itemId} bestaat niet`);
+            if (qty > item.stock) throw new Error(`Niet genoeg voorraad van ${item.name}`);
+
+            totalPrice += item.price * qty;
+
+            itemsData.push({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                qty
+            });
+        }
+
+        // 2. balance check
+        const balance = getFestcoinsById(userId);
+        if (totalPrice > balance) throw new Error("Te weinig FestCoins.");
+
+        // 3. subtract coins
+        updateCoins({ value: -totalPrice, user: { id: userId } });
+
+        // 4. maak transactie
+        const result = db.prepare(`
+            INSERT INTO transactions (bezoekerId, totalPrice) VALUES (?, ?)
+        `).run(userId, totalPrice);
+
+        const transactionId = result.lastInsertRowid;
+
+        // 5. voeg items toe + update stock
+        const insertItem = db.prepare(`
+            INSERT INTO transaction_items (transactionId, itemId, itemName, itemPrice, quantity)
+            VALUES (?, ?, ?, ?, ?)
+        `);
+        const updateStock = db.prepare("UPDATE items SET stock = stock - ? WHERE id = ?");
+
+        itemsData.forEach(it => {
+            insertItem.run(transactionId, it.id, it.name, it.price, it.qty);
+            updateStock.run(it.qty, it.id);
+        });
+
+        db.prepare("COMMIT").run();
+
+        return { success: true, totalPrice, items: itemsData };
+
+    } catch (err) {
+        db.prepare("ROLLBACK").run();
+        return { success: false, error: err.message };
+    }
+}
+
+export function searchExistingVisit(eventId, userId){
+    return db.prepare(`
+        SELECT id FROM event_visitors
+        WHERE eventId = ? AND userId = ? AND leftAt IS NULL
+    `).get(eventId, userId);
+}
+
+export function makeVisit(eventId, userId){
+    return db.prepare(`
+        INSERT INTO event_visitors (eventId, userId)
+        VALUES (?, ?)
+    `).run(eventId, userId);
+}
+
+export function closeVisit(eventId, userId){
+    return db.prepare(`
+        UPDATE event_visitors
+        SET leftAt = CURRENT_TIMESTAMP
+        WHERE eventId = ? AND userId = ? AND leftAt IS NULL
+        ORDER BY visitTime DESC
+        LIMIT 1
+    `).run(eventId, userId);
+}
