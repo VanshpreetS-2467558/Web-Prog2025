@@ -331,6 +331,17 @@ window.addEventListener("DOMContentLoaded", () => {
         sDate.setAttribute("min", todayStr);
         eDate.setAttribute("min", todayStr);
 
+        function updateStartTimeMin() {
+            const now = new Date();
+            const todayStr = now.toISOString().split("T")[0];
+
+            if (sDate.value === todayStr) {
+                sTime.setAttribute("min", now.toTimeString().slice(0,5));
+            } else {
+                sTime.removeAttribute("min");
+            }
+        }
+
         function updateEndConstraints() {
             if(!sDate.value || !sTime.value) return;
 
@@ -354,13 +365,17 @@ window.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        sDate.addEventListener("change", updateEndConstraints);
+        sDate.addEventListener("change", () => {
+            updateStartTimeMin();
+            updateEndConstraints();
+        });
         sTime.addEventListener("change", updateEndConstraints);
         eDate.addEventListener("change", updateEndConstraints);
         eTime.addEventListener("change", updateEndConstraints);
+        updateStartTimeMin();
     });
 
-    // Extra check bij submit
+    
     ["eventAanmaakForm", "editEventForm"].forEach(id => {
         const form = document.getElementById(id);
         if(!form) return;

@@ -10,11 +10,11 @@
 - [ ] organisator account -> dashboard (hoofdpagina) een dropdown menu maken voor algemene analyse en per event analyse
 - [ ] groepspot functie werkend krijgen (hele popup (vansh: ik doe da wel verder, heb da niet af gekregen))
 - [ ] qr code implementatie fixen (vansh: same thing lmao ik doe da verder) (zowel bezoeker als employee side);
+- [ ] bezoeker timestampt bijhouden bij event tweaken (wat als die tab sluiten en geen post sturen voor leftAt...) (heartbeat implementeren)
+- [ ] event delete knoppen werken niet meer (probs door changes database)
 - [ ] (Ga over elke implementatie: als ge iets ziet dat beter kan -> change da na overleg samen)
 - [ ] als er tijd over is dark mode
 - [ ] tailwind classes overzichtelijker maken? (als laatste houden)
-- [ ] bezoeker timestampt bijhouden bij event tweaken (wat als die tab sluiten en geen post sturen voor leftAt...)
-- [ ] event delete knoppen werken niet meer (probs door changes database)
 
 ## 3 browser API's (min. aantal bereikt!)
 
