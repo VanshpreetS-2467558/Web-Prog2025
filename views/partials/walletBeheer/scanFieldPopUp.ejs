@@ -1,0 +1,17 @@
+<div id="scanField" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-gray-100 rounded-xl shadow-lg w-11/12 max-w-md overflow-hidden">
+        <div class="flex justify-between items-center px-4 py-3 bg-gradient-to-br from-indigo-200 via-white to-pink-200">
+            <h1 class="text-xl bg-gradientkleurBR bg-clip-text text-transparent font-bold">Scan de groepspot</h1>
+            <button class="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition" onclick="closeScanField()">Sluiten</button>
+        </div>
+        <div class="relative w-full h-96">
+            <video id="video" autoplay playsinline class="w-full h-full object-cover rounded-b-xl"></video>
+            <div class="absolute top-1/2 left-1/2 w-48 h-48 -translate-x-1/2 -translate-y-1/2 border-4 border-dashed border-green-500 rounded-lg"></div>
+            <div id="output" class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white text-gray-900 px-4 py-2 rounded-xl shadow text-center text-sm"></div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+<script src="/js/scanQRScript.js"></script>

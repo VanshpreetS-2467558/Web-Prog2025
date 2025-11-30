@@ -19,3 +19,13 @@ tabs.forEach(tab => {
 function setAmount(id, amount) {
 document.getElementById(id).value = amount.toFixed(2);
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    window.openScanField = function() {
+        document.getElementById('scanField').classList.remove('hidden');
+    }
+
+    window.closeScanField = function() {
+        document.getElementById('scanField').classList.add('hidden');
+    }
+});

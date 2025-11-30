@@ -7,6 +7,7 @@
 - [ ] feature 2: als event gedaan is dan disablen en een export pdf maken
 - [ ] organisator account -> dashboard (hoofdpagina) een dropdown menu maken voor algemene analyse en per event analyse
 - [ ] groepspot functie werkend krijgen (hele popup (vansh: ik doe da wel verder, heb da niet af gekregen))
+- [ ] transactions fixen bij festcoin beheer
 - [ ] qr code implementatie fixen (vansh: same thing lmao ik doe da verder) (zowel bezoeker als employee side);
 - [ ] bezoeker timestampt bijhouden bij event tweaken (wat als die tab sluiten en geen post sturen voor leftAt...) (heartbeat implementeren)
 - [ ] event delete knoppen werken niet meer (probs door changes database)
