@@ -77,11 +77,11 @@ authenticationRouter.post("/login", async (req, res) => {
   }
 
   // als er geen user is, stuur error terug
-  if (!user) return res.json({ success: false, error: "Dit e-mailadres is nog niet in gebruik. Maak een nieuw account aan." });
+  if (!user) return res.json({ success: false, error: "Dit e-mailadres/ID is nog niet in gebruik. Maak een nieuw account aan." });
   
   // kijkt of wachtwoord matched; anders weer error
   const match = await isPasswordCorrect(password, user.password);
-  if (!match) return res.json({ success: false, error: "E-mail of wachtwoord is fout." });
+  if (!match) return res.json({ success: false, error: "E-mail/ID of wachtwoord is fout." });
   
   if(keepLoggedIn){
     req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 dagen
@@ -97,7 +97,7 @@ authenticationRouter.post("/login", async (req, res) => {
   else {
     // sessie opslaan en redirect met stationName
     const stationName = await getEmployeeStationNameById(user.id);
-    req.session.user = { id: user.id, name: user.name, role: user.role , festCoins: user.festCoins, email: user.email, stationName: stationName};
+    req.session.user = { id: user.id, name: user.name, role: user.role, stationName: stationName};
     res.json({ success: true });  
   }
 });
