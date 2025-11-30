@@ -1,5 +1,5 @@
 import express from "express";
-import {updateCoins, idExists ,getUserById, transferCoins} from "../utils/dbHulpfuncties.js";
+import {updateCoins, idExists ,getUserById, transferCoins, createFestCoinsTransaction} from "../utils/dbHulpfuncties.js";
 import {checkUserAndAmount} from "../utils/validatieHulpfuncties.js";
 
 const beheerCoinsRouter = express.Router();
@@ -17,6 +17,13 @@ beheerCoinsRouter.post("/addAmount", async (req, res) => {
         const result = updateCoins({value : buyAmount, user});
         if (result){
             req.session.user.festCoins = result;
+            // Log transaction
+            createFestCoinsTransaction({
+                userId: user.id,
+                type: 'buy',
+                amount: buyAmount,
+                description: `FestCoins gekocht: ${buyAmount}`
+            });
             res.json({success: true, newAmount: req.session.user.festCoins});
         }
     } catch (err) {
@@ -38,6 +45,13 @@ beheerCoinsRouter.post("/sellAmount", async (req, res) =>{
         const result = updateCoins({value: -sellAmount, user});
         if (result !== false){
             req.session.user.festCoins = result;
+            // Log transaction
+            createFestCoinsTransaction({
+                userId: user.id,
+                type: 'sell',
+                amount: -sellAmount,
+                description: `FestCoins verkocht: ${sellAmount}`
+            });
             res.json({success: true , newAmount: req.session.user.festCoins })
         }
     } catch(err){
@@ -63,6 +77,23 @@ beheerCoinsRouter.post("/shareAmount", async (req, res) =>{
         if (!result.success) return res.json({ success: false, error: "Festcoins versturen mislukt!" });
     
         req.session.user.festCoins = result.newAmount;
+        
+        // Log transactions for both users
+        createFestCoinsTransaction({
+            userId: user.id,
+            type: 'send',
+            amount: -shareAmount,
+            relatedUserId: receiver.id,
+            description: `FestCoins gestuurd naar ${receiver.name || receiver.email}`
+        });
+        createFestCoinsTransaction({
+            userId: receiver.id,
+            type: 'receive',
+            amount: shareAmount,
+            relatedUserId: user.id,
+            description: `FestCoins ontvangen van ${user.name || user.email}`
+        });
+        
         res.json({success: true , newAmount: req.session.user.festCoins })
         
     } catch(err) {
@@ -70,5 +101,20 @@ beheerCoinsRouter.post("/shareAmount", async (req, res) =>{
         res.json({success: false, error: "Festcoins versturen mislukt! Probeer het later opnieuw."});
     }
 })
+
+// Get festcoins transactions GET
+beheerCoinsRouter.get("/festcoins-transactions", async (req, res) => {
+    const user = req.session.user;
+    if (!user) return res.json({ success: false, error: "Niet ingelogd" });
+
+    try {
+        const { getFestCoinsTransactions } = await import("../utils/dbHulpfuncties.js");
+        const transactions = getFestCoinsTransactions(user.id);
+        res.json({ success: true, transactions });
+    } catch (err) {
+        console.error(err);
+        res.json({ success: false, error: "internal server error" });
+    }
+});
 
 export default beheerCoinsRouter;

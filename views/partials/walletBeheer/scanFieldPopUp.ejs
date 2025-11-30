@@ -12,6 +12,27 @@
     </div>
 </div>
 
+<!-- Contribution Popup -->
+<div id="contributionPopup" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-xl shadow-lg w-11/12 max-w-md p-6 space-y-4">
+        <h2 class="text-2xl font-bold bg-gradientkleurBR bg-clip-text text-transparent">Geef jouw bijdrage</h2>
+        <div class="space-y-3">
+            <div class="bg-gray-100 p-4 rounded">
+                <p class="text-sm text-gray-600 mb-1">Nog te betalen:</p>
+                <p class="text-2xl font-bold bg-gradientkleurBR bg-clip-text text-transparent" id="contributionRemaining">0 FestCoins</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">Jouw bijdrage (FestCoins):</label>
+                <input type="number" id="contributionAmount" class="w-full px-4 py-2 border rounded-lg text-lg" placeholder="0" min="1" value="">
+            </div>
+            <p class="text-xs text-gray-500" id="contributionMax">Maximum: 0 FestCoins</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="submitContribution()" class="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition font-medium">Draag bij</button>
+            <button onclick="cancelContribution()" class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition font-medium">Annuleer</button>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
 <script src="/js/scanQRScript.js"></script>

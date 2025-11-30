@@ -63,8 +63,10 @@ router.get("/dashboard", requireLogin() ,(request,response)=>{
 });
 
 // wallet pagina (bezoeker)
-router.get("/wallet", requireLogin("bezoeker") ,(request,response)=>{
-  response.render("pages/walletBeheer");
+router.get("/wallet", requireLogin("bezoeker") , async (request,response)=>{
+  const { getFestCoinsTransactions } = await import("../utils/dbHulpfuncties.js");
+  const transactions = getFestCoinsTransactions(request.session.user.id, 4);
+  response.render("pages/walletBeheer", { transactions });
 });
 
 // profiel pagina
