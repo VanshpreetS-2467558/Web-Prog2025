@@ -82,8 +82,9 @@ document.getElementById("registratieform").addEventListener("submit", async (e) 
     const name = document.getElementById("name").value;
     const password = document.getElementById("password").value;
     const confirmPassword = document.getElementById("confirmPassword").value;
-    const evenementId = document.getElementById("evenement").value;
-    const stationId   = document.getElementById("station").value;
+
+    const eventId = document.getElementById("evenement").value;
+    const stationId = document.getElementById("station").value;
 
     const errorMsg = document.getElementById("errorMsg");
 
@@ -99,7 +100,7 @@ document.getElementById("registratieform").addEventListener("submit", async (e) 
             name,
             password,
             confirmPassword,
-            evenementId,
+            eventId,
             stationId
         }),
     });
@@ -108,8 +109,9 @@ document.getElementById("registratieform").addEventListener("submit", async (e) 
 
     if (result.success) {
         sessionStorage.setItem('showNotification', "Account succesvol aangemaakt!");
-        window.location.href = "/home";
+        window.location.href = "/werknemers";
     } else {
         errorMsg.textContent = result.error;
     }
 });
+

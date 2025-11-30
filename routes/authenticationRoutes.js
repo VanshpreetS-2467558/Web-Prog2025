@@ -185,26 +185,35 @@ authenticationRouter.post("/resetWachtwoord", async (req, res) =>{
 
 
 // newEmployee POST
-authenticationRouter.post("/newEmployee", async (req, res) =>{
-  const {name, password, confirmPassword} = req.body;
-  const role = "employee";
-  if ( !name || !password || !confirmPassword) return res.json({ success: false, error: "Vul alle velden in!" });
+authenticationRouter.post("/newEmployee", async (req, res) => {
+  const { name, password, confirmPassword, eventId, stationId } = req.body;
 
-  // validatie checken
-  if (!isStrongPassword(password)) return res.json({success: false, error: "Wachtwoord is niet sterk genoeg"});
-  if (password !== confirmPassword) return res.json({success: false, error: "Wachtwoorden komen niet overeen"});
+  // veld validatie
+  console.log("test" + name + " " + password + " " + confirmPassword + " " + eventId + " " + stationId);
+  if (!name || !password || !confirmPassword || !eventId || !stationId) return res.json({ success: false, error: "Vul alle velden in!" });
+ 
+  // wachtwoord validatie
+  if (!isStrongPassword(password)) return res.json({ success: false, error: "Wachtwoord is niet sterk genoeg" });
+  if (password !== confirmPassword) return res.json({ success: false, error: "Wachtwoorden komen niet overeen" });
 
-  try{
-    // maak account aan
+  try {
+    // hash wachtwoord
     const hashedPass = await bcrypt.hash(password, 10);
-    const newUser = makeEmployeeAccount({name, password: hashedPass});
-    newUser.lastInsertRowid
-    res.json({success: true});
-    
+
+    // maak account aan
+    makeEmployeeAccount({
+      name,
+      password: hashedPass,
+      eventId,
+      stationId
+    });
+    return res.json({ success: true });
+
   } catch (err) {
-    console.log(err);
-    return res.json({success: false, error: "internal server error"});
+    console.error(err);
+    return res.json({ success: false, error: "internal server error" });
   }
-})
+});
+
 
 export default authenticationRouter;

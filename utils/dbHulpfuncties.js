@@ -236,13 +236,14 @@ export function getFestcoinsById(id){
 }
 
 
-// under construction
-export function makeEmployeeAccount({name, password}){
+// adds employee account into users and employees table
+export function makeEmployeeAccount({name, password, eventId, stationId}){
     const result = db.prepare(`
     INSERT INTO users (role, name, email, phone, password, festCoins) 
-    VALUES ("employee", ?, null, null, ?, null)
+    VALUES ('employee', ?, null, null, ?, null)
     `).run(name, password);
     const user = result.lastInsertRowid;
+    return db.prepare('INSERT INTO employees (userId, eventId, stationId) VALUES (?, ?, ?)').run(user, eventId, stationId);
 }
 
 export function getEventsById(userId){
@@ -260,4 +261,33 @@ export function getStationsById(userId){
         JOIN events e ON s.eventId = e.id
         WHERE e.organisatorid = ?
     `).all(userId);
+}
+
+export function getEmployeesByOrganisationId(orgId) {
+    return db.prepare(`
+        SELECT 
+            u.id,
+            u.name,
+            e.name AS eventName,
+            s.name AS stationName
+        FROM users u
+        JOIN employees emp ON u.id = emp.userId
+        JOIN events e ON emp.eventId = e.id
+        JOIN stations s ON emp.stationId = s.id
+        WHERE e.organisatorid = ?
+    `).all(orgId);
+}
+
+export function getStationsWithoutEmployeesByOrganisationId(orgId) {
+    return db.prepare(`
+        SELECT s.id, s.name, s.eventId, e.name AS eventName
+        FROM stations s
+        JOIN events e ON s.eventId = e.id
+        WHERE e.organisatorid = ?
+        AND s.id NOT IN (
+            SELECT stationId FROM employees
+            JOIN events ev ON employees.eventId = ev.id
+            WHERE ev.organisatorid = ?
+        )
+    `).all(orgId, orgId);
 }

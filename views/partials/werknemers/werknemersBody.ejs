@@ -1,11 +1,14 @@
-
-<button id="showFormWerknemer" type="button"
-    class="w-full bg-gradientkleurR text-white py-2 rounded-lg font-semibold hover:opacity-90 shadow-md">
-    Employee account aanmaken ➜
-</button>
-<div>
-    <%- include("nieuweWerknemer") %>
-</div>
-<div>
+<section class="container mx-auto max-w-full p-6 border-2">
+  <div class="space-y-4">
+    <!-- Employee table -->
     <%- include("werknemerLijst") %>
-</div>
+
+    <!-- Stations without employees table-->
+    <%- include("stationsZonderWerknemers") %>
+    <!-- Button directly below table, no extra margin -->
+    <button id="showFormWerknemer" type="button"
+        class="w-full bg-gradientkleurR text-white py-2 rounded-lg font-semibold hover:opacity-90 shadow-md">
+      Employee account aanmaken ➜
+    </button>
+  </div>
+</section>
