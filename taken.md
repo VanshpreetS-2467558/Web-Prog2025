@@ -1,7 +1,6 @@
 ## to-do:
 
 - [ ] analyse pagina maken voor organisator (voor alle organisators voor te zien welke items/locatie populair zijn);
-- [ ] employee login implementeren
 - [ ] data showen bij dashboard van user/org
 - [ ] budget alarm feature bij bezoekers (doelstelling) per categorie (drank, eten, other,..)
 - [ ] feature 1: puntensysteem en iets winnen (gratis festcoin )
