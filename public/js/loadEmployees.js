@@ -18,14 +18,25 @@ async function loadEmployees() {
             data.employees.forEach(emp => {
                 const row = document.createElement("tr");
                 row.className = "bg-white hover:bg-gray-50";
+
                 row.innerHTML = `
                     <td class="px-6 py-3 text-sm text-gray-700">${emp.id}</td>
                     <td class="px-6 py-3 text-sm text-gray-700">${emp.name}</td>
                     <td class="px-6 py-3 text-sm text-gray-700">${emp.eventName}</td>
                     <td class="px-6 py-3 text-sm text-gray-700">${emp.stationName}</td>
+                    <td class="px-6 py-3 text-sm text-gray-700">
+                        <button 
+                            data-id="${emp.id}"
+                            class="deleteEmployee px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-xs">
+                            Verwijder
+                        </button>
+                    </td>
                 `;
                 tbody.appendChild(row);
             });
+
+            attachDeleteHandlers();
+
         } else {
             noEmployees.classList.remove("hidden");
         }
@@ -33,6 +44,37 @@ async function loadEmployees() {
         console.error("Error fetching employees:", err);
     }
 }
+
+function attachDeleteHandlers() {
+    document.querySelectorAll(".deleteEmployee").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const employeeId = Number(btn.dataset.id);
+
+            if (!confirm("Weet je zeker dat je deze werknemer wilt verwijderen?")) return;
+
+            try {
+                const res = await fetch("/deleteEmployee", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ employeeId })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    // Full page reload after successful deletion
+                    window.location.reload();
+                } else {
+                    alert(data.error || "Verwijderen mislukt.");
+                }
+            } catch (err) {
+                console.error("Delete error:", err);
+                alert("Er is een fout opgetreden bij het verwijderen.");
+            }
+        });
+    });
+}
+
 
 // Utility: wait for element to appear in DOM
 function waitForElement(selector, timeout = 5000) {

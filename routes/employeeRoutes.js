@@ -1,5 +1,5 @@
 import express from "express";
-import { getEventsById, getStationsById, getEmployeesByOrganisationId, getStationsWithoutEmployeesByOrganisationId } from "../utils/dbHulpfuncties.js"
+import { getEventsById, getStationsById, getEmployeesByOrganisationId, getStationsWithoutEmployeesByOrganisationId, getUserTypeById, deleteUserById } from "../utils/dbHulpfuncties.js"
 
 const employeeRouter = express.Router();
 
@@ -41,5 +41,46 @@ employeeRouter.post("/getStationsWithoutEmployees", async (req, res) => {
     }
 });
 
+// deleteEmployee POST
+employeeRouter.post("/deleteEmployee", async (req, res) => {
+    try {
+        const employeeId = Number(req.body.employeeId); // Ensure it's a number
+        if (!employeeId) {
+            return res.status(400).json({ success: false, error: "employeeId ontbreekt." });
+        }
+
+        const userId = req.session.user.id;
+
+        // check user exists and is an employee
+        const targetType = await getUserTypeById(employeeId);
+        if (!targetType) {
+            return res.status(404).json({ success: false, error: "Gebruiker bestaat niet." });
+        }
+
+        if (targetType !== "employee") {
+            return res.status(403).json({ success: false, error: "Gebruiker is geen werknemer." });
+        }
+
+        // check employee belongs to this organizer
+        const myEmployees = await getEmployeesByOrganisationId(userId);
+        const belongsToMe = myEmployees.some(emp => emp.id === employeeId);
+
+        if (!belongsToMe) {
+            return res.status(403).json({ success: false, error: "Geen toestemming om deze werknemer te verwijderen." });
+        }
+
+        // delete user (cascades to employees table)
+        const deleteResult = await deleteUserById(employeeId);
+        if (!deleteResult.success) {
+            return res.status(500).json({ success: false, error: "Verwijderen mislukt." });
+        }
+
+        return res.json({ success: true });
+
+    } catch (err) {
+        console.error("Delete employee error:", err);
+        return res.status(500).json({ success: false, error: "Internal server error" });
+    }
+});
 
 export { employeeRouter };

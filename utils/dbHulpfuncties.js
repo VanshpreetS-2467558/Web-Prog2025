@@ -291,3 +291,8 @@ export function getStationsWithoutEmployeesByOrganisationId(orgId) {
         )
     `).all(orgId, orgId);
 }
+
+export function getUserTypeById(employeeId) { 
+    const row = db.prepare("SELECT role FROM users WHERE id = ?").get(employeeId);
+    return row.role;
+}
