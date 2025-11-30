@@ -316,8 +316,8 @@ window.addEventListener("DOMContentLoaded", () => {
     const todayStr = now.toISOString().split("T")[0];
 
     const forms = [
-        { startDate: "startDate", startTime: "startTime", endDate: "endDate", endTime: "endTime" },
-        { startDate: "newStartDate", startTime: "NewStartTime", endDate: "newEndDate", endTime: "NewEndTime" }
+        { startDate: "startDate", startTime: "startTime", endDate: "endDate", endTime: "endTime", isEdit: false },
+        { startDate: "newStartDate", startTime: "NewStartTime", endDate: "newEndDate", endTime: "NewEndTime", isEdit: true }
     ];
 
     forms.forEach(f => {
@@ -328,10 +328,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
         if(!sDate || !sTime || !eDate || !eTime) return;
 
-        sDate.setAttribute("min", todayStr);
-        eDate.setAttribute("min", todayStr);
+        if (!f.isEdit) {
+            sDate.setAttribute("min", todayStr);
+            eDate.setAttribute("min", todayStr);
+        }
 
         function updateStartTimeMin() {
+            if(f.isEdit) return;
             const now = new Date();
             const todayStr = now.toISOString().split("T")[0];
 
