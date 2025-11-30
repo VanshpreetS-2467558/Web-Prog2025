@@ -1,0 +1,10 @@
+<div id="qrDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-30">
+  <div class="bg-white rounded-lg max-w-md w-full p-6">
+    <h2 class="text-xl font-bold mb-4">Actieve bestelling</h2>
+    <p id="qrOrderItems" class="mb-4"></p>
+    <p id="qrOrderTotal" class="font-bold mb-4"></p>
+    <!-- Devmode afhandelen knop -->
+    <button class="w-full bg-green-500 text-white py-2 rounded mb-2" onclick="handleActiveOrder()">AFHANDELEN (devmode)</button>
+    <button onclick="document.getElementById('qrDialog').classList.add('hidden')" class="w-full py-2 bg-gray-200 rounded">Sluiten</button>
+  </div>
+</div>

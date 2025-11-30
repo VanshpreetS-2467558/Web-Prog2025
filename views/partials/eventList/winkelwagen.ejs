@@ -1,0 +1,15 @@
+<div id="cartContainer" class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4 z-20">
+  <div class="container mx-auto">
+    <p id="emptyCartMsg" class="text-center text-gray-500">Winkelwagen is leeg</p>
+    <div id="cartItems" class="space-y-4 hidden"></div>
+
+    <div class="flex gap-2 mt-2 hidden" id="cartButtons">
+      <button id="groupPotBtn" class="flex-1 px-4 py-2 border rounded hover:bg-gray-100" onclick="openGroup()">Groepspot (0 items)</button>
+      <button id="orderBtn" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="openOrderPopup()">Bestel (0 FestCoins)</button>
+    </div>
+
+    <div class="flex gap-2 mt-2 hidden" id="qrButtonContainer">
+      <button id="qrActiveBtn" class="flex-1 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" onclick="openQRActiveOrder()">QR-bestelling (Actieve bestelling)</button>
+    </div>
+  </div>
+</div>

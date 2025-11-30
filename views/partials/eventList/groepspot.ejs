@@ -1,0 +1,27 @@
+<div id="groupDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-30">
+  <div class="bg-white rounded-lg max-w-md w-full p-6 space-y-4">
+    <h2 class="text-2xl font-bold bg-gradientkleurBR bg-clip-text text-transparent">Groepspot Aanmaken</h2>
+    <p class="text-gray-900">Deel de kosten met je vrienden</p>
+    <div class="bg-gray-100 p-4 rounded">
+      <p class="text-sm mb-1">Totaal te betalen:</p>
+      <p class="text-3xl font-bold bg-gradientkleurBR bg-clip-text text-transparent" id="groupTotal">0 FestCoins</p>
+      <p class="text-sm text-gray-500 mt-1" id="groupItems">0 items</p>
+    </div>
+    <p class="font-medium mb-2">Laat vrienden scannen om bij te dragen:</p>
+    <div class="bg-white p-6 rounded-lg mx-auto w-fit border-2 border-dashed">
+      <div class="w-48 h-48 bg-gray-200 flex items-center justify-center">QR CODE</div>
+    </div>
+    <div class="space-y-3">
+      <div class="flex justify-between items-center p-3 bg-gray-100 rounded">
+        <span class="text-sm">Jouw bijdrage:</span>
+        <input type="number" class="w-24 px-3 py-1 border rounded text-right" placeholder="0">
+      </div>
+      <div class="flex justify-between items-center p-3 bg-green-50 rounded">
+        <span class="text-sm font-medium">Nog te betalen:</span>
+        <span class="font-bold text-green-600" id="groupRemaining">0 FestCoins</span>
+      </div>
+    </div>
+    <button class="w-full bg-gray-300 rounded p-2" disabled>Wachten op vrienden...</button>
+    <button onclick="document.getElementById('groupDialog').classList.add('hidden')" class="mt-2 px-4 py-2 bg-gray-200 rounded w-full">Sluiten</button>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-import { showNotification } from "./headerScripts.js";
+
 
 // functie voor het kopen van FestCoins
 document.getElementById("forgotPassword").addEventListener("submit", async (e) => {
