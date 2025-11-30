@@ -54,9 +54,11 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       name TEXT,
       price INTEGER,
       stock INTEGER,
+      category TEXT,
       FOREIGN KEY(locationId) REFERENCES stations(id) ON DELETE CASCADE
     ) STRICT
   `).run();
+
   
   db.prepare(`
     CREATE TABLE IF NOT EXISTS transactions (

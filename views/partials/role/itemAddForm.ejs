@@ -9,6 +9,14 @@
       <label class="text-sm">Item Naam</label>
       <input type="text" id="itemName" class="w-full border rounded p-2 mb-2" required>
 
+      <label class="text-sm">Item categorie</label>
+      <select id="itemCategory" class="w-full border rounded p-2 mb-2" autocomplete="off" required>
+        <option value="" disabled selected>Kies een categorie</option>
+        <option value="Drank">Drank</option>
+        <option value="Eten">Eten</option>
+        <option value="Others">Others</option>
+      </select>
+
       <label class="text-sm">Prijs</label>
       <input type="number" step="1" id="itemPrice" class="w-full border rounded p-2 mb-2" required>
 

@@ -103,17 +103,17 @@ eventRouter.post("/addLocation", async (req,res) => {
 });
 
 eventRouter.post("/addItem", async (req, res) => {
-    const { sectionId, name, price, stock } = req.body;
+    const { sectionId, name, price, stock, category } = req.body;
 
-    if (!sectionId || !name || !price || !stock) {
+    if (!sectionId || !name || !price || !stock || !category) {
         return res.json({ success: false, error: "Alle velden zijn verplicht." });
     }
 
     try {
         db.prepare(`
-            INSERT INTO items (locationId, name, price, stock)
-            VALUES (?, ?, ?, ?)
-        `).run(sectionId, name, price, stock);
+            INSERT INTO items (locationId, name, price, stock, category)
+            VALUES (?, ?, ?, ?, ?)
+        `).run(sectionId, name, price, stock, category);
 
         res.json({ success: true });
     } catch(err) {

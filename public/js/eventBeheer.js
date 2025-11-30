@@ -126,6 +126,7 @@ document.getElementById("itemForm").addEventListener("submit", async (e) => {
     const name = document.getElementById("itemName").value;
     const price = parseInt(document.getElementById("itemPrice").value);
     const stock = parseInt(document.getElementById("itemStock").value);
+    const category = document.getElementById("itemCategory").value;
 
     if (!name || isNaN(price) || isNaN(stock)) return errorMsg.textContent = "Alle velden zijn verplicht.";
 
@@ -133,7 +134,7 @@ document.getElementById("itemForm").addEventListener("submit", async (e) => {
         const res = await fetch("/addItem", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ sectionId, name, price, stock })
+            body: JSON.stringify({ sectionId, name, price, stock, category})
         });
         const result = await res.json();
 

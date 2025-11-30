@@ -1,6 +1,5 @@
 ## to-do:
 
-- [ ] bij items database categorie toevoegen voor analytics.
 - [ ] analyse pagina maken voor organisator (voor alle organisators voor te zien welke items/locatie populair zijn);
 - [x] bij organisator account een extra pagina met lijst (per event) waar ze employee accounts kunnen maken (subaccounts met id en wachtwoord die
       organisator kiest) en organisator kan die subaccounts beheren en verwijderen.
