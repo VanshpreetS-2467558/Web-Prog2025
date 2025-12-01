@@ -1,5 +1,5 @@
 import express from "express";
-import { makeTransaction } from "../utils/dbHulpfuncties.js";
+import { makeTransaction } from "../utils/db/transactions.js";
 
 const transactionRouter = express.Router();
 

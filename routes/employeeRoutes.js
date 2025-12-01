@@ -1,5 +1,8 @@
 import express from "express";
-import { getEventsById, getStationsById, getEmployeesByOrganisationId, getStationsWithoutEmployeesByOrganisationId, getUserTypeById, deleteUserById } from "../utils/dbHulpfuncties.js"
+import { getEventsById } from "../utils/db/events.js";
+import { getStationsById, getStationsWithoutEmployeesByOrganisationId } from "../utils/db/stations.js";
+import { getEmployeesByOrganisationId } from "../utils/db/employees.js";
+import { getUserTypeById, deleteUserById } from "../utils/db/users.js";
 
 const employeeRouter = express.Router();
 

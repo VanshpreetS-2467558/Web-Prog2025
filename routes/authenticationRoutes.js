@@ -1,8 +1,19 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import { isValidEmail, isValidPhone, isStrongPassword, isPasswordCorrect } from "../utils/validatieHulpfuncties.js";
-import { emailExists, getUserByEmail, createUser, getPasswordById, changePasswordById, updateNameById, deleteUserById, 
-  changePasswordByEmail, makeEmployeeAccount, idExists, getUserById, getEmployeeStationNameById} from "../utils/dbHulpfuncties.js";
+import {
+  emailExists,
+  getUserByEmail,
+  createUser,
+  getPasswordById,
+  changePasswordById,
+  updateNameById,
+  deleteUserById,
+  changePasswordByEmail,
+  idExists,
+  getUserById,
+} from "../utils/db/users.js";
+import { makeEmployeeAccount, getEmployeeStationNameById } from "../utils/db/employees.js";
 
 
 const authenticationRouter = express.Router();

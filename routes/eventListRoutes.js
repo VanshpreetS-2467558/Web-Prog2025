@@ -1,5 +1,8 @@
 import express from "express";
-import { searchExistingVisit, makeVisit, searchEventById, searchStationByEventId, searchItemsByStationId, closeVisit } from "../utils/dbHulpfuncties.js";
+import { searchEventById } from "../utils/db/events.js";
+import { searchStationByEventId } from "../utils/db/stations.js";
+import { searchItemsByStationId } from "../utils/db/items.js";
+import { searchExistingVisit, makeVisit, closeVisit } from "../utils/db/eventVisitors.js";
 import {requireLogin} from "../middleware/requireLogin.js";
 
 const eventListRouter = express.Router();

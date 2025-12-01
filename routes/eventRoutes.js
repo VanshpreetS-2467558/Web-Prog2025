@@ -1,5 +1,7 @@
 import express from "express";
-import {checkNameEvent, createEvent, deleteEvent, deleteItem, deleteLocation, searchEventById, updateEventById} from "../utils/dbHulpfuncties.js";
+import { checkNameEvent, createEvent, deleteEvent, searchEventById, updateEventById } from "../utils/db/events.js";
+import { deleteItem } from "../utils/db/items.js";
+import { deleteLocation } from "../utils/db/stations.js";
 import {requireLogin} from "../middleware/requireLogin.js";
 
 import { db } from "../db.js";
