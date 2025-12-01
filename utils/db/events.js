@@ -1,6 +1,6 @@
 import { db } from "../../db.js";
 
-export function checkNameEvent(name) {
+export function checkEventName(name) {
   return !!db.prepare("SELECT id FROM events WHERE LOWER(name) = LOWER(?)").get(name);
 }
 
