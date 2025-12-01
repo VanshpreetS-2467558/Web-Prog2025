@@ -6,7 +6,7 @@ document.getElementById("profileInfoUpdater").addEventListener("submit", async (
     e.preventDefault();
     const name = document.getElementById("name").value;
     const errorMsgInfo = document.getElementById("errorMsgInfo");
-    const res = await fetch("/nameChange", {
+    const res = await fetch("/auth/nameChange", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ name }),

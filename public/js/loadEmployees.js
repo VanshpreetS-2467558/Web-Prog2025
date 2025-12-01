@@ -3,7 +3,7 @@ async function loadEmployees() {
         const tbody = await waitForElement("#employees-table tbody");
         const noEmployees = document.getElementById("no-employees");
 
-        const response = await fetch("/listEmployees", {
+        const response = await fetch("/employee/listEmployees", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({})
@@ -53,7 +53,7 @@ function attachDeleteHandlers() {
             if (!confirm("Weet je zeker dat je deze werknemer wilt verwijderen?")) return;
 
             try {
-                const res = await fetch("/deleteEmployee", {
+                const res = await fetch("/employee/deleteEmployee", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ employeeId })

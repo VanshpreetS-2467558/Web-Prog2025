@@ -21,7 +21,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (logoutBtn) { 
         logoutBtn.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const res = await fetch("/logout", { method: "POST" });
+            const res = await fetch("/auth/logout", { method: "POST" });
             if (res.ok) {
                 sessionStorage.setItem('showNotification', "succesvol uitgelogd!");
                 window.location.href = "/home";

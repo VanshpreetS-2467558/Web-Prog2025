@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cart.forEach(i=>itemsDict[i.id]=i.quantity);
 
     try{
-      const res = await fetch("/transaction",{
+      const res = await fetch("/transactions/transaction",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({items:itemsDict})

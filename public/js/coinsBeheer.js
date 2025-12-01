@@ -19,7 +19,7 @@ document.getElementById("koopform").addEventListener("submit", async (e) => {
     if(!buyAmount) return errorMsg.textContent = "Geef een waarde in.";
     if (buyAmount <= 0) return errorMsg.textContent = "Geef een waarde groter dan nul in.";
 
-    const res = await fetch("/addAmount", {
+    const res = await fetch("/coins/addAmount", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ buyAmount }),
@@ -44,7 +44,7 @@ document.getElementById("verkoopform").addEventListener("submit", async (e) => {
     if(!sellAmount) return errorMsg.textContent = "Geef een waarde in.";
     if(sellAmount <= 0) return errorMsg.textContent = "Geef een waarde groter dan nul in."
 
-    const res = await fetch("/sellAmount", {
+    const res = await fetch("/coins/sellAmount", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ sellAmount }),
@@ -70,7 +70,7 @@ document.getElementById("shareform").addEventListener("submit", async (e) => {
     if( !shareAmount || !shareReceiver) return errorMsg.textContent = "Vul alle velden in!";
     if(shareAmount <= 0) return errorMsg.textContent = "Geef een waarde groter dan nul in."
 
-    const res = await fetch("/shareAmount", {
+    const res = await fetch("/coins/shareAmount", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ shareAmount, shareReceiver }),

@@ -2,7 +2,7 @@
 async function fetchStationsWithoutEmployees() {
   try {
     // Fetch stations without employees
-    const res = await fetch("/getStationsWithoutEmployees", {
+    const res = await fetch("/employee/getStationsWithoutEmployees", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     });

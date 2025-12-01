@@ -35,7 +35,7 @@ eventListRouter.post("/events/:id/leave", requireLogin("bezoeker"), (req, res) =
 
   // Eventueel cart resetten
   req.session.cart = [];
-  res.redirect("/evenementen");
+  res.redirect("/event/evenementen");
 });
 
 

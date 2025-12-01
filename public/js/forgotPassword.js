@@ -13,7 +13,7 @@ document.getElementById("forgotPassword").addEventListener("submit", async (e) =
     if(newPassword != confirmPassword) return errorMsgPass.textContent = "Wachtwoorden komen niet overeen.";
     if(!(isStrongPassword(newPassword))) return errorMsgPass.textContent = "Wachtwoord is niet sterk genoeg.";
 
-    const res = await fetch("/resetWachtwoord", {
+    const res = await fetch("/auth/resetWachtwoord", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ email, newPassword, confirmPassword }),

@@ -6,7 +6,7 @@ document.getElementById("deleteAccountBtn").addEventListener("click", async (e) 
 
     // delete account if confirm button is pressed
     if (confirmDelete) {
-        const res = await fetch("/deleteAccount", {
+        const res = await fetch("/auth/deleteAccount", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                 });

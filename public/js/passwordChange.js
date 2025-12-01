@@ -13,7 +13,7 @@ document.getElementById("passwordChange").addEventListener("submit", async (e) =
     if(newPassword === password) return errorMsgPass.textContent = "Nieuwe wachtwoord mag niet overeen komen met je huidige wachtwoord.";
     if(!(isStrongPassword(newPassword))) return errorMsgPass.textContent = "Wachtwoord is niet sterk genoeg.";
 
-    const res = await fetch("/passwordChange", {
+    const res = await fetch("/auth/passwordChange", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ password, newPassword, confirmPassword }),

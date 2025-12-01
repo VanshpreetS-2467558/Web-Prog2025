@@ -23,7 +23,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     const errorMsg = document.getElementById("errorMsg");
 
 
-    const res = await fetch("/login", {
+    const res = await fetch("/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, keepLoggedIn })

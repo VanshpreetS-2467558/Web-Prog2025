@@ -16,7 +16,7 @@ document.getElementById("eventAanmaakForm").addEventListener("submit", async (e)
     delete data.endTime;
 
     try{
-        const res = await fetch("/createEvent", {
+        const res = await fetch("/event/createEvent", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data) 
@@ -46,7 +46,7 @@ window.originalLocation = "";
 window.openAddEditModel = async function(eventId){
     const errorMsg = document.getElementById("errorMsgGeneral");
     try{
-        const res = await fetch(`/findEvent?eventId=${encodeURIComponent(eventId)}`);
+        const res = await fetch(`/event/findEvent?eventId=${encodeURIComponent(eventId)}`);
         if(!res.ok) throw new Error(`HTTP error: ${res.status}`);
         const result = await res.json();
         if(result.success){
@@ -95,7 +95,7 @@ document.getElementById("addLocationForm").addEventListener("submit", async (e) 
     if (!name) return errorMsg.textContent = "Geef een locatie naam!";
 
     try {
-        const res = await fetch("/addLocation", {
+        const res = await fetch("/event/addLocation", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ eventId, name })
@@ -131,7 +131,7 @@ document.getElementById("itemForm").addEventListener("submit", async (e) => {
     if (!name || isNaN(price) || isNaN(stock)) return errorMsg.textContent = "Alle velden zijn verplicht.";
 
     try {
-        const res = await fetch("/addItem", {
+        const res = await fetch("/event/addItem", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ sectionId, name, price, stock, category})
@@ -173,7 +173,7 @@ window.deleteEvent = async function(id) {
     if(!confirm("Weet je zeker dat je dit evenement wilt verwijderen?")) return;
     const errorMsg = document.getElementById("errorMsgDelete");
     try{
-        const res = await fetch("/deleteEvent", {
+        const res = await fetch("/event/deleteEvent", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id }) 
@@ -199,7 +199,7 @@ window.deleteItem = async function(id, eventId) {
     const errorMsg = document.getElementById(`errorMsgItem-${eventId}`);
 
     try{
-        const res = await fetch("/deleteItem", {
+        const res = await fetch("/event/deleteItem", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id }) 
@@ -225,7 +225,7 @@ window.deleteStation = async function(id, eventId) {
     const errorMsg = document.getElementById(`errorMsgStation-${eventId}`);
 
     try{
-        const res = await fetch("/deleteStation", {
+        const res = await fetch("/event/deleteStation", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id }) 
@@ -252,7 +252,7 @@ document.getElementById("editEventForm").addEventListener("submit", async (e) =>
     const errorMsg = document.getElementById("errorMsgEditForm");
     const eventId = document.getElementById("eventIdInput").value;
     try{
-        const res = await fetch(`/findEvent?eventId=${encodeURIComponent(eventId)}`);
+        const res = await fetch(`/event/findEvent?eventId=${encodeURIComponent(eventId)}`);
         const result = await res.json();
         const currentEvent = result.event;
 
@@ -282,7 +282,7 @@ document.getElementById("editEventForm").addEventListener("submit", async (e) =>
             return;
         }
 
-        const res2 = await fetch("/updateEventDetails", {
+        const res2 = await fetch("/event/updateEventDetails", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ eventId, updatedFields  }) 

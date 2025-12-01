@@ -36,7 +36,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 // Fetch evenementen + stations from backend
 async function loadEventData() {
     try {
-        const res = await fetch("/getEventData", {
+        const res = await fetch("/employee/getEventData", {
             method: "POST",
             headers: { "Content-Type": "application/json" }
         });
@@ -116,7 +116,7 @@ document.getElementById("registratieform").addEventListener("submit", async (e) 
     }
 
     try {
-        const res = await fetch("/newEmployee", {
+        const res = await fetch("/auth/newEmployee", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({ name, password, confirmPassword, eventId, stationId }),

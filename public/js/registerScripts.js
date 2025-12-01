@@ -7,7 +7,7 @@ document.getElementById("registratieform").addEventListener("submit", async (e) 
     data.keepLoggedIn = document.getElementById("keepLoggedIn").checked;
     const errorMsg = document.getElementById("errorMsg");
 
-    const res = await fetch("/register", {
+    const res = await fetch("/auth/register", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(data),

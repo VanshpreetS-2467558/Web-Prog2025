@@ -55,12 +55,12 @@ app.use(sessionMiddleware);
 
 // Routes
 app.use("/", router);
-app.use("/", authenticationRouter);
-app.use("/", beheerCoinsRouter);
-app.use("/", eventRouter);
-app.use("/", transactionRouter);
-app.use("/", eventListRouter);
-app.use("/", employeeRouter);
+app.use("/auth", authenticationRouter);
+app.use("/coins", beheerCoinsRouter);
+app.use("/event", eventRouter);
+app.use("/transactions", transactionRouter);
+app.use("/list", eventListRouter);
+app.use("/employee", employeeRouter);
 
 // Middleware for unknown routes
 app.use((request, response, next) => {
