@@ -102,6 +102,16 @@ async function loadAllTransactions() {
     }
 }
 
+function openAllTransactions() {
+    const popup = document.getElementById('allTransactionsPopup');
+    if (popup) {
+        popup.classList.remove('hidden');
+        loadAllTransactions();
+    }
+}
+
+window.openAllTransactions = openAllTransactions;
+
 function renderAllTransactions(transactions) {
     const container = document.getElementById("allTransactionsList");
     if (!container) return;
@@ -131,12 +141,17 @@ function renderAllTransactions(transactions) {
         }
 
         const date = new Date(transaction.createdAt).toLocaleString('nl-NL');
+        const relatedUserInfo = (transaction.type === 'send' || transaction.type === 'receive') && transaction.relatedUserName
+            ? `<p class="text-xs text-blue-600 font-medium">${transaction.type === 'send' ? 'Naar' : 'Van'}: ${transaction.relatedUserName}</p>`
+            : '';
+        
         return `
             <div class="flex justify-between items-center p-3 bg-gray-100 rounded-lg">
                 <div class="flex items-center gap-3">
                     <i class="fa-solid ${icon}"></i>
                     <div>
                         <p class="font-medium">${label}</p>
+                        ${relatedUserInfo}
                         <p class="text-sm text-gray-500">${date}</p>
                         ${transaction.description ? `<p class="text-xs text-gray-400">${transaction.description}</p>` : ''}
                     </div>
@@ -152,8 +167,13 @@ function renderAllTransactions(transactions) {
 }
 
 window.openAllTransactions = function() {
-    document.getElementById('allTransactionsPopup').classList.remove('hidden');
-    loadAllTransactions();
+    const popup = document.getElementById('allTransactionsPopup');
+    if(popup) {
+        popup.classList.remove('hidden');
+        loadAllTransactions();
+    } else {
+        console.error('Popup element not found');
+    }
 }
 
 window.closeAllTransactions = function() {

@@ -58,8 +58,131 @@ router.get("/registreren", (request,response)=>{
 });
 
 // dashboard pagina
-router.get("/dashboard", requireLogin() ,(request,response)=>{
-  response.render("pages/dashboard");
+router.get("/dashboard", requireLogin(), async (request, response) => {
+  try {
+    const user = request.session.user;
+    
+    if (user.role === "bezoeker") {
+      const {
+        getSpendingPerCategory,
+        getSpendingPerEvent,
+        getSpendingToday,
+        getUserTransactions,
+        getUserPoints
+      } = await import("../utils/dbHulpfuncties.js");
+      
+    const categorySpending = getSpendingPerCategory(user.id);
+    const eventSpending = getSpendingPerEvent(user.id);
+    const todaySpending = getSpendingToday(user.id);
+    const recentTransactions = getUserTransactions(user.id, 3);
+    const userPoints = getUserPoints(user.id);
+    
+    // Update dashboard data endpoint to return 3 transactions
+    const dashboardData = {
+      categorySpending,
+      eventSpending,
+      todaySpending,
+      recentTransactions: getUserTransactions(user.id, 3)
+    };
+      
+      response.render("pages/dashboard", {
+        categorySpending,
+        eventSpending,
+        todaySpending,
+        recentTransactions,
+        userPoints
+      });
+    } else {
+      response.render("pages/dashboard");
+    }
+  } catch (error) {
+    console.error("Dashboard error:", error);
+    response.status(500).render("error_pages/500");
+  }
+});
+
+// Get all transactions for dashboard
+router.get("/dashboard/transactions", requireLogin("bezoeker"), async (request, response) => {
+  const { getUserTransactions } = await import("../utils/dbHulpfuncties.js");
+  const transactions = getUserTransactions(request.session.user.id);
+  response.json({ success: true, transactions });
+});
+
+// Transactions page removed - now using dashboard tab
+
+// Get event spending details
+router.get("/dashboard/event/:eventId/details", requireLogin("bezoeker"), async (request, response) => {
+  const { getEventSpendingDetails } = await import("../utils/dbHulpfuncties.js");
+  const eventId = parseInt(request.params.eventId);
+  const details = getEventSpendingDetails(request.session.user.id, eventId);
+  response.json({ success: true, details });
+});
+
+// Get transaction details
+router.get("/dashboard/transaction/:transactionId/details", requireLogin("bezoeker"), async (request, response) => {
+  try {
+    const { getTransactionDetails } = await import("../utils/dbHulpfuncties.js");
+    const transactionId = parseInt(request.params.transactionId);
+    const transaction = getTransactionDetails(transactionId, request.session.user.id);
+    if (transaction) {
+      response.json({ success: true, transaction });
+    } else {
+      response.json({ success: false, error: "Transactie niet gevonden" });
+    }
+  } catch (error) {
+    console.error("Transaction details error:", error);
+    response.json({ success: false, error: error.message });
+  }
+});
+
+// Get dashboard data (for real-time updates)
+router.get("/dashboard/data", requireLogin("bezoeker"), async (request, response) => {
+  try {
+    const {
+      getSpendingPerCategory,
+      getSpendingPerEvent,
+      getSpendingToday,
+      getUserTransactions
+    } = await import("../utils/dbHulpfuncties.js");
+    
+    const categorySpending = getSpendingPerCategory(request.session.user.id);
+    const eventSpending = getSpendingPerEvent(request.session.user.id);
+    const todaySpending = getSpendingToday(request.session.user.id);
+    const recentTransactions = getUserTransactions(request.session.user.id, 5);
+    
+    response.json({
+      success: true,
+      categorySpending,
+      eventSpending,
+      todaySpending,
+      recentTransactions
+    });
+  } catch (error) {
+    console.error("Dashboard data error:", error);
+    response.json({ success: false, error: error.message });
+  }
+});
+
+// Get user points
+router.get("/dashboard/points", requireLogin("bezoeker"), async (request, response) => {
+  const { getUserPoints } = await import("../utils/dbHulpfuncties.js");
+  const points = getUserPoints(request.session.user.id);
+  response.json({ success: true, points });
+});
+
+// Claim points reward
+router.post("/dashboard/points/claim", requireLogin("bezoeker"), async (request, response) => {
+  const { claimPointsReward, getUserById } = await import("../utils/dbHulpfuncties.js");
+  const result = claimPointsReward(request.session.user.id);
+  
+  if (result.success) {
+    // Update session FestCoins
+    const user = getUserById(request.session.user.id);
+    request.session.user.festCoins = user.festCoins;
+    response.json(result);
+  } else {
+    response.json(result);
+  }
 });
 
 // wallet pagina (bezoeker)
@@ -67,6 +190,20 @@ router.get("/wallet", requireLogin("bezoeker") , async (request,response)=>{
   const { getFestCoinsTransactions } = await import("../utils/dbHulpfuncties.js");
   const transactions = getFestCoinsTransactions(request.session.user.id, 4);
   response.render("pages/walletBeheer", { transactions });
+});
+
+// budget alarm pagina (bezoeker)
+router.get("/budget-alarm", requireLogin("bezoeker"), async (request, response) => {
+  const { getBudgetAlarms, getCategorySpending } = await import("../utils/dbHulpfuncties.js");
+  const alarms = getBudgetAlarms(request.session.user.id);
+  
+  // Add current spending for each alarm
+  const alarmsWithSpending = alarms.map(alarm => ({
+    ...alarm,
+    currentSpending: getCategorySpending(request.session.user.id, alarm.category)
+  }));
+  
+  response.render("pages/budgetAlarm", { alarms: alarmsWithSpending });
 });
 
 // profiel pagina

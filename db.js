@@ -185,6 +185,32 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       FOREIGN KEY(groepspotId) REFERENCES groepspot(id) ON DELETE SET NULL
     ) STRICT
   `).run();
+
+  // budget_alarms table (for budget alerts per category)
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS budget_alarms (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      userId INTEGER NOT NULL,
+      category TEXT NOT NULL,
+      budgetLimit INTEGER NOT NULL,
+      isActive INTEGER DEFAULT 1,
+      createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE,
+      UNIQUE(userId, category)
+    ) STRICT
+  `).run();
+
+  // user_points table (for loyalty points system)
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS user_points (
+      userId INTEGER PRIMARY KEY,
+      currentPoints INTEGER DEFAULT 0,
+      totalPointsEarned INTEGER DEFAULT 0,
+      totalRewardsClaimed INTEGER DEFAULT 0,
+      lastUpdated TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE
+    ) STRICT
+  `).run();
   
   // voor id
   const row = db.prepare("SELECT seq FROM sqlite_sequence WHERE name = 'users'").get();

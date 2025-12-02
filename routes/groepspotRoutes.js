@@ -273,6 +273,16 @@ groepspotRouter.post("/groepspot/finalize", async (req, res) => {
             return res.json({ success: false, error: "Nog niet volledig betaald" });
         }
 
+        // Check budget limits for creator before finalizing
+        const { getGroepspotItems } = await import("../utils/dbHulpfuncties.js");
+        const groepspotItems = getGroepspotItems(groepspot.id);
+        const itemsDict = {};
+        groepspotItems.forEach(item => {
+            itemsDict[item.itemId] = item.quantity;
+        });
+        const { checkBudgetLimits } = await import("../utils/dbHulpfuncties.js");
+        const budgetCheck = checkBudgetLimits(groepspot.creatorId, itemsDict);
+
         const result = finalizeGroepspot(groepspot.id);
 
         if (!result.success) {
@@ -288,21 +298,16 @@ groepspotRouter.post("/groepspot/finalize", async (req, res) => {
             req.session.user.festCoins = updatedCreator.festCoins;
         }
 
-        // Create festcoins transaction for groepspot
-        contributions.forEach(contrib => {
-            createFestCoinsTransaction({
-                userId: contrib.contributorId,
-                type: 'groepspot',
-                amount: -contrib.amount,
-                groepspotId: groepspot.id,
-                description: `Groepspot bijdrage - ${groepspot.id}`
-            });
-        });
+        // Note: Groepspot transactions are already stored in transactions table via finalizeGroepspot
+        // We don't need to create festcoins_transactions for groepspot contributions
+        // as they are regular purchase transactions, not FestCoin buy/sell/share operations
 
         res.json({
             success: true,
             transactionId: result.transactionId,
-            newAmount: req.session.user.festCoins
+            newAmount: req.session.user.festCoins,
+            budgetExceeded: budgetCheck.exceeded,
+            budgetAlarms: budgetCheck.alarms || []
         });
     } catch (err) {
         console.error(err);

@@ -43,16 +43,22 @@
               <div class="border rounded-lg bg-white shadow-sm p-4 flex flex-col justify-between" data-item-id="<%= item.id %>">
                 <div class="flex justify-between items-start mb-2">
                   <h3 class="font-bold text-2xl"><%= item.name %></h3>
-                  <span class="px-2 py-1 text-xs font-medium rounded <%= item.stock > 50 ? 'bg-green-700 text-white' : 'bg-red-100 text-red-700' %>" data-stock>
-                    <%= item.stock %> op voorraad
+                  <span class="px-2 py-1 text-xs font-medium rounded <%= item.stock === 0 ? 'bg-gray-500 text-white' : (item.stock > 50 ? 'bg-green-700 text-white' : 'bg-red-100 text-red-700') %>" data-stock>
+                    <%= item.stock === 0 ? 'Out of stock' : item.stock + ' op voorraad' %>
                   </span>
                 </div>
                 <div class="flex justify-between items-center mt-2">
                   <p class="text-2xl font-bold bg-gradientkleurBR bg-clip-text text-transparent"><%= item.price %> FestCoins</p>
-                  <button class="flex items-center px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                          onclick="addToCartItem(<%= JSON.stringify({...item, sectionName: section.name}) %>)">
-                    + Toevoegen
-                  </button>
+                  <% if (item.stock === 0) { %>
+                    <button class="flex items-center px-3 py-1 bg-gray-400 text-white rounded cursor-not-allowed" disabled>
+                      Out of stock
+                    </button>
+                  <% } else { %>
+                    <button class="flex items-center px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            onclick="addToCartItem(<%= JSON.stringify({...item, sectionName: section.name}) %>)">
+                      + Toevoegen
+                    </button>
+                  <% } %>
                 </div>
               </div>
             <% }) %>

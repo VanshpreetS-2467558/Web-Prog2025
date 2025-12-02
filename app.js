@@ -11,6 +11,7 @@ import transactionRouter from "./routes/transactionRoutes.js";
 import eventListRouter from "./routes/eventListRoutes.js";
 import { employeeRouter } from "./routes/employeeRoutes.js";
 import groepspotRouter from "./routes/groepspotRoutes.js";
+import budgetAlarmRouter from "./routes/budgetAlarmRoutes.js";
 
 
 
@@ -63,6 +64,7 @@ app.use("/", transactionRouter);
 app.use("/", eventListRouter);
 app.use("/", employeeRouter);
 app.use("/", groepspotRouter);
+app.use("/", budgetAlarmRouter);
 
 // Middleware for unknown routes
 app.use((request, response, next) => {

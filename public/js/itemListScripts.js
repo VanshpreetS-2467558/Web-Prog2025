@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Request notification permission on page load
+  if('Notification' in window && Notification.permission === 'default'){
+    Notification.requestPermission();
+  }
+
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   let activeOrder = JSON.parse(localStorage.getItem('activeOrder')) || null;
   let currentStation = localStorage.getItem('currentStation') || null;
@@ -282,6 +287,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Check and show budget notifications
+      if(data.budgetExceeded && data.budgetAlarms && data.budgetAlarms.length > 0){
+        showBudgetNotifications(data.budgetAlarms);
+      }
+
       alert("Bestelling gelukt! De FestCoins zijn afgeschreven van alle bijdragers.");
 
       // Create active order (same as normal order)
@@ -462,6 +472,16 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Check if item is out of stock
+    const itemCard = document.querySelector(`[data-item-id="${item.id}"]`);
+    if(itemCard){
+      const stockEl = itemCard.querySelector('[data-stock]');
+      if(stockEl && stockEl.textContent.includes('Out of stock')){
+        alert("Dit item is niet meer op voorraad!");
+        return;
+      }
+    }
+
     const currentTotal = cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
     if(currentTotal + item.price > user.festCoins){
       alert("Niet genoeg saldo!");
@@ -524,6 +544,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Update item stocks
       updateItemStocks();
 
+      // Check and show budget notifications
+      if(data.budgetExceeded && data.budgetAlarms && data.budgetAlarms.length > 0){
+        showBudgetNotifications(data.budgetAlarms);
+      }
+
       alert("Bestelling gelukt! Gebruik QR-knop om af te handelen (devmode).");
 
       renderCart();
@@ -533,6 +558,60 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch(err){
       console.error(err);
       alert("Bestelling mislukt: internal error");
+    }
+  }
+
+  // Request notification permission on page load
+  if('Notification' in window && Notification.permission === 'default'){
+    Notification.requestPermission();
+  }
+
+  // Show budget notifications
+  function showBudgetNotifications(alarms){
+    alarms.forEach(alarm => {
+      const message = `⚠️ Budget limiet bereikt voor ${alarm.category}!\n\n` +
+                     `Budget: ${alarm.budgetLimit} FestCoins\n` +
+                     `Huidige uitgaven: ${alarm.newSpending} FestCoins\n` +
+                     `Je hebt ${alarm.newSpending - alarm.budgetLimit} FestCoins te veel uitgegeven.\n\n` +
+                     `Overweeg om meer FestCoins bij te kopen.`;
+      
+      // Browser notification
+      if('Notification' in window && Notification.permission === 'granted'){
+        new Notification('Budget Alarm - ' + alarm.category, {
+          body: `Je budget limiet voor ${alarm.category} is overschreden. Overweeg om meer FestCoins bij te kopen.`,
+          icon: '/assets/favicon.ico',
+          tag: 'budget-alarm-' + alarm.category
+        });
+      } else if('Notification' in window && Notification.permission === 'default'){
+        Notification.requestPermission().then(permission => {
+          if(permission === 'granted'){
+            new Notification('Budget Alarm - ' + alarm.category, {
+              body: `Je budget limiet voor ${alarm.category} is overschreden. Overweeg om meer FestCoins bij te kopen.`,
+              icon: '/assets/favicon.ico',
+              tag: 'budget-alarm-' + alarm.category
+            });
+          }
+        });
+      }
+      
+      // In-app notification
+      showNotification(message, 'warning');
+    });
+  }
+
+  // Show notification helper
+  function showNotification(message, type = 'info'){
+    const notification = document.getElementById('notificatie');
+    if(notification){
+      notification.textContent = message;
+      notification.className = `fixed top-16 right-4 px-4 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-500 ${
+        type === 'warning' ? 'bg-yellow-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+      } text-white`;
+      notification.classList.remove('opacity-0', 'pointer-events-none');
+      
+      setTimeout(() => {
+        notification.classList.add('opacity-0', 'pointer-events-none');
+      }, 5000);
     }
   }
 
@@ -670,10 +749,27 @@ async function updateItemStocks(){
       const data = await res.json();
       if(data.success){
         const stockEl = card.querySelector('[data-stock]');
+        const addButton = card.querySelector('button');
         if(stockEl){
-          stockEl.textContent = `${data.stock} op voorraad`;
-          // Update styling
-          stockEl.className = `px-2 py-1 text-xs font-medium rounded ${data.stock > 50 ? 'bg-green-700 text-white' : 'bg-red-100 text-red-700'}`;
+          if(data.stock === 0){
+            stockEl.textContent = 'Out of stock';
+            stockEl.className = 'px-2 py-1 text-xs font-medium rounded bg-gray-500 text-white';
+            // Disable add button
+            if(addButton){
+              addButton.disabled = true;
+              addButton.className = 'flex items-center px-3 py-1 bg-gray-400 text-white rounded cursor-not-allowed';
+              addButton.textContent = 'Out of stock';
+            }
+          } else {
+            stockEl.textContent = `${data.stock} op voorraad`;
+            stockEl.className = `px-2 py-1 text-xs font-medium rounded ${data.stock > 50 ? 'bg-green-700 text-white' : 'bg-red-100 text-red-700'}`;
+            // Enable add button if it was disabled
+            if(addButton && addButton.disabled){
+              addButton.disabled = false;
+              addButton.className = 'flex items-center px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600';
+              addButton.textContent = '+ Toevoegen';
+            }
+          }
         }
       }
     } catch(err){
