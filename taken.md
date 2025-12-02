@@ -1,15 +1,16 @@
 ## to-do:
 
-- [ ] analyse pagina maken voor organisator (voor alle organisators voor te zien welke items/locatie populair zijn);
-- [ ] data showen bij dashboard van user/org
-- [ ] budget alarm feature bij bezoekers (doelstelling) per categorie (drank, eten, other,..)
+- [x] analyse pagina maken voor organisator (voor alle organisators voor te zien welke items/locatie populair zijn);
+- [x] data showen bij dashboard van user
+- [x] budget alarm feature bij bezoekers (doelstelling) per categorie (drank, eten, other,..)
 - [ ] feature 1: puntensysteem en iets winnen (gratis festcoin )
 - [ ] feature 2: als event gedaan is dan disablen en een export pdf maken
 - [ ] organisator account -> dashboard (hoofdpagina) een dropdown menu maken voor algemene analyse en per event analyse
+- [ ] data showen bij dashboard van org
 - [ ] groepspot functie werkend krijgen (hele popup (vansh: ik doe da wel verder, heb da niet af gekregen))
-- [ ] transactions fixen bij festcoin beheer
-- [ ] qr code implementatie fixen (vansh: same thing lmao ik doe da verder) (zowel bezoeker als employee side);
-- [ ] bezoeker timestampt bijhouden bij event tweaken (wat als die tab sluiten en geen post sturen voor leftAt...) (heartbeat implementeren)
+- [x] transactions fixen bij festcoin beheer
+- [x] qr code implementatie fixen (vansh: same thing lmao ik doe da verder) (zowel bezoeker als employee side);
+- [x] bezoeker timestampt bijhouden bij event tweaken (wat als die tab sluiten en geen post sturen voor leftAt...) (heartbeat implementeren)
 - [ ] event delete knoppen werken niet meer (probs door changes database)
 - [ ] (Ga over elke implementatie: als ge iets ziet dat beter kan -> change da na overleg samen)
 - [ ] als er tijd over is dark mode
