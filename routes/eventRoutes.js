@@ -1,5 +1,7 @@
 import express from "express";
-import {checkNameEvent, createEvent, deleteEvent, deleteItem, deleteLocation, searchEventById, updateEventById} from "../utils/dbHulpfuncties.js";
+import { checkEventName, createEvent, deleteEvent, searchEventById, updateEventById } from "../utils/db/events.js";
+import { deleteItem } from "../utils/db/items.js";
+import { deleteLocation } from "../utils/db/stations.js";
 import {requireLogin} from "../middleware/requireLogin.js";
 
 import { db } from "../db.js";
@@ -63,7 +65,7 @@ eventRouter.post("/createEvent", async (req, res) =>{
 
         // validation
         if(!name || !location || !startDate || !endDate) return res.json({ success: false, error: "Vul alle verplichte velden in." });
-        if(checkNameEvent(name)) return res.json({ success: false, error: "Er bestaat al een evenement met deze naam." });
+        if(checkEventName(name)) return res.json({ success: false, error: "Er bestaat al een evenement met deze naam." });
 
         const result = createEvent({ organisatorid, name, location, description, startDate, endDate });
         if (result.changes > 0) {   
@@ -174,7 +176,7 @@ eventRouter.post("/updateEventDetails", async (req, res) => {
     if(!eventId || Object.keys(updatedFields).length === 0) return res.json({success: false, error: "Geen updates opgegeven."});
 
     if(updatedFields.name){
-        const nameCheck = checkNameEvent(updatedFields.name);
+        const nameCheck = checkEventName(updatedFields.name);
         if(nameCheck) return res.json({ success: false, error: "Er bestaat al een evenement met deze naam." });
     }
 

@@ -1,5 +1,5 @@
 import express from "express";
-import {updateCoins, idExists ,getUserById, transferCoins} from "../utils/dbHulpfuncties.js";
+import { updateCoins, idExists, getUserById, transferCoins } from "../utils/db/users.js";
 import {checkUserAndAmount} from "../utils/validatieHulpfuncties.js";
 
 const beheerCoinsRouter = express.Router();
