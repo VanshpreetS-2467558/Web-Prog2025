@@ -1,6 +1,6 @@
 async function loadEmployees() {
     try {
-        const tbody = await waitForElement("#employees-table tbody");
+        const tbody = await waitForElement("#employees-tbody");
         const noEmployees = document.getElementById("no-employees");
 
         const response = await fetch("/employee/listEmployees", {
@@ -17,17 +17,17 @@ async function loadEmployees() {
 
             data.employees.forEach(emp => {
                 const row = document.createElement("tr");
-                row.className = "bg-white hover:bg-gray-50";
+                row.className = "hover:bg-gray-50 transition-colors duration-150";
 
                 row.innerHTML = `
-                    <td class="px-6 py-3 text-sm text-gray-700">${emp.id}</td>
-                    <td class="px-6 py-3 text-sm text-gray-700">${emp.name}</td>
-                    <td class="px-6 py-3 text-sm text-gray-700">${emp.eventName}</td>
-                    <td class="px-6 py-3 text-sm text-gray-700">${emp.stationName}</td>
-                    <td class="px-6 py-3 text-sm text-gray-700">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${emp.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${emp.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${emp.eventName}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${emp.stationName}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
                         <button 
                             data-id="${emp.id}"
-                            class="deleteEmployee px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-xs">
+                            class="deleteEmployee px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-xs font-semibold transition-colors duration-200 shadow-sm hover:shadow-md">
                             Verwijder
                         </button>
                     </td>

@@ -1,20 +1,22 @@
-<div class="inline-block">
-  <h2 class="text-2xl font-bold mb-4 text-center">Stations zonder werknemers</h2>
+<div class="w-full">
+  <h2 class="text-2xl font-bold mb-6 text-gray-800">Stations zonder werknemers</h2>
 
-  <table id="stations-table"
-         class="table-auto border-collapse divide-y divide-gray-200 bg-white shadow-sm rounded-lg">
-    <thead class="bg-gray-100">
-      <tr>
-        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Event Naam</th>
-        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Station Naam</th>
-      </tr>
-    </thead>
-    <tbody class="divide-y divide-gray-200 text-center">
-      <!-- Rows injected via JS -->
-    </tbody>
-  </table>
+  <div class="overflow-x-auto">
+    <table id="stations-table" class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gradient-to-r from-blue-50 to-purple-50">
+        <tr>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Event Naam</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Station Naam</th>
+        </tr>
+      </thead>
+      <tbody id="stations-tbody" class="bg-white divide-y divide-gray-200">
+        <!-- Rows injected via JS -->
+      </tbody>
+    </table>
+  </div>
 
-  <p id="no-stations" class="mt-4 text-gray-500 hidden text-center">
+  <p id="no-stations" class="mt-6 text-gray-500 hidden text-center py-8">
+    <span class="text-4xl mb-2 block">📍</span>
     Geen stations zonder werknemers gevonden.
   </p>
 </div>

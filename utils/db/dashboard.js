@@ -182,3 +182,49 @@ export function getEventInfo(organizerId, eventId = null) {
   `).get(organizerId);
 }
 
+// Get total items sold for an event (or all events)
+export function getTotalItemsSold(organizerId, eventId = null) {
+  let query = `
+    SELECT COALESCE(SUM(ti.quantity), 0) as total
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    JOIN items i ON ti.itemId = i.id
+    JOIN stations s ON i.locationId = s.id
+    JOIN events e ON s.eventId = e.id
+    WHERE e.organisatorid = ?
+  `;
+  
+  const params = [organizerId];
+  
+  if (eventId) {
+    query += ` AND e.id = ?`;
+    params.push(eventId);
+  }
+  
+  const result = db.prepare(query).get(...params);
+  return result?.total || 0;
+}
+
+// Get total transactions count for an event (or all events)
+export function getTotalTransactions(organizerId, eventId = null) {
+  let query = `
+    SELECT COUNT(DISTINCT t.id) as count
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    JOIN items i ON ti.itemId = i.id
+    JOIN stations s ON i.locationId = s.id
+    JOIN events e ON s.eventId = e.id
+    WHERE e.organisatorid = ?
+  `;
+  
+  const params = [organizerId];
+  
+  if (eventId) {
+    query += ` AND e.id = ?`;
+    params.push(eventId);
+  }
+  
+  const result = db.prepare(query).get(...params);
+  return result?.count || 0;
+}
+

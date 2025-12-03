@@ -17,7 +17,29 @@ document.addEventListener('DOMContentLoaded', () => {
             loadDashboardData();
         }
     }, 30000);
+
+    // PDF export button
+    const exportPdfBtn = document.getElementById('exportPdfBtn');
+    if (exportPdfBtn) {
+        exportPdfBtn.addEventListener('click', () => {
+            exportToPdf();
+        });
+    }
 });
+
+function exportToPdf() {
+    const eventSelect = document.getElementById('eventSelect');
+    const eventId = eventSelect ? eventSelect.value : null;
+    
+    // Build URL with eventId parameter
+    let url = '/dashboard/export-pdf';
+    if (eventId) {
+        url += `?eventId=${eventId}`;
+    }
+    
+    // Open in new window to trigger download
+    window.open(url, '_blank');
+}
 
 async function loadDashboardData() {
     const eventSelect = document.getElementById('eventSelect');
