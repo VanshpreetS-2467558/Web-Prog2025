@@ -93,5 +93,32 @@ router.get("/analysis", requireLogin("bezoeker"), (request, response) =>{
   response.render("pages/analysis");
 })
 
+// order history pagina (bezoeker)
+router.get("/order-history", requireLogin("bezoeker"), async (request, response) =>{
+  const { getOrderHistory } = await import("../utils/db/transactions.js");
+  const orderHistory = getOrderHistory(request.session.user.id);
+  
+  // Group items by transaction
+  const groupedTransactions = {};
+  orderHistory.forEach(item => {
+    if (!groupedTransactions[item.transactionId]) {
+      groupedTransactions[item.transactionId] = {
+        transactionId: item.transactionId,
+        date: item.date,
+        totalPrice: item.totalPrice,
+        items: []
+      };
+    }
+    groupedTransactions[item.transactionId].items.push(item);
+  });
+  
+  // Convert to array and sort by date (newest first)
+  const transactions = Object.values(groupedTransactions).sort((a, b) => {
+    return new Date(b.date) - new Date(a.date);
+  });
+  
+  response.render("pages/orderHistory", { transactions });
+})
+
 
 export default router;

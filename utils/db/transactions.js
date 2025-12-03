@@ -184,3 +184,28 @@ export function getTopStationsBySpending(userId, startDate = null, endDate = nul
   return db.prepare(query).all(...params);
 }
 
+// Get complete order history for a user
+export function getOrderHistory(userId) {
+  const query = `
+    SELECT 
+      t.id as transactionId,
+      t.date,
+      t.totalPrice,
+      ti.id as itemId,
+      ti.itemName,
+      ti.itemPrice,
+      ti.quantity,
+      (ti.itemPrice * ti.quantity) as itemTotal,
+      COALESCE(s.name, 'Onbekend Station') as stationName,
+      COALESCE(i.category, 'Onbekend') as category
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    LEFT JOIN items i ON ti.itemId = i.id
+    LEFT JOIN stations s ON i.locationId = s.id
+    WHERE t.bezoekerId = ?
+    ORDER BY t.date DESC, t.id DESC, ti.id ASC
+  `;
+  
+  return db.prepare(query).all(userId);
+}
+
