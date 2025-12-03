@@ -88,5 +88,10 @@ router.get("/werknemers", requireLogin("organisator"), (request, response) =>{
   response.render("pages/werknemers");
 })
 
+// analysis pagina (bezoeker)
+router.get("/analysis", requireLogin("bezoeker"), (request, response) =>{
+  response.render("pages/analysis");
+})
+
 
 export default router;

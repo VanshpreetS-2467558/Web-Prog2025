@@ -22,6 +22,7 @@
             <% if(user.role === "bezoeker") {  %>
                 <a href="wallet" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Beheer FestCoins</a>
                 <a href="/event/evenementen" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Actieve evenementen</a>
+                <a href="/analysis" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Analyse</a>
             <% } else if(user.role === "organisator") { %>
                 <a href="/event/event-management" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Mijn Evenement</a>
                 <a href="/werknemers" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Werknemer Beheer</a>

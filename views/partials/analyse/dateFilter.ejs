@@ -1,0 +1,23 @@
+<!-- Date Filter Section -->
+<div class="bg-white border rounded-2xl p-6 shadow-sm mb-6">
+    <h2 class="text-xl font-semibold mb-4">Tijdsperiode</h2>
+    <form id="dateFilterForm" class="flex flex-wrap gap-4 items-end">
+        <div class="flex-1 min-w-[200px]">
+            <label for="startDate" class="block text-sm font-medium mb-2">Startdatum</label>
+            <input type="date" id="startDate" name="startDate" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="flex-1 min-w-[200px]">
+            <label for="endDate" class="block text-sm font-medium mb-2">Einddatum</label>
+            <input type="date" id="endDate" name="endDate" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="flex gap-2">
+            <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                Filter
+            </button>
+            <button type="button" id="resetFilter" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">
+                Reset
+            </button>
+        </div>
+    </form>
+</div>
+

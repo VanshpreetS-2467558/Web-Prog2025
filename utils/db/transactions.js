@@ -60,3 +60,127 @@ export function makeTransaction(userId, itemsDict) {
   }
 }
 
+// Get transaction analysis data for a user within a date range
+export function getTransactionAnalysis(userId, startDate = null, endDate = null) {
+  let query = `
+    SELECT 
+      ti.quantity,
+      ti.itemPrice,
+      CASE 
+        WHEN ti.itemId IS NULL THEN 'Onbekend'
+        WHEN i.category IS NULL OR i.category = '' THEN 'Onbekend'
+        ELSE i.category
+      END as category
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    LEFT JOIN items i ON ti.itemId = i.id
+    WHERE t.bezoekerId = ?
+  `;
+  
+  const params = [userId];
+  
+  if (startDate) {
+    query += ` AND DATE(t.date) >= DATE(?)`;
+    params.push(startDate);
+  }
+  
+  if (endDate) {
+    query += ` AND DATE(t.date) <= DATE(?)`;
+    params.push(endDate);
+  }
+  
+  return db.prepare(query).all(...params);
+}
+
+// Get total amount spent for a user within a date range
+export function getTotalSpent(userId, startDate = null, endDate = null) {
+  let query = `
+    SELECT SUM(totalPrice) as total
+    FROM transactions
+    WHERE bezoekerId = ?
+  `;
+  
+  const params = [userId];
+  
+  if (startDate) {
+    query += ` AND DATE(date) >= DATE(?)`;
+    params.push(startDate);
+  }
+  
+  if (endDate) {
+    query += ` AND DATE(date) <= DATE(?)`;
+    params.push(endDate);
+  }
+  
+  const result = db.prepare(query).get(...params);
+  return result?.total || 0;
+}
+
+// Get top 5 items by total money spent for a user within a date range
+export function getTopItemsBySpending(userId, startDate = null, endDate = null) {
+  let query = `
+    SELECT 
+      ti.itemName,
+      SUM(ti.itemPrice * ti.quantity) as totalSpent,
+      SUM(ti.quantity) as totalQuantity
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    WHERE t.bezoekerId = ?
+  `;
+  
+  const params = [userId];
+  
+  if (startDate) {
+    query += ` AND DATE(t.date) >= DATE(?)`;
+    params.push(startDate);
+  }
+  
+  if (endDate) {
+    query += ` AND DATE(t.date) <= DATE(?)`;
+    params.push(endDate);
+  }
+  
+  query += `
+    GROUP BY ti.itemName
+    ORDER BY totalSpent DESC
+    LIMIT 5
+  `;
+  
+  return db.prepare(query).all(...params);
+}
+
+// Get top 5 stations by total money spent for a user within a date range
+export function getTopStationsBySpending(userId, startDate = null, endDate = null) {
+  let query = `
+    SELECT 
+      COALESCE(s.name, 'Onbekend Station') as stationName,
+      SUM(ti.itemPrice * ti.quantity) as totalSpent,
+      SUM(ti.quantity) as totalQuantity
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    LEFT JOIN items i ON ti.itemId = i.id
+    LEFT JOIN stations s ON i.locationId = s.id
+    WHERE t.bezoekerId = ?
+  `;
+  
+  const params = [userId];
+  
+  if (startDate) {
+    query += ` AND DATE(t.date) >= DATE(?)`;
+    params.push(startDate);
+  }
+  
+  if (endDate) {
+    query += ` AND DATE(t.date) <= DATE(?)`;
+    params.push(endDate);
+  }
+  
+  query += `
+    GROUP BY s.id, s.name
+    ORDER BY totalSpent DESC
+    LIMIT 5
+  `;
+  
+  return db.prepare(query).all(...params);
+}
+
