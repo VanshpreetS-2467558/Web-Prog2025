@@ -4,8 +4,8 @@
 - [x] data showen bij dashboard van user
 - [x] budget alarm feature bij bezoekers (doelstelling) per categorie (drank, eten, other,..)
 - [x] feature 1: puntensysteem en iets winnen (gratis festcoin )
-- [ ] feature 2: als event gedaan is dan disablen en een export pdf maken
-- [ ] organisator account -> dashboard (hoofdpagina) een dropdown menu maken voor algemene analyse en per event analyse
+- [x] feature 2: als event gedaan is dan disablen en een export pdf maken
+- [x] organisator account -> dashboard (hoofdpagina) een dropdown menu maken voor algemene analyse en per event analyse
 - [ ] data showen bij dashboard van org
 - [x] groepspot functie werkend krijgen (hele popup (vansh: ik doe da wel verder, heb da niet af gekregen))
 - [x] transactions fixen bij festcoin beheer
