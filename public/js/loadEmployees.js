@@ -27,6 +27,15 @@ async function loadEmployees() {
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                         <button 
                             data-id="${emp.id}"
+                            data-name="${emp.name}"
+                            class="viewPassword px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-xs font-semibold transition-colors duration-200 shadow-sm hover:shadow-md">
+                            Bekijk
+                        </button>
+                        <span class="viewed-password-${emp.id} ml-2 text-sm text-gray-600 hidden"></span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <button 
+                            data-id="${emp.id}"
                             class="deleteEmployee px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-xs font-semibold transition-colors duration-200 shadow-sm hover:shadow-md">
                             Verwijder
                         </button>
@@ -36,6 +45,7 @@ async function loadEmployees() {
             });
 
             attachDeleteHandlers();
+            attachViewPasswordHandlers();
 
         } else {
             noEmployees.classList.remove("hidden");
@@ -70,6 +80,53 @@ function attachDeleteHandlers() {
             } catch (err) {
                 console.error("Delete error:", err);
                 alert("Er is een fout opgetreden bij het verwijderen.");
+            }
+        });
+    });
+}
+
+function attachViewPasswordHandlers() {
+    document.querySelectorAll(".viewPassword").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const employeeId = Number(btn.dataset.id);
+            const employeeName = btn.dataset.name;
+            
+            // Check if password is already shown
+            const passwordSpan = document.querySelector(`.viewed-password-${employeeId}`);
+            if (!passwordSpan.classList.contains("hidden")) {
+                // Hide password
+                passwordSpan.classList.add("hidden");
+                btn.textContent = "Bekijk";
+                return;
+            }
+
+            // Prompt for organizer password
+            const organizerPassword = prompt(`Voer je wachtwoord in om het wachtwoord van ${employeeName} te bekijken:`);
+            
+            if (!organizerPassword) {
+                return; // User cancelled
+            }
+
+            try {
+                const res = await fetch("/employee/viewEmployeePassword", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ employeeId, organizerPassword })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    // Show password
+                    passwordSpan.textContent = data.password;
+                    passwordSpan.classList.remove("hidden");
+                    btn.textContent = "Verberg";
+                } else {
+                    alert(data.error || "Fout bij ophalen wachtwoord.");
+                }
+            } catch (err) {
+                console.error("View password error:", err);
+                alert("Er is een fout opgetreden bij het ophalen van het wachtwoord.");
             }
         });
     });

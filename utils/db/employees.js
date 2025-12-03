@@ -1,6 +1,6 @@
 import { db } from "../../db.js";
 
-export function makeEmployeeAccount({ name, password, eventId, stationId }) {
+export function makeEmployeeAccount({ name, password, eventId, stationId, encryptedPassword }) {
   const result = db
     .prepare(
       `
@@ -10,7 +10,12 @@ export function makeEmployeeAccount({ name, password, eventId, stationId }) {
     )
     .run(name, password);
   const user = result.lastInsertRowid;
-  return db.prepare("INSERT INTO employees (userId, eventId, stationId) VALUES (?, ?, ?)").run(user, eventId, stationId);
+  return db.prepare("INSERT INTO employees (userId, eventId, stationId, encryptedPassword) VALUES (?, ?, ?, ?)").run(user, eventId, stationId, encryptedPassword);
+}
+
+export function getEmployeeEncryptedPassword(userId) {
+  const result = db.prepare("SELECT encryptedPassword FROM employees WHERE userId = ?").get(userId);
+  return result?.encryptedPassword || null;
 }
 
 export function getEmployeesByOrganisationId(orgId) {

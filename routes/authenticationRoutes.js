@@ -216,26 +216,44 @@ authenticationRouter.post("/resetWachtwoord", async (req, res) =>{
 
 // newEmployee POST
 authenticationRouter.post("/newEmployee", async (req, res) => {
-  const { name, password, confirmPassword, eventId, stationId } = req.body;
+  const { name, password, confirmPassword, eventId, stationId, organizerPassword } = req.body;
 
   // veld validatie
   console.log("test" + name + " " + password + " " + confirmPassword + " " + eventId + " " + stationId);
-  if (!name || !password || !confirmPassword || !eventId || !stationId) return res.json({ success: false, error: "Vul alle velden in!" });
+  if (!name || !password || !confirmPassword || !eventId || !stationId || !organizerPassword) {
+    return res.json({ success: false, error: "Vul alle velden in!" });
+  }
  
   // wachtwoord validatie
   if (!isStrongPassword(password)) return res.json({ success: false, error: "Wachtwoord is niet sterk genoeg" });
   if (password !== confirmPassword) return res.json({ success: false, error: "Wachtwoorden komen niet overeen" });
 
   try {
-    // hash wachtwoord
+    // Verify organizer password
+    const organizer = getUserById(req.session.user.id);
+    if (!organizer) {
+      return res.json({ success: false, error: "Organisator niet gevonden" });
+    }
+    
+    const passwordMatch = await isPasswordCorrect(organizerPassword, organizer.password);
+    if (!passwordMatch) {
+      return res.json({ success: false, error: "Organisator wachtwoord is incorrect" });
+    }
+
+    // hash wachtwoord for users table (for login)
     const hashedPass = await bcrypt.hash(password, 10);
+
+    // Encrypt password for employees table
+    const { encryptPassword } = await import("../utils/encryption.js");
+    const encryptedPass = encryptPassword(password, organizerPassword);
 
     // maak account aan
     makeEmployeeAccount({
       name,
       password: hashedPass,
       eventId,
-      stationId
+      stationId,
+      encryptedPassword: encryptedPass
     });
     return res.json({ success: true });
 

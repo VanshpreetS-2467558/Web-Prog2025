@@ -104,6 +104,7 @@ document.getElementById("registratieform").addEventListener("submit", async (e) 
     const name = document.getElementById("name").value;
     const password = document.getElementById("password").value;
     const confirmPassword = document.getElementById("confirmPassword").value;
+    const organizerPassword = document.getElementById("organizerPassword").value;
 
     const eventId = document.getElementById("evenement").value;
     const stationId = document.getElementById("station").value;
@@ -115,11 +116,16 @@ document.getElementById("registratieform").addEventListener("submit", async (e) 
         return;
     }
 
+    if (!organizerPassword) {
+        errorMsg.textContent = "Vul je wachtwoord in om het werknemer wachtwoord te versleutelen.";
+        return;
+    }
+
     try {
         const res = await fetch("/auth/newEmployee", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ name, password, confirmPassword, eventId, stationId }),
+            body: JSON.stringify({ name, password, confirmPassword, eventId, stationId, organizerPassword }),
         });
 
         const result = await res.json();

@@ -108,11 +108,19 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       userId INTEGER PRIMARY KEY,
       eventId INTEGER,
       stationId INTEGER,
+      encryptedPassword TEXT,
       FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE,
       FOREIGN KEY(eventId) REFERENCES events(id) ON DELETE CASCADE,
       FOREIGN KEY(stationId) REFERENCES stations(id) ON DELETE CASCADE
     ) STRICT
   `).run();
+  
+  // Add encryptedPassword column if it doesn't exist (migration)
+  try {
+    db.prepare("ALTER TABLE employees ADD COLUMN encryptedPassword TEXT").run();
+  } catch (err) {
+    // Column already exists, ignore error
+  }
 
   
   // voor id
