@@ -184,6 +184,29 @@ function updatePopularItems(popularItems) {
 function updateEventTimer(eventInfo) {
     const timerEl = document.getElementById('eventTimer');
     const timeRangeEl = document.getElementById('eventTimeRange');
+    const timerCard = document.getElementById('eventTimerCard');
+    const eventSelect = document.getElementById('eventSelect');
+    const infoCardsGrid = document.getElementById('infoCardsGrid');
+    
+    // Check if a specific event is selected
+    const eventId = eventSelect ? eventSelect.value : null;
+    const isSpecificEventSelected = eventId && eventId !== '';
+    
+    // Show/hide timer card based on selection and update grid layout
+    if (timerCard && infoCardsGrid) {
+        if (isSpecificEventSelected && eventInfo) {
+            timerCard.classList.remove('hidden');
+            // Use 4 columns when timer is visible
+            infoCardsGrid.className = 'grid md:grid-cols-4 gap-6 mb-8';
+        } else {
+            timerCard.classList.add('hidden');
+            // Use 3 columns when timer is hidden
+            infoCardsGrid.className = 'grid md:grid-cols-3 gap-6 mb-8';
+            if (timerEl) timerEl.textContent = '-';
+            if (timeRangeEl) timeRangeEl.textContent = '-';
+            return;
+        }
+    }
     
     if (!timerEl || !timeRangeEl || !eventInfo) {
         if (timerEl) timerEl.textContent = '-';
@@ -195,10 +218,22 @@ function updateEventTimer(eventInfo) {
     const startDate = new Date(eventInfo.startDate);
     const endDate = new Date(eventInfo.endDate);
 
-    // Format time range
-    const startTime = startDate.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
-    const endTime = endDate.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
-    timeRangeEl.textContent = `${startTime} - ${endTime}`;
+    // Format date and time range (showing both date and time)
+    const startDateTime = startDate.toLocaleString('nl-NL', { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
+    const endDateTime = endDate.toLocaleString('nl-NL', { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
+    timeRangeEl.textContent = `${startDateTime} tot ${endDateTime}`;
 
     // Calculate time remaining
     if (now < startDate) {

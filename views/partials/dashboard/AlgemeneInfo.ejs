@@ -17,7 +17,7 @@
 
 <% } else if(user.role === "organisator" ) { %>
 
-    <div class="grid md:grid-cols-4 gap-6 mb-8">
+    <div class="grid md:grid-cols-4 gap-6 mb-8" id="infoCardsGrid">
         <div class="p-8 bg-gradientkleurSmallText text-white rounded-lg shadow">
             <p class="text-2xl font-bold mb-2">Totale Omzet</p>
             <div class="text-3xl font-bold mb-1" id="totalRevenue">0 FestCoins</div>
@@ -29,7 +29,7 @@
             <div class="text-3xl font-bold mb-1" id="totalVisitors">0</div>
         </div>
 
-        <div class="p-8 bg-gradientkleurSmallText text-white rounded-lg shadow">
+        <div id="eventTimerCard" class="p-8 bg-gradientkleurSmallText text-white rounded-lg shadow hidden">
             <p class="text-2xl font-bold mb-2">Evenement Timer</p>
             <div class="text-3xl font-bold mb-1" id="eventTimer">-</div>
             <div class="text-1xl font-bold mb-1" id="eventTimeRange">-</div>
