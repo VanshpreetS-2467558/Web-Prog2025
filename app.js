@@ -10,6 +10,7 @@ import sessionMiddleware from "./middleware/session.js";
 import transactionRouter from "./routes/transactionRoutes.js";
 import eventListRouter from "./routes/eventListRoutes.js";
 import { employeeRouter } from "./routes/employeeRoutes.js";
+import dashboardRouter from "./routes/dashboardRoutes.js";
 
 
 
@@ -61,6 +62,7 @@ app.use("/event", eventRouter);
 app.use("/transactions", transactionRouter);
 app.use("/list", eventListRouter);
 app.use("/employee", employeeRouter);
+app.use("/dashboard", dashboardRouter);
 
 // Middleware for unknown routes
 app.use((request, response, next) => {

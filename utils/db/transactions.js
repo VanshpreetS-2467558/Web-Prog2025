@@ -1,6 +1,173 @@
 import { db } from "../../db.js";
 import { getFestcoinsById, updateCoins } from "./users.js";
 
+// Get recent transactions for a bezoeker (3 most recent)
+export function getRecentTransactionsForBezoeker(userId, limit = 3) {
+  const query = `
+    SELECT 
+      t.id,
+      t.date,
+      t.totalPrice,
+      (SELECT GROUP_CONCAT(ti2.itemName || ' (' || ti2.quantity || 'x)')
+       FROM transaction_items ti2
+       WHERE ti2.transactionId = t.id) as items,
+      COALESCE(MAX(s.name), 'Onbekend Station') as stationName
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    LEFT JOIN items i ON ti.itemId = i.id
+    LEFT JOIN stations s ON i.locationId = s.id
+    WHERE t.bezoekerId = ?
+    GROUP BY t.id
+    ORDER BY t.date DESC
+    LIMIT ?
+  `;
+  
+  return db.prepare(query).all(userId, limit);
+}
+
+// Get all transactions for a bezoeker
+export function getAllTransactionsForBezoeker(userId) {
+  const query = `
+    SELECT 
+      t.id,
+      t.date,
+      t.totalPrice,
+      (SELECT GROUP_CONCAT(ti2.itemName || ' (' || ti2.quantity || 'x)')
+       FROM transaction_items ti2
+       WHERE ti2.transactionId = t.id) as items,
+      COALESCE(MAX(s.name), 'Onbekend Station') as stationName
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    LEFT JOIN items i ON ti.itemId = i.id
+    LEFT JOIN stations s ON i.locationId = s.id
+    WHERE t.bezoekerId = ?
+    GROUP BY t.id
+    ORDER BY t.date DESC
+  `;
+  
+  return db.prepare(query).all(userId);
+}
+
+// Get recent transactions for an organizer (from their events)
+export function getRecentTransactionsForOrganizer(organizerId, eventId = null, limit = 3) {
+  let query = `
+    SELECT 
+      t.id,
+      t.date,
+      t.totalPrice,
+      (SELECT GROUP_CONCAT(ti2.itemName || ' (' || ti2.quantity || 'x)')
+       FROM transaction_items ti2
+       WHERE ti2.transactionId = t.id) as items,
+      COALESCE(MAX(s.name), 'Onbekend Station') as stationName
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    JOIN items i ON ti.itemId = i.id
+    JOIN stations s ON i.locationId = s.id
+    JOIN events e ON s.eventId = e.id
+    WHERE e.organisatorid = ?
+  `;
+  
+  const params = [organizerId];
+  
+  if (eventId) {
+    query += ` AND e.id = ?`;
+    params.push(eventId);
+  }
+  
+  query += `
+    GROUP BY t.id
+    ORDER BY t.date DESC
+    LIMIT ?
+  `;
+  
+  params.push(limit);
+  
+  return db.prepare(query).all(...params);
+}
+
+// Get all transactions for an organizer
+export function getAllTransactionsForOrganizer(organizerId, eventId = null) {
+  let query = `
+    SELECT 
+      t.id,
+      t.date,
+      t.totalPrice,
+      (SELECT GROUP_CONCAT(ti2.itemName || ' (' || ti2.quantity || 'x)')
+       FROM transaction_items ti2
+       WHERE ti2.transactionId = t.id) as items,
+      COALESCE(MAX(s.name), 'Onbekend Station') as stationName
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    JOIN items i ON ti.itemId = i.id
+    JOIN stations s ON i.locationId = s.id
+    JOIN events e ON s.eventId = e.id
+    WHERE e.organisatorid = ?
+  `;
+  
+  const params = [organizerId];
+  
+  if (eventId) {
+    query += ` AND e.id = ?`;
+    params.push(eventId);
+  }
+  
+  query += `
+    GROUP BY t.id
+    ORDER BY t.date DESC
+  `;
+  
+  return db.prepare(query).all(...params);
+}
+
+// Get recent transactions for an employee (from their station)
+export function getRecentTransactionsForEmployee(employeeId, limit = 3) {
+  const query = `
+    SELECT 
+      t.id,
+      t.date,
+      t.totalPrice,
+      (SELECT GROUP_CONCAT(ti2.itemName || ' (' || ti2.quantity || 'x)')
+       FROM transaction_items ti2
+       WHERE ti2.transactionId = t.id) as items,
+      MAX(s.name) as stationName
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    JOIN items i ON ti.itemId = i.id
+    JOIN stations s ON i.locationId = s.id
+    JOIN employees emp ON s.id = emp.stationId
+    WHERE emp.userId = ?
+    GROUP BY t.id
+    ORDER BY t.date DESC
+    LIMIT ?
+  `;
+  
+  return db.prepare(query).all(employeeId, limit);
+}
+
+// Get all transactions for an employee
+export function getAllTransactionsForEmployee(employeeId) {
+  const query = `
+    SELECT 
+      t.id,
+      t.date,
+      t.totalPrice,
+      (SELECT GROUP_CONCAT(ti2.itemName || ' (' || ti2.quantity || 'x)')
+       FROM transaction_items ti2
+       WHERE ti2.transactionId = t.id) as items,
+      MAX(s.name) as stationName
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    JOIN items i ON ti.itemId = i.id
+    JOIN stations s ON i.locationId = s.id
+    JOIN employees emp ON s.id = emp.stationId
+    WHERE emp.userId = ?
+    GROUP BY t.id
+    ORDER BY t.date DESC
+  `;
+  
+  return db.prepare(query).all(employeeId);
+}
+
 export function makeTransaction(userId, itemsDict) {
   const itemsData = [];
   let totalPrice = 0;

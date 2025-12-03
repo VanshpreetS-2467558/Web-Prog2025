@@ -6,7 +6,7 @@
 - [x] feature 1: puntensysteem en iets winnen (gratis festcoin )
 - [x] feature 2: als event gedaan is dan disablen en een export pdf maken
 - [x] organisator account -> dashboard (hoofdpagina) een dropdown menu maken voor algemene analyse en per event analyse
-- [ ] data showen bij dashboard van org
+- [x] data showen bij dashboard van org
 - [x] groepspot functie werkend krijgen (hele popup (vansh: ik doe da wel verder, heb da niet af gekregen))
 - [x] transactions fixen bij festcoin beheer
 - [x] qr code implementatie fixen (vansh: same thing lmao ik doe da verder) (zowel bezoeker als employee side);

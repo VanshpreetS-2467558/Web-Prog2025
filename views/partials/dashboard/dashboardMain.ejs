@@ -1,6 +1,8 @@
 <section class="container mx-auto max-w-full p-14 border-2">
 
     <div class="mb-8">
+        <div class="flex justify-between items-center mb-4">
+            <div>
         <h1 class="text-3xl font-bold mb-2">Welkom terug, <%= user.name %>!</h1>
         <% if(user.role === "bezoeker") { %>
             <p class="text-gray-600">Bekijk rustig je overzicht.</p>
@@ -9,6 +11,19 @@
         <% } else if(user.role === "employee") { %>
             <p class="text-gray-600">Station Dashboard - Live overzicht van locatie: <%= user.stationName || "placeholder" %></p>
         <% } %>
+            </div>
+            <% if(user.role === "organisator" && typeof events !== 'undefined' && events.length > 0) { %>
+                <div class="flex items-center gap-4">
+                    <label for="eventSelect" class="text-sm font-medium text-gray-700">Evenement:</label>
+                    <select id="eventSelect" class="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Alle evenementen</option>
+                        <% events.forEach(event => { %>
+                            <option value="<%= event.id %>"><%= event.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+            <% } %>
+        </div>
         </div>
 
     <!-- info kaarten -->

@@ -20,25 +20,24 @@
     <div class="grid md:grid-cols-4 gap-6 mb-8">
         <div class="p-8 bg-gradientkleurSmallText text-white rounded-lg shadow">
             <p class="text-2xl font-bold mb-2">Totale Omzet</p>
-            <div class="text-3xl font-bold mb-1"><%= user.festCoins %> FestCoins</div>
-            <div class="text-1xl font-bold mb-1"><%= user.festCoins %> Euro</div>
+            <div class="text-3xl font-bold mb-1" id="totalRevenue">0 FestCoins</div>
+            <div class="text-1xl font-bold mb-1" id="totalRevenueEuro">€0</div>
         </div>
 
         <div class="p-8 bg-gradientkleurSmallText text-white rounded-lg shadow">
             <p class="text-2xl font-bold mb-2">Aantal bezoekers</p>
-            <div class="text-3xl font-bold mb-1">3,696</div>
+            <div class="text-3xl font-bold mb-1" id="totalVisitors">0</div>
         </div>
 
         <div class="p-8 bg-gradientkleurSmallText text-white rounded-lg shadow">
             <p class="text-2xl font-bold mb-2">Evenement Timer</p>
-            <div class="text-3xl font-bold mb-1">03:30u te gaan</div>
-            <div class="text-1xl font-bold mb-1">22:30 - 03:00</div>
+            <div class="text-3xl font-bold mb-1" id="eventTimer">-</div>
+            <div class="text-1xl font-bold mb-1" id="eventTimeRange">-</div>
         </div>
 
         <div class="p-8 bg-gradientkleurSmallText text-white rounded-lg shadow">
-            <p class="text-2xl font-bold mb-2">Transacties/uur</p>
-            <div class="text-1xl font-bold mb-1">850 FestCoins</div>
-            <div class="text-1xl font-bold mb-1">peak: 924 FestCoins</div>
+            <p class="text-2xl font-bold mb-2">Bezoekers vandaag</p>
+            <div class="text-3xl font-bold mb-1" id="visitorsToday">0</div>
         </div>
     </div>
 

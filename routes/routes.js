@@ -58,8 +58,14 @@ router.get("/registreren", (request,response)=>{
 });
 
 // dashboard pagina
-router.get("/dashboard", requireLogin() ,(request,response)=>{
-  response.render("pages/dashboard");
+router.get("/dashboard", requireLogin() ,async (request,response)=>{
+  if (request.session.user.role === "organisator") {
+    const { getEventsById } = await import("../utils/db/events.js");
+    const events = getEventsById(request.session.user.id);
+    response.render("pages/dashboard", { events });
+  } else {
+    response.render("pages/dashboard");
+  }
 });
 
 // wallet pagina (bezoeker)

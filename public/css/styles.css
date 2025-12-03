@@ -880,6 +880,10 @@ video {
   max-height: 70vh;
 }
 
+.max-h-\[90vh\] {
+  max-height: 90vh;
+}
+
 .min-h-\[385px\] {
   min-height: 385px;
 }
