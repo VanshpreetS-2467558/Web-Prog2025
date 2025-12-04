@@ -70,9 +70,35 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       totalPrice INTEGER,
       date TEXT DEFAULT CURRENT_TIMESTAMP,
       handled INTEGER DEFAULT 0,
+      qrCode TEXT UNIQUE,
+      orderCode TEXT UNIQUE,
       FOREIGN KEY(bezoekerId) REFERENCES users(id) ON DELETE SET NULL
     ) STRICT
   `).run();
+  
+  // Add qrCode and orderCode columns if they don't exist (migration)
+  // SQLite doesn't support UNIQUE in ALTER TABLE ADD COLUMN, so we add the column first, then create unique index
+  try {
+    db.prepare(`ALTER TABLE transactions ADD COLUMN qrCode TEXT`).run();
+    // Create unique index for qrCode
+    db.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_transactions_qrCode ON transactions(qrCode)`).run();
+  } catch (err) {
+    // Column already exists, ignore error
+    if (!err.message.includes('duplicate column')) {
+      console.error('Error adding qrCode column:', err);
+    }
+  }
+  
+  try {
+    db.prepare(`ALTER TABLE transactions ADD COLUMN orderCode TEXT`).run();
+    // Create unique index for orderCode
+    db.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_transactions_orderCode ON transactions(orderCode)`).run();
+  } catch (err) {
+    // Column already exists, ignore error
+    if (!err.message.includes('duplicate column')) {
+      console.error('Error adding orderCode column:', err);
+    }
+  }
 
   // transaction items table
   db.prepare(`

@@ -577,6 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
         transactionId: data.transactionId,
         stationId: data.stationId,
         stationName: data.stationName,
+        qrCode: data.qrCode,
         orderCode: data.orderCode,
         eventId: typeof eventId !== 'undefined' ? eventId : null
       };
@@ -603,7 +604,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('bestelDialog').classList.add('hidden');
 
       // Show QR code dialog immediately
-      showOrderQRCode(data.transactionId, data.stationId, data.stationName, data.orderCode);
+      showOrderQRCode(data.transactionId, data.stationId, data.stationName, data.orderCode, data.qrCode);
 
       renderCart();
       updateCartTotals();
@@ -699,18 +700,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     
-    showOrderQRCode(activeOrder.transactionId, activeOrder.stationId, activeOrder.stationName, activeOrder.orderCode);
+    showOrderQRCode(activeOrder.transactionId, activeOrder.stationId, activeOrder.stationName, activeOrder.orderCode, activeOrder.qrCode);
   }
 
-  function showOrderQRCode(transactionId, stationId, stationName, orderCode) {
-    if(!transactionId || !stationId) {
-      console.error('Missing transactionId or stationId:', {transactionId, stationId});
+  function showOrderQRCode(transactionId, stationId, stationName, orderCode, qrCode) {
+    if(!transactionId || !stationId || !qrCode) {
+      console.error('Missing transactionId, stationId, or qrCode:', {transactionId, stationId, qrCode});
       alert('Bestelling informatie ontbreekt. Bestelling wordt geannuleerd.');
       window.cancelActiveOrder();
       return;
     }
     
-    const qrCode = `ORDER_${transactionId}_${stationId}`;
     const qrContainer = document.getElementById('qrCodeContainer');
     
     if(!qrContainer) {
@@ -780,10 +780,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, 200);
     
-    // Show station name
+    // Show station name (use fallback if null)
     const qrStationName = document.getElementById('qrStationName');
-    if(qrStationName && stationName) {
-      qrStationName.textContent = stationName;
+    if(qrStationName) {
+      qrStationName.textContent = stationName || 'Onbekend station';
     }
     
     // Show order code (6-digit)

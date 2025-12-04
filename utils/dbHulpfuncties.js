@@ -1,5 +1,7 @@
 import { db } from "../db.js";
 
+import crypto from "crypto";
+
 
 // geeft een user terug door email
 export function getUserByEmail(email){
@@ -365,11 +367,21 @@ export function getEmployeeStationId(userId) {
   return result ? result.stationId : null;
 }
 
+export function getEmployeeEventId(userId) {
+  const result = db.prepare(`
+    SELECT eventId
+    FROM employees
+    WHERE userId = ?
+  `).get(userId);
+
+  return result ? result.eventId : null;
+}
+
 // Get order details by transaction ID
 export function getOrderDetails(transactionId) {
   try {
     const transaction = db.prepare(`
-      SELECT t.*, s.id as stationId, s.name as stationName
+      SELECT t.*, s.id as stationId, s.name as stationName, s.eventId as orderEventId
       FROM transactions t
       JOIN transaction_items ti ON t.id = ti.transactionId
       JOIN items i ON ti.itemId = i.id
@@ -389,9 +401,88 @@ export function getOrderDetails(transactionId) {
     return {
       transactionId: transaction.id,
       stationId: transaction.stationId,
-      stationName: transaction.stationName,
+      stationName: transaction.stationName || 'Onbekend station',
+      orderEventId: transaction.orderEventId,
       totalPrice: transaction.totalPrice,
       handled: transaction.handled,
+      qrCode: transaction.qrCode,
+      orderCode: transaction.orderCode,
+      items: items
+    };
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+// Get order details by QR code
+export function getOrderDetailsByQrCode(qrCode) {
+  try {
+    const transaction = db.prepare(`
+      SELECT t.*, s.id as stationId, s.name as stationName, s.eventId as orderEventId
+      FROM transactions t
+      JOIN transaction_items ti ON t.id = ti.transactionId
+      JOIN items i ON ti.itemId = i.id
+      JOIN stations s ON i.locationId = s.id
+      WHERE t.qrCode = ?
+      LIMIT 1
+    `).get(qrCode);
+
+    if (!transaction) return null;
+
+    const items = db.prepare(`
+      SELECT ti.itemName, ti.quantity, ti.itemPrice
+      FROM transaction_items ti
+      WHERE ti.transactionId = ?
+    `).all(transaction.id);
+
+    return {
+      transactionId: transaction.id,
+      stationId: transaction.stationId,
+      stationName: transaction.stationName || 'Onbekend station',
+      orderEventId: transaction.orderEventId,
+      totalPrice: transaction.totalPrice,
+      handled: transaction.handled,
+      qrCode: transaction.qrCode,
+      orderCode: transaction.orderCode,
+      items: items
+    };
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+// Get order details by order code (6-digit)
+export function getOrderDetailsByOrderCode(orderCode) {
+  try {
+    const transaction = db.prepare(`
+      SELECT t.*, s.id as stationId, s.name as stationName, s.eventId as orderEventId
+      FROM transactions t
+      JOIN transaction_items ti ON t.id = ti.transactionId
+      JOIN items i ON ti.itemId = i.id
+      JOIN stations s ON i.locationId = s.id
+      WHERE t.orderCode = ?
+      LIMIT 1
+    `).get(orderCode);
+
+    if (!transaction) return null;
+
+    const items = db.prepare(`
+      SELECT ti.itemName, ti.quantity, ti.itemPrice
+      FROM transaction_items ti
+      WHERE ti.transactionId = ?
+    `).all(transaction.id);
+
+    return {
+      transactionId: transaction.id,
+      stationId: transaction.stationId,
+      stationName: transaction.stationName || 'Onbekend station',
+      orderEventId: transaction.orderEventId,
+      totalPrice: transaction.totalPrice,
+      handled: transaction.handled,
+      qrCode: transaction.qrCode,
+      orderCode: transaction.orderCode,
       items: items
     };
   } catch (err) {
@@ -421,7 +512,7 @@ export function getFestcoinsById(id){
 }
 
 
-export function makeTransaction(userId, itemsDict){
+export async function makeTransaction(userId, itemsDict){
     const itemsData = [];
     let totalPrice = 0;
 
@@ -451,10 +542,24 @@ export function makeTransaction(userId, itemsDict){
         // 3. subtract coins
         updateCoins({ value: -totalPrice, user: { id: userId } });
 
-        // 4. maak transactie
+        // 4. Generate unique QR code and random 6-digit order code
+        const qrCode = `ORDER_${crypto.randomBytes(16).toString('hex')}`;
+        
+        // Generate random 6-digit code (ensure uniqueness)
+        let orderCode;
+        let isUnique = false;
+        while (!isUnique) {
+          orderCode = Math.floor(100000 + Math.random() * 900000).toString();
+          const existing = db.prepare(`SELECT id FROM transactions WHERE orderCode = ?`).get(orderCode);
+          if (!existing) {
+            isUnique = true;
+          }
+        }
+
+        // 5. maak transactie met QR code en order code
         const result = db.prepare(`
-            INSERT INTO transactions (bezoekerId, totalPrice) VALUES (?, ?)
-        `).run(userId, totalPrice);
+            INSERT INTO transactions (bezoekerId, totalPrice, qrCode, orderCode) VALUES (?, ?, ?, ?)
+        `).run(userId, totalPrice, qrCode, orderCode);
 
         const transactionId = result.lastInsertRowid;
 
@@ -487,10 +592,7 @@ export function makeTransaction(userId, itemsDict){
         // Add points to user (1 FestCoin = 1 point)
         addUserPoints(userId, totalPrice);
 
-        // Generate 6-digit order code from transactionId
-        const orderCode = String(transactionId).padStart(6, '0').slice(-6);
-
-        return { success: true, totalPrice, items: itemsData, transactionId, stationId, stationName, orderCode };
+        return { success: true, totalPrice, items: itemsData, transactionId, stationId, stationName, qrCode, orderCode };
 
     } catch (err) {
         db.prepare("ROLLBACK").run();
