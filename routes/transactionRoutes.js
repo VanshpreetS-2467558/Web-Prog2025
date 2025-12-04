@@ -12,7 +12,7 @@ transactionRouter.post("/transaction", async (req, res) => {
         // Check budget limits before processing transaction
         const budgetCheck = checkBudgetLimits(user.id, itemsDict);
         
-        const result = await makeTransaction(user.id, itemsDict);
+        const result = makeTransaction(user.id, itemsDict);
         if (!result.success) return res.json({ success: false, error: result.error });
 
         req.session.user.festCoins -= result.totalPrice;

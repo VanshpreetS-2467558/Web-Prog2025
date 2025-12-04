@@ -1,6 +1,6 @@
 import { db } from "../db.js";
-
 import crypto from "crypto";
+
 
 
 // geeft een user terug door email
@@ -512,7 +512,7 @@ export function getFestcoinsById(id){
 }
 
 
-export async function makeTransaction(userId, itemsDict){
+export function makeTransaction(userId, itemsDict){
     const itemsData = [];
     let totalPrice = 0;
 
