@@ -4,6 +4,11 @@ export function checkEventName(name) {
   return !!db.prepare("SELECT id FROM events WHERE LOWER(name) = LOWER(?)").get(name);
 }
 
+// Alias for backward compatibility
+export function checkNameEvent(name) {
+  return checkEventName(name);
+}
+
 export function createEvent({ organisatorid, name, location, description, startDate, endDate }) {
   return db
     .prepare(`
@@ -14,12 +19,50 @@ export function createEvent({ organisatorid, name, location, description, startD
 }
 
 export function deleteEvent(id) {
-  try {
-    db.prepare("DELETE FROM events WHERE id = ?").run(id);
-    return { success: true };
+  try{
+    db.prepare("BEGIN TRANSACTION").run();
+    
+    // Delete in order to avoid foreign key constraint errors:
+    // 1. Delete employees (references eventId and stationId)
+    db.prepare(`DELETE FROM employees WHERE eventId = ?`).run(id);
+    
+    // 2. Delete groepspot contributions and items (references groepspot)
+    const groepspots = db.prepare(`SELECT id FROM groepspot WHERE eventId = ?`).all(id);
+    groepspots.forEach(gs => {
+        db.prepare(`DELETE FROM groepspot_contributions WHERE groepspotId = ?`).run(gs.id);
+        db.prepare(`DELETE FROM groepspot_items WHERE groepspotId = ?`).run(gs.id);
+    });
+    
+    // 3. Delete groepspot (references eventId)
+    db.prepare(`DELETE FROM groepspot WHERE eventId = ?`).run(id);
+    
+    // 4. Delete event_visitors (references eventId)
+    db.prepare(`DELETE FROM event_visitors WHERE eventId = ?`).run(id);
+    
+    // 5. Get stations for this event to delete items
+    const stations = db.prepare(`SELECT id FROM stations WHERE eventId = ?`).all(id);
+    
+    // 6. Delete items in these stations (transaction_items has ON DELETE SET NULL, so safe)
+    stations.forEach(station => {
+        db.prepare(`DELETE FROM items WHERE locationId = ?`).run(station.id);
+    });
+    
+    // 7. Delete stations (references eventId)
+    db.prepare(`DELETE FROM stations WHERE eventId = ?`).run(id);
+    
+    // 8. Finally delete the event
+    const result = db.prepare(`DELETE FROM events WHERE id = ?`).run(id);
+    
+    db.prepare("COMMIT").run();
+    
+    if(result.changes === 0) {
+        return { success: false, error: "Event niet gevonden" };
+    }
+    return {success: true};
   } catch (err) {
+    db.prepare("ROLLBACK").run();
     console.error(err);
-    return { success: false, err };
+    return { success: false, error: "Internal server error" };
   }
 }
 

@@ -18,7 +18,7 @@ import crypto from "crypto";
 const groepspotRouter = express.Router();
 
 // Create groepspot POST
-groepspotRouter.post("/groepspot/create", async (req, res) => {
+groepspotRouter.post("/create", async (req, res) => {
     const user = req.session.user;
     if (!user) return res.json({ success: false, error: "Niet ingelogd" });
 
@@ -61,7 +61,7 @@ groepspotRouter.post("/groepspot/create", async (req, res) => {
 });
 
 // Get groepspot by QR code GET
-groepspotRouter.get("/groepspot/qr/:qrCode", async (req, res) => {
+groepspotRouter.get("/qr/:qrCode", async (req, res) => {
     try {
         const groepspot = getGroepspotByQrCode(req.params.qrCode);
         if (!groepspot) {
@@ -79,7 +79,7 @@ groepspotRouter.get("/groepspot/qr/:qrCode", async (req, res) => {
 });
 
 // Get groepspot status GET
-groepspotRouter.get("/groepspot/:id", async (req, res) => {
+groepspotRouter.get("/:id", async (req, res) => {
     const user = req.session.user;
     if (!user) return res.json({ success: false, error: "Niet ingelogd" });
 
@@ -110,7 +110,7 @@ groepspotRouter.get("/groepspot/:id", async (req, res) => {
 });
 
 // Contribute to groepspot POST
-groepspotRouter.post("/groepspot/contribute", async (req, res) => {
+groepspotRouter.post("/contribute", async (req, res) => {
     const user = req.session.user;
     if (!user) return res.json({ success: false, error: "Niet ingelogd" });
 
@@ -173,7 +173,7 @@ groepspotRouter.post("/groepspot/contribute", async (req, res) => {
 });
 
 // Add creator's own contribution POST
-groepspotRouter.post("/groepspot/creator-contribute", async (req, res) => {
+groepspotRouter.post("/creator-contribute", async (req, res) => {
     const user = req.session.user;
     if (!user) return res.json({ success: false, error: "Niet ingelogd" });
 
@@ -249,7 +249,7 @@ groepspotRouter.post("/groepspot/creator-contribute", async (req, res) => {
 });
 
 // Finalize groepspot (order) POST
-groepspotRouter.post("/groepspot/finalize", async (req, res) => {
+groepspotRouter.post("/finalize", async (req, res) => {
     const user = req.session.user;
     if (!user) return res.json({ success: false, error: "Niet ingelogd" });
 
@@ -316,7 +316,7 @@ groepspotRouter.post("/groepspot/finalize", async (req, res) => {
 });
 
 // Update creator contribution POST
-groepspotRouter.post("/groepspot/update-contribution", async (req, res) => {
+groepspotRouter.post("/update-contribution", async (req, res) => {
     const user = req.session.user;
     if (!user) return res.json({ success: false, error: "Niet ingelogd" });
 
@@ -353,7 +353,7 @@ groepspotRouter.post("/groepspot/update-contribution", async (req, res) => {
 });
 
 // Get groepspot items GET
-groepspotRouter.get("/groepspot/items/:id", async (req, res) => {
+groepspotRouter.get("/items/:id", async (req, res) => {
     const user = req.session.user;
     if (!user) return res.json({ success: false, error: "Niet ingelogd" });
 
@@ -388,7 +388,7 @@ groepspotRouter.get("/groepspot/items/:id", async (req, res) => {
 });
 
 // Delete creator contribution POST
-groepspotRouter.post("/groepspot/delete-contribution", async (req, res) => {
+groepspotRouter.post("/delete-contribution", async (req, res) => {
     const user = req.session.user;
     if (!user) return res.json({ success: false, error: "Niet ingelogd" });
 

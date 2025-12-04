@@ -1,5 +1,7 @@
 import { db } from "../../db.js";
 import { getFestcoinsById, updateCoins } from "./users.js";
+import { addUserPoints } from "./userPoints.js";
+import crypto from "crypto";
 
 // Get recent transactions for a bezoeker (3 most recent)
 export function getRecentTransactionsForBezoeker(userId, limit = 3) {
@@ -168,61 +170,219 @@ export function getAllTransactionsForEmployee(employeeId) {
   return db.prepare(query).all(employeeId);
 }
 
-export function makeTransaction(userId, itemsDict) {
-  const itemsData = [];
-  let totalPrice = 0;
+export function makeTransaction(userId, itemsDict){
+    const itemsData = [];
+    let totalPrice = 0;
 
-  try {
-    db.prepare("BEGIN TRANSACTION").run();
+    try {
+        db.prepare("BEGIN TRANSACTION").run();
 
-    for (const [itemId, qty] of Object.entries(itemsDict)) {
-      const item = db.prepare("SELECT * FROM items WHERE id = ?").get(itemId);
-      if (!item) throw new Error(`Item ${itemId} bestaat niet`);
-      if (qty > item.stock) throw new Error(`Niet genoeg voorraad van ${item.name}`);
+        // 1. validate items + prijs berekenen
+        for (const [itemId, qty] of Object.entries(itemsDict)) {
+            const item = db.prepare("SELECT * FROM items WHERE id = ?").get(itemId);
+            if (!item) throw new Error(`Item ${itemId} bestaat niet`);
+            if (qty > item.stock) throw new Error(`Niet genoeg voorraad van ${item.name}`);
 
-      totalPrice += item.price * qty;
+            totalPrice += item.price * qty;
 
-      itemsData.push({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        qty,
-      });
-    }
+            itemsData.push({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                qty
+            });
+        }
 
-    const balance = getFestcoinsById(userId);
-    if (totalPrice > balance) throw new Error("Te weinig FestCoins.");
+        // 2. balance check
+        const balance = getFestcoinsById(userId);
+        if (totalPrice > balance) throw new Error("Te weinig FestCoins.");
 
-    updateCoins({ value: -totalPrice, user: { id: userId } });
+        // 3. subtract coins
+        updateCoins({ value: -totalPrice, user: { id: userId } });
 
-    const result = db
-      .prepare(
-        `
-            INSERT INTO transactions (bezoekerId, totalPrice) VALUES (?, ?)
-        `
-      )
-      .run(userId, totalPrice);
+        // 4. Generate unique QR code and random 6-digit order code
+        const qrCode = `ORDER_${crypto.randomBytes(16).toString('hex')}`;
+        
+        // Generate random 6-digit code (ensure uniqueness)
+        let orderCode;
+        let isUnique = false;
+        while (!isUnique) {
+          orderCode = Math.floor(100000 + Math.random() * 900000).toString();
+          const existing = db.prepare(`SELECT id FROM transactions WHERE orderCode = ?`).get(orderCode);
+          if (!existing) {
+            isUnique = true;
+          }
+        }
 
-    const transactionId = result.lastInsertRowid;
+        // 5. maak transactie met QR code en order code
+        const result = db.prepare(`
+            INSERT INTO transactions (bezoekerId, totalPrice, qrCode, orderCode) VALUES (?, ?, ?, ?)
+        `).run(userId, totalPrice, qrCode, orderCode);
 
-    const insertItem = db.prepare(
-      `
+        const transactionId = result.lastInsertRowid;
+
+        // 5. Get station ID and name from first item (all items should be from same station)
+        const firstItem = itemsData[0];
+        const stationInfo = db.prepare(`
+            SELECT s.id as stationId, s.name as stationName
+            FROM items i
+            JOIN stations s ON i.locationId = s.id
+            WHERE i.id = ?
+        `).get(firstItem.id);
+        
+        const stationId = stationInfo?.stationId || null;
+        const stationName = stationInfo?.stationName || null;
+
+        // 6. voeg items toe + update stock
+        const insertItem = db.prepare(`
             INSERT INTO transaction_items (transactionId, itemId, itemName, itemPrice, quantity)
             VALUES (?, ?, ?, ?, ?)
-        `
-    );
-    const updateStock = db.prepare("UPDATE items SET stock = stock - ? WHERE id = ?");
+        `);
+        const updateStock = db.prepare("UPDATE items SET stock = stock - ? WHERE id = ?");
 
-    itemsData.forEach((it) => {
-      insertItem.run(transactionId, it.id, it.name, it.price, it.qty);
-      updateStock.run(it.qty, it.id);
-    });
+        itemsData.forEach(it => {
+            insertItem.run(transactionId, it.id, it.name, it.price, it.qty);
+            updateStock.run(it.qty, it.id);
+        });
 
-    db.prepare("COMMIT").run();
+        db.prepare("COMMIT").run();
 
-    return { success: true, totalPrice, items: itemsData };
+        // Add points to user (1 FestCoin = 1 point)
+        addUserPoints(userId, totalPrice);
+
+        return { success: true, totalPrice, items: itemsData, transactionId, stationId, stationName, qrCode, orderCode };
+
+    } catch (err) {
+        db.prepare("ROLLBACK").run();
+        return { success: false, error: err.message };
+    }
+}
+
+// Get order details by transaction ID
+export function getOrderDetails(transactionId) {
+  try {
+    const transaction = db.prepare(`
+      SELECT t.*, s.id as stationId, s.name as stationName, s.eventId as orderEventId
+      FROM transactions t
+      JOIN transaction_items ti ON t.id = ti.transactionId
+      JOIN items i ON ti.itemId = i.id
+      JOIN stations s ON i.locationId = s.id
+      WHERE t.id = ?
+      LIMIT 1
+    `).get(transactionId);
+
+    if (!transaction) return null;
+
+    const items = db.prepare(`
+      SELECT ti.itemName, ti.quantity, ti.itemPrice
+      FROM transaction_items ti
+      WHERE ti.transactionId = ?
+    `).all(transactionId);
+
+    return {
+      transactionId: transaction.id,
+      stationId: transaction.stationId,
+      stationName: transaction.stationName || 'Onbekend station',
+      orderEventId: transaction.orderEventId,
+      totalPrice: transaction.totalPrice,
+      handled: transaction.handled,
+      qrCode: transaction.qrCode,
+      orderCode: transaction.orderCode,
+      items: items
+    };
   } catch (err) {
-    db.prepare("ROLLBACK").run();
+    console.error(err);
+    return null;
+  }
+}
+
+// Get order details by QR code
+export function getOrderDetailsByQrCode(qrCode) {
+  try {
+    const transaction = db.prepare(`
+      SELECT t.*, s.id as stationId, s.name as stationName, s.eventId as orderEventId
+      FROM transactions t
+      JOIN transaction_items ti ON t.id = ti.transactionId
+      JOIN items i ON ti.itemId = i.id
+      JOIN stations s ON i.locationId = s.id
+      WHERE t.qrCode = ?
+      LIMIT 1
+    `).get(qrCode);
+
+    if (!transaction) return null;
+
+    const items = db.prepare(`
+      SELECT ti.itemName, ti.quantity, ti.itemPrice
+      FROM transaction_items ti
+      WHERE ti.transactionId = ?
+    `).all(transaction.id);
+
+    return {
+      transactionId: transaction.id,
+      stationId: transaction.stationId,
+      stationName: transaction.stationName || 'Onbekend station',
+      orderEventId: transaction.orderEventId,
+      totalPrice: transaction.totalPrice,
+      handled: transaction.handled,
+      qrCode: transaction.qrCode,
+      orderCode: transaction.orderCode,
+      items: items
+    };
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+// Get order details by order code (6-digit)
+export function getOrderDetailsByOrderCode(orderCode) {
+  try {
+    const transaction = db.prepare(`
+      SELECT t.*, s.id as stationId, s.name as stationName, s.eventId as orderEventId
+      FROM transactions t
+      JOIN transaction_items ti ON t.id = ti.transactionId
+      JOIN items i ON ti.itemId = i.id
+      JOIN stations s ON i.locationId = s.id
+      WHERE t.orderCode = ?
+      LIMIT 1
+    `).get(orderCode);
+
+    if (!transaction) return null;
+
+    const items = db.prepare(`
+      SELECT ti.itemName, ti.quantity, ti.itemPrice
+      FROM transaction_items ti
+      WHERE ti.transactionId = ?
+    `).all(transaction.id);
+
+    return {
+      transactionId: transaction.id,
+      stationId: transaction.stationId,
+      stationName: transaction.stationName || 'Onbekend station',
+      orderEventId: transaction.orderEventId,
+      totalPrice: transaction.totalPrice,
+      handled: transaction.handled,
+      qrCode: transaction.qrCode,
+      orderCode: transaction.orderCode,
+      items: items
+    };
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+// Mark order as handled
+export function markOrderAsHandled(transactionId) {
+  try {
+    db.prepare(`
+      UPDATE transactions
+      SET handled = 1
+      WHERE id = ?
+    `).run(transactionId);
+    return { success: true };
+  } catch (err) {
+    console.error(err);
     return { success: false, error: err.message };
   }
 }

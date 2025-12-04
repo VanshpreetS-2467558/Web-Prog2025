@@ -66,9 +66,9 @@ app.use("/transactions", transactionRouter);
 app.use("/list", eventListRouter);
 app.use("/employee", employeeRouter);
 app.use("/dashboard", dashboardRouter);
-app.use("/", groepspotRouter);
-app.use("/", budgetAlarmRouter);
-app.use("/", orderRouter);
+app.use("/groepspot", groepspotRouter);
+app.use("/budget-alarms", budgetAlarmRouter);
+app.use("/order", orderRouter);
 
 // Middleware for unknown routes
 app.use((request, response, next) => {

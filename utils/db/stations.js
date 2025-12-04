@@ -1,12 +1,27 @@
 import { db } from "../../db.js";
 
 export function deleteLocation(id) {
-  try {
-    db.prepare("DELETE FROM stations WHERE id = ?").run(id);
+  try{
+    // ON CASCADE DELETE should handle items automatically
+    // But we need to delete employees first since they reference stationId
+    db.prepare("BEGIN TRANSACTION").run();
+    
+    // Delete employees that reference this station
+    db.prepare(`DELETE FROM employees WHERE stationId = ?`).run(id);
+    
+    // Now delete the station - CASCADE will handle items (ON DELETE CASCADE from stations)
+    const result = db.prepare(`DELETE FROM stations WHERE id = ?`).run(id);
+    
+    db.prepare("COMMIT").run();
+    
+    if(result.changes === 0) {
+        return { success: false, error: "Station niet gevonden" };
+    }
     return { success: true };
-  } catch (err) {
+  } catch(err){
+    db.prepare("ROLLBACK").run();
     console.error(err);
-    return { success: false, err };
+    return { success: false, error: "Internal server error" };
   }
 }
 

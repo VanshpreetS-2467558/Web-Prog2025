@@ -905,8 +905,6 @@ video {
   max-height: 70vh;
 }
 
-.max-h-\[90vh\] {
-  max-height: 90vh;
 .max-h-\[80vh\] {
   max-height: 80vh;
 }
@@ -1488,8 +1486,6 @@ video {
   background-color: rgb(255 255 255 / 0.7);
 }
 
-<<<<<<< HEAD
-=======
 .bg-yellow-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 249 195 / var(--tw-bg-opacity, 1));
@@ -1500,7 +1496,6 @@ video {
   background-color: rgb(234 179 8 / var(--tw-bg-opacity, 1));
 }
 
->>>>>>> groepspot
 .bg-opacity-50 {
   --tw-bg-opacity: 0.5;
 }
@@ -1559,14 +1554,15 @@ video {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
-<<<<<<< HEAD
-.from-purple-50 {
-  --tw-gradient-from: #faf5ff var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(250 245 255 / 0) var(--tw-gradient-to-position);
-=======
 .from-purple-100 {
   --tw-gradient-from: #f3e8ff var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(243 232 255 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.from-purple-50 {
+  --tw-gradient-from: #faf5ff var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(250 245 255 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
@@ -1585,7 +1581,6 @@ video {
 .from-yellow-400 {
   --tw-gradient-from: #facc15 var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(250 204 21 / 0) var(--tw-gradient-to-position);
->>>>>>> groepspot
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
@@ -1636,13 +1631,12 @@ video {
   --tw-gradient-to: #d8b4fe var(--tw-gradient-to-position);
 }
 
-<<<<<<< HEAD
 .to-purple-50 {
   --tw-gradient-to: #faf5ff var(--tw-gradient-to-position);
-=======
+}
+
 .to-purple-500\/10 {
   --tw-gradient-to: rgb(168 85 247 / 0.1) var(--tw-gradient-to-position);
->>>>>>> groepspot
 }
 
 .bg-cover {
@@ -1794,13 +1788,6 @@ video {
 .py-8 {
   padding-top: 2rem;
   padding-bottom: 2rem;
-<<<<<<< HEAD
-=======
-}
-
-.pb-16 {
-  padding-bottom: 4rem;
->>>>>>> groepspot
 }
 
 .pb-2 {
@@ -1967,21 +1954,14 @@ video {
   font-weight: 100;
 }
 
-<<<<<<< HEAD
 .uppercase {
   text-transform: uppercase;
-}
-
-.capitalize {
-  text-transform: capitalize;
 }
 
 .tracking-wider {
   letter-spacing: 0.05em;
 }
 
-=======
->>>>>>> groepspot
 .text-blue-500 {
   --tw-text-opacity: 1;
   color: rgb(59 130 246 / var(--tw-text-opacity, 1));
@@ -2411,10 +2391,6 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
-<<<<<<< HEAD
-.focus\:border-transparent:focus {
-  border-color: transparent;
-=======
 .hover\:shadow-md:hover {
   --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
@@ -2430,7 +2406,10 @@ video {
 .focus\:border-purple-500:focus {
   --tw-border-opacity: 1;
   border-color: rgb(168 85 247 / var(--tw-border-opacity, 1));
->>>>>>> groepspot
+}
+
+.focus\:border-transparent:focus {
+  border-color: transparent;
 }
 
 .focus\:bg-gray-100:focus {

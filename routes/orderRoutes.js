@@ -6,7 +6,7 @@ import { db } from "../db.js";
 const orderRouter = express.Router();
 
 // Get order details by QR code (for employee scanning)
-orderRouter.get("/order/qr/:qrCode", requireLogin("employee"), (req, res) => {
+orderRouter.get("/qr/:qrCode", requireLogin("employee"), (req, res) => {
     try {
         const qrCode = req.params.qrCode;
         
@@ -59,7 +59,7 @@ orderRouter.get("/order/qr/:qrCode", requireLogin("employee"), (req, res) => {
 });
 
 // Mark order as handled
-orderRouter.post("/order/:transactionId/handle", requireLogin("employee"), (req, res) => {
+orderRouter.post("/:transactionId/handle", requireLogin("employee"), (req, res) => {
     try {
         const transactionId = parseInt(req.params.transactionId);
         
@@ -83,7 +83,7 @@ orderRouter.post("/order/:transactionId/handle", requireLogin("employee"), (req,
 });
 
 // Get order details by 6-digit code (for manual entry)
-orderRouter.get("/order/code/:code", requireLogin("employee"), (req, res) => {
+orderRouter.get("/code/:code", requireLogin("employee"), (req, res) => {
     try {
         const code = req.params.code;
         
@@ -136,7 +136,7 @@ orderRouter.get("/order/code/:code", requireLogin("employee"), (req, res) => {
 });
 
 // Check order status (for visitor polling)
-orderRouter.get("/order/status/:transactionId", requireLogin("bezoeker"), (req, res) => {
+orderRouter.get("/status/:transactionId", requireLogin("bezoeker"), (req, res) => {
     try {
         const transactionId = parseInt(req.params.transactionId);
         const orderDetails = getOrderDetails(transactionId);

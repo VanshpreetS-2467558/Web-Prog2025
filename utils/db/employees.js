@@ -56,3 +56,23 @@ export function getEmployeeStationNameById(userId) {
   return result.stationName;
 }
 
+export function getEmployeeStationId(userId) {
+  const result = db.prepare(`
+    SELECT stationId
+    FROM employees
+    WHERE userId = ?
+  `).get(userId);
+
+  return result ? result.stationId : null;
+}
+
+export function getEmployeeEventId(userId) {
+  const result = db.prepare(`
+    SELECT eventId
+    FROM employees
+    WHERE userId = ?
+  `).get(userId);
+
+  return result ? result.eventId : null;
+}
+

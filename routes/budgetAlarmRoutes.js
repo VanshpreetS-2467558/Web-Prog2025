@@ -11,7 +11,7 @@ import {
 const budgetAlarmRouter = express.Router();
 
 // Get all budget alarms for user
-budgetAlarmRouter.get("/budget-alarms", requireLogin("bezoeker"), (req, res) => {
+budgetAlarmRouter.get("/", requireLogin("bezoeker"), (req, res) => {
     try {
         const alarms = getBudgetAlarms(req.session.user.id);
         const alarmsWithSpending = alarms.map(alarm => ({
@@ -26,7 +26,7 @@ budgetAlarmRouter.get("/budget-alarms", requireLogin("bezoeker"), (req, res) => 
 });
 
 // Create or update budget alarm
-budgetAlarmRouter.post("/budget-alarms", requireLogin("bezoeker"), (req, res) => {
+budgetAlarmRouter.post("/", requireLogin("bezoeker"), (req, res) => {
     try {
         const { category, budgetLimit } = req.body;
         
@@ -52,20 +52,23 @@ budgetAlarmRouter.post("/budget-alarms", requireLogin("bezoeker"), (req, res) =>
         const currentSpending = getCategorySpending(req.session.user.id, category);
         const wasExceeded = existingAlarm && currentSpending > existingAlarm.budgetLimit;
 
-        const result = upsertBudgetAlarm(req.session.user.id, category, parseInt(budgetLimit), wasExceeded);
+        // Always reset if updating and was exceeded
+        const shouldReset = existingAlarm && wasExceeded;
+
+        const result = upsertBudgetAlarm(req.session.user.id, category, parseInt(budgetLimit), shouldReset);
         if (result.success) {
             const alarm = getBudgetAlarms(req.session.user.id).find(a => 
                 a.category === category
             );
-            // If budget was exceeded and updated, reset spending tracking
+            // If budget was exceeded and updated, reset spending tracking (will be 0 after resetDate update)
             const alarmWithSpending = {
                 ...alarm,
-                currentSpending: wasExceeded ? 0 : getCategorySpending(req.session.user.id, category)
+                currentSpending: shouldReset ? 0 : getCategorySpending(req.session.user.id, category)
             };
             res.json({ 
                 success: true, 
                 alarm: alarmWithSpending,
-                wasReset: wasExceeded
+                wasReset: shouldReset
             });
         } else {
             res.json({ success: false, error: result.error });
@@ -77,7 +80,7 @@ budgetAlarmRouter.post("/budget-alarms", requireLogin("bezoeker"), (req, res) =>
 });
 
 // Delete budget alarm
-budgetAlarmRouter.delete("/budget-alarms/:id", requireLogin("bezoeker"), (req, res) => {
+budgetAlarmRouter.delete("/:id", requireLogin("bezoeker"), (req, res) => {
     try {
         const alarmId = parseInt(req.params.id);
         const result = deleteBudgetAlarm(req.session.user.id, alarmId);
@@ -89,7 +92,7 @@ budgetAlarmRouter.delete("/budget-alarms/:id", requireLogin("bezoeker"), (req, r
 });
 
 // Toggle budget alarm active status
-budgetAlarmRouter.post("/budget-alarms/:id/toggle", requireLogin("bezoeker"), (req, res) => {
+budgetAlarmRouter.post("/:id/toggle", requireLogin("bezoeker"), (req, res) => {
     try {
         const alarmId = parseInt(req.params.id);
         const result = toggleBudgetAlarm(req.session.user.id, alarmId);
