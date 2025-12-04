@@ -19,6 +19,24 @@
 
         <!-- Output box onderaan video -->
         <div id="output" class="absolute bottom-10 left-1/2 -translate-x-1/2 bg-white text-gray-900 px-6 py-3 rounded-xl shadow text-center"></div>
+        
+        <!-- Manual code input button -->
+        <button id="manualCodeBtn" onclick="showManualCodeInput()" class="absolute top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition">
+            Code invoeren
+        </button>
+        
+        <!-- Manual code input modal -->
+        <div id="manualCodeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                <h2 class="text-xl font-bold mb-4">Bestelling code invoeren</h2>
+                <p class="text-sm text-gray-600 mb-4">Voer de 6-cijferige code in van de bestelling:</p>
+                <input type="text" id="manualOrderCode" maxlength="6" pattern="[0-9]{6}" class="w-full border rounded-lg p-3 text-2xl font-mono text-center mb-4" placeholder="000000">
+                <div class="flex gap-2">
+                    <button onclick="hideManualCodeInput()" class="flex-1 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">Annuleren</button>
+                    <button onclick="submitManualCode()" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Verzenden</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

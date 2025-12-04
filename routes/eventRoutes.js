@@ -9,19 +9,23 @@ import { db } from "../db.js";
 const eventRouter = express.Router();
 
 // event beheren pagina
-eventRouter.get("/event-management", requireLogin("organisator"), (req, res) => {
+eventRouter.get("/event-management", requireLogin("organisator"), async (req, res) => {
     try {
         const orgId = req.session.user.id;
         const events = db.prepare("SELECT * FROM events WHERE organisatorid = ?").all(orgId) || [];
 
         const now = new Date();
 
+        const { getActiveVisitorsCount } = await import("../utils/dbHulpfuncties.js");
 
         events.forEach(event => {
             
             const start = new Date(event.startDate);
             const end = new Date(event.endDate);
             event.isLive = now >= start && now < end;
+            
+            // Add visitor count
+            event.attendees = getActiveVisitorsCount(event.id);
 
             const stations = db.prepare("SELECT * FROM stations WHERE eventId = ?").all(event.id) || [];
             stations.forEach(station => {
@@ -37,22 +41,39 @@ eventRouter.get("/event-management", requireLogin("organisator"), (req, res) => 
 });
 
 // evenementen lijst pagina bij bezoekers
-eventRouter.get("/evenementen", requireLogin("bezoeker"), (req, res) => {
+eventRouter.get("/evenementen", requireLogin("bezoeker"), async (req, res) => {
     try {
         const now = new Date();
 
         let events = db.prepare("SELECT * FROM events").all() || [];
 
-        // filter op live
+        // filter op live (events die nu actief zijn)
         events = events.filter(event => {
-            const start = new Date(event.startDate);
-            const end = new Date(event.endDate);
-            return now >= start && now < end;
+            try {
+                const start = new Date(event.startDate);
+                const end = new Date(event.endDate);
+                // Event is live als nu tussen start en end is (inclusief end tijd)
+                const isLive = now >= start && now <= end;
+                if (!isLive) {
+                    console.log(`Event ${event.id} (${event.name}) is not live: now=${now}, start=${start}, end=${end}`);
+                }
+                return isLive;
+            } catch (err) {
+                console.error(`Error parsing dates for event ${event.id}:`, err);
+                return false;
+            }
         });
 
+        // Add visitor count to each event
+        const { getActiveVisitorsCount } = await import("../utils/dbHulpfuncties.js");
+        events.forEach(event => {
+            event.attendees = getActiveVisitorsCount(event.id);
+        });
+
+        console.log(`Found ${events.length} live events out of ${db.prepare("SELECT COUNT(*) as count FROM events").get()?.count || 0} total events`);
         res.render("pages/eventLijst", { events });
     } catch (err) {
-        console.error(err);
+        console.error("Error in /evenementen route:", err);
         res.render("pages/eventLijst", { events: [] });
     }
 });
@@ -112,6 +133,12 @@ eventRouter.post("/addItem", async (req, res) => {
     }
 
     try {
+        // Check if item with same name already exists in this station
+        const existing = db.prepare("SELECT id FROM items WHERE locationId = ? AND name = ?").get(sectionId, name);
+        if (existing) {
+            return res.json({ success: false, error: "Er bestaat al een item met deze naam in dit station." });
+        }
+
         db.prepare(`
             INSERT INTO items (locationId, name, price, stock, category)
             VALUES (?, ?, ?, ?, ?)
@@ -128,8 +155,12 @@ eventRouter.post("/addItem", async (req, res) => {
 eventRouter.post("/deleteEvent", async (req, res) => {
     const { id } = req.body;
     try {
-        deleteEvent(id);
-        res.json({ success: true });
+        const result = deleteEvent(id);
+        if(result.success) {
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, error: result.error || "Kon het event niet verwijderen. Probeer het later opnieuw." });
+        }
     } catch(err) {
         console.error(err);
         res.json({ success: false, error: "Kon het event niet verwijderen. Probeer het later opnieuw." });
@@ -139,22 +170,30 @@ eventRouter.post("/deleteEvent", async (req, res) => {
 eventRouter.post("/deleteItem", async (req, res) => {
     const {id} = req.body;
     try{
-        deleteItem(id);
-        res.json({ success: true });
+        const result = deleteItem(id);
+        if(result.success) {
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, error: result.error || "Kon het item niet verwijderen. Probeer het later opnieuw." });
+        }
     } catch (err) {
         console.error(err);
-        res.json({ success: false, error: "Kon het item niet verwijderen. Probeer het later opnieuw." })
+        res.json({ success: false, error: "Kon het item niet verwijderen. Probeer het later opnieuw." });
     }
 });
 
 eventRouter.post("/deleteStation", async (req, res) => {
     const {id} = req.body;
     try{
-        deleteLocation(id);
-        res.json({ success: true });
+        const result = deleteLocation(id);
+        if(result.success) {
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, error: result.error || "Kon het locatie niet verwijderen. Probeer het later opnieuw." });
+        }
     } catch (err) {
         console.error(err);
-        res.json({ success: false, error: "Kon het locatie niet verwijderen. Probeer het later opnieuw." })
+        res.json({ success: false, error: "Kon het locatie niet verwijderen. Probeer het later opnieuw." });
     }
 });
 

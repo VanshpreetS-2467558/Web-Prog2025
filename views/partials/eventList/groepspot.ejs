@@ -9,19 +9,36 @@
     </div>
     <p class="font-medium mb-2">Laat vrienden scannen om bij te dragen:</p>
     <div class="bg-white p-6 rounded-lg mx-auto w-fit border-2 border-dashed">
-      <div class="w-48 h-48 bg-gray-200 flex items-center justify-center">QR CODE</div>
+      <div id="qrCodeContainer" class="w-48 h-48 bg-gray-200 flex items-center justify-center">
+        <span class="text-gray-500">QR CODE</span>
+      </div>
     </div>
     <div class="space-y-3">
       <div class="flex justify-between items-center p-3 bg-gray-100 rounded">
         <span class="text-sm">Jouw bijdrage:</span>
-        <input type="number" class="w-24 px-3 py-1 border rounded text-right" placeholder="0">
+        <div class="flex items-center gap-2">
+          <input type="number" id="creatorContribution" class="w-24 px-3 py-1 border rounded text-right" placeholder="0" min="0" value="0">
+          <button id="addCreatorContribution" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm">Draag bij</button>
+        </div>
+      </div>
+      <div id="currentContribution" class="hidden p-3 bg-blue-50 rounded">
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="text-sm font-medium">Huidige bijdrage: </span>
+            <span class="font-bold" id="currentContributionAmount">0</span> FestCoins
+          </div>
+          <div class="flex gap-2">
+            <button onclick="updateCreatorContribution()" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-sm">Wijzigen</button>
+            <button onclick="deleteCreatorContribution()" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm">Verwijderen</button>
+          </div>
+        </div>
       </div>
       <div class="flex justify-between items-center p-3 bg-green-50 rounded">
         <span class="text-sm font-medium">Nog te betalen:</span>
         <span class="font-bold text-green-600" id="groupRemaining">0 FestCoins</span>
       </div>
     </div>
-    <button class="w-full bg-gray-300 rounded p-2" disabled>Wachten op vrienden...</button>
-    <button onclick="document.getElementById('groupDialog').classList.add('hidden')" class="mt-2 px-4 py-2 bg-gray-200 rounded w-full">Sluiten</button>
+    <button id="finalizeGroupBtn" class="w-full bg-gray-300 rounded p-2" disabled>Wachten op vrienden...</button>
+    <button onclick="closeGroupDialog()" class="mt-2 px-4 py-2 bg-gray-200 rounded w-full">Sluiten</button>
   </div>
 </div>

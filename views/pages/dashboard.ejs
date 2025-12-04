@@ -17,9 +17,13 @@
     <!-- footer -->
     <%- include("../partials/index/footer") %>
     
+
     <% if(user.role === "organisator") { %>
-        <script type="module" src="/js/dashboard.js"></script>
+        <script type="module" src="/js/dashboardOrg.js"></script>
+    <% } else if(user.role === "bezoeker") { %>
+        <script type="module" src="/js/dashboardUser.js"></script>
     <% } %>
     <script type="module" src="/js/transactions.js"></script>
+
 </body>
 </html>

@@ -1,0 +1,297 @@
+<div class="border-2 shadow rounded-xl p-6 mb-8">
+    <h2 class="text-2xl font-bold mb-4">Puntensysteem</h2>
+    <p class="text-gray-600 mb-6">Verdien punten bij elke aankoop! 1 FestCoin = 1 punt. Bij 100 punten krijg je 10 FestCoins gratis!</p>
+    
+    <div class="flex flex-col items-center justify-center py-8">
+        <!-- Star Container -->
+        <div class="relative mb-6">
+            <div class="star-container relative" style="width: 200px; height: 200px;">
+                <!-- Background Star (empty) -->
+                <svg id="starBackground" class="absolute inset-0 w-full h-full star-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M100 10 L120 70 L180 70 L135 110 L155 170 L100 135 L45 170 L65 110 L20 70 L80 70 Z" 
+                          fill="none" 
+                          stroke="#E5E7EB" 
+                          stroke-width="3"
+                          class="star-path-bg"/>
+                </svg>
+                
+                <!-- Filled Star (animated) -->
+                <svg id="starFilled" class="absolute inset-0 w-full h-full star-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="clip-path: polygon(0 0, 0 0, 0 100%, 100% 100%, 100% 0);">
+                    <defs>
+                        <linearGradient id="starGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FCD34D;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#F59E0B;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#EF4444;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M100 10 L120 70 L180 70 L135 110 L155 170 L100 135 L45 170 L65 110 L20 70 L80 70 Z" 
+                          fill="url(#starGradient)" 
+                          stroke="#F59E0B" 
+                          stroke-width="3"
+                          class="star-path"/>
+                </svg>
+                
+                <!-- Sparkle effect when full -->
+                <div id="sparkleContainer" class="absolute inset-0 hidden">
+                    <div class="sparkle sparkle-1"></div>
+                    <div class="sparkle sparkle-2"></div>
+                    <div class="sparkle sparkle-3"></div>
+                    <div class="sparkle sparkle-4"></div>
+                    <div class="sparkle sparkle-5"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Points Display -->
+        <div class="text-center mb-6">
+            <p class="text-3xl font-bold text-purple-600 mb-2">
+                <span id="currentPoints"><%= userPoints ? userPoints.currentPoints : 0 %></span> / 100 punten
+            </p>
+            <p class="text-gray-600">
+                Nog <span id="pointsNeeded"><%= userPoints ? Math.max(0, 100 - (userPoints.currentPoints || 0)) : 100 %></span> punten tot beloning!
+            </p>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="w-full max-w-md mb-6">
+            <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                <div id="pointsProgressBar" 
+                     class="bg-gradient-to-r from-purple-500 to-pink-500 h-4 rounded-full transition-all duration-500 ease-out"
+                     style="width: <%= userPoints ? Math.min(100, ((userPoints.currentPoints || 0) / 100) * 100) : 0 %>%">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Claim Button (only visible when points >= 100) -->
+        <button id="claimRewardBtn" 
+                onclick="claimPointsReward()"
+                class="<%= userPoints && userPoints.currentPoints >= 100 ? '' : 'hidden' %> px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold text-xl rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 animate-pulse">
+            ⭐ Claim 10 Gratis FestCoins! ⭐
+        </button>
+        
+        <!-- Stats -->
+        <div class="grid grid-cols-2 gap-4 mt-6 w-full max-w-md">
+            <div class="bg-gradient-to-br from-purple-100 to-pink-100 p-4 rounded-lg text-center">
+                <p class="text-sm text-gray-600 mb-1">Totaal verdiend</p>
+                <p class="text-2xl font-bold text-purple-600">
+                    <%= userPoints ? userPoints.totalPointsEarned : 0 %> punten
+                </p>
+            </div>
+            <div class="bg-gradient-to-br from-yellow-100 to-orange-100 p-4 rounded-lg text-center">
+                <p class="text-sm text-gray-600 mb-1">Beloningen</p>
+                <p class="text-2xl font-bold text-orange-600">
+                    <%= userPoints ? userPoints.totalRewardsClaimed : 0 %>x
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.star-container {
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.star-path, .star-path-bg {
+    filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.5));
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+.star-container:hover .star-path,
+.star-container:hover .star-path-bg {
+    filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.8));
+}
+
+.star-container:hover .star-svg {
+    transform: scale(1.05);
+}
+
+.sparkle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #FCD34D;
+    border-radius: 50%;
+    animation: sparkle 1.5s infinite;
+}
+
+.sparkle-1 { top: 20%; left: 20%; animation-delay: 0s; }
+.sparkle-2 { top: 20%; right: 20%; animation-delay: 0.3s; }
+.sparkle-3 { bottom: 20%; left: 20%; animation-delay: 0.6s; }
+.sparkle-4 { bottom: 20%; right: 20%; animation-delay: 0.9s; }
+.sparkle-5 { top: 50%; left: 50%; animation-delay: 1.2s; }
+
+@keyframes sparkle {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0) rotate(0deg);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.5) rotate(180deg);
+    }
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(245, 158, 11, 0.8);
+    }
+}
+
+#claimRewardBtn {
+    animation: pulse-glow 2s infinite;
+}
+</style>
+
+<script>
+let currentPoints = <%= userPoints ? userPoints.currentPoints : 0 %>;
+const maxPoints = 100;
+
+// Update star fill based on points
+function updateStarFill(points) {
+    const percentage = Math.min(100, (points / maxPoints) * 100);
+    const starFilled = document.getElementById('starFilled');
+    
+    if (starFilled) {
+        // Create clip path based on percentage
+        // We'll use a polygon that fills from bottom to top
+        const clipY = 100 - percentage;
+        starFilled.style.clipPath = `polygon(0% ${clipY}%, 100% ${clipY}%, 100% 100%, 0% 100%)`;
+        
+        // Show sparkles when full
+        const sparkleContainer = document.getElementById('sparkleContainer');
+        if (points >= maxPoints && sparkleContainer) {
+            sparkleContainer.classList.remove('hidden');
+        } else if (sparkleContainer) {
+            sparkleContainer.classList.add('hidden');
+        }
+    }
+    
+    // Update progress bar
+    const progressBar = document.getElementById('pointsProgressBar');
+    if (progressBar) {
+        progressBar.style.width = `${percentage}%`;
+    }
+    
+    // Update points display
+    const currentPointsEl = document.getElementById('currentPoints');
+    const pointsNeededEl = document.getElementById('pointsNeeded');
+    if (currentPointsEl) currentPointsEl.textContent = points;
+    if (pointsNeededEl) pointsNeededEl.textContent = Math.max(0, maxPoints - points);
+    
+    // Show/hide claim button
+    const claimBtn = document.getElementById('claimRewardBtn');
+    if (claimBtn) {
+        if (points >= maxPoints) {
+            claimBtn.classList.remove('hidden');
+        } else {
+            claimBtn.classList.add('hidden');
+        }
+    }
+}
+
+// Initialize star fill
+document.addEventListener('DOMContentLoaded', () => {
+    updateStarFill(currentPoints);
+    
+    // Poll for points updates every 3 seconds
+    setInterval(async () => {
+        try {
+            const response = await fetch('/dashboard/points');
+            const data = await response.json();
+            if (data.success && data.points.currentPoints !== currentPoints) {
+                const oldPoints = currentPoints;
+                currentPoints = data.points.currentPoints;
+                
+                // Animate points change
+                if (currentPoints > oldPoints) {
+                    showNotification(`+${currentPoints - oldPoints} punten verdiend! ⭐`, 'success');
+                }
+                
+                updateStarFill(currentPoints);
+            }
+        } catch (error) {
+            console.error('Error fetching points:', error);
+        }
+    }, 3000);
+});
+
+// Claim reward
+async function claimPointsReward() {
+    if (currentPoints < maxPoints) {
+        alert('Je hebt nog niet genoeg punten! Je hebt 100 punten nodig.');
+        return;
+    }
+    
+    if (!confirm('Weet je zeker dat je je beloning wilt claimen? Je krijgt 10 FestCoins gratis!')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/dashboard/points/claim', {
+            method: 'POST'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Update points
+            currentPoints = data.newPoints;
+            updateStarFill(currentPoints);
+            
+            // Show success message
+            showNotification(`🎉 Gefeliciteerd! Je hebt 10 FestCoins gekregen! 🎉`, 'success');
+            
+            // Update FestCoins display dynamically (header and dashboard)
+            fetch('/user/festcoins')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update header
+                        const festCoinsHeader = document.getElementById('festCoinsHeader');
+                        if (festCoinsHeader) {
+                            festCoinsHeader.textContent = `FestCoins: ${data.festCoins}`;
+                        }
+                        // Update dashboard FestCoins display
+                        const dashboardFestCoinsDisplay = document.getElementById('dashboardFestCoinsDisplay');
+                        if (dashboardFestCoinsDisplay) {
+                            dashboardFestCoinsDisplay.textContent = data.festCoins;
+                        }
+                    }
+                })
+                .catch(err => console.error('Error updating FestCoins:', err));
+            
+            // Update stats
+            const totalRewardsEl = document.querySelector('#totalRewardsStat');
+            if (totalRewardsEl) {
+                totalRewardsEl.textContent = `${data.totalRewardsClaimed}x`;
+            }
+        } else {
+            alert('Fout: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error claiming reward:', error);
+        alert('Er is een fout opgetreden bij het claimen van je beloning.');
+    }
+}
+
+function showNotification(message, type = 'success') {
+    const notification = document.getElementById('notificatie');
+    if (notification) {
+        notification.textContent = message;
+        notification.className = `fixed top-16 right-4 px-4 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-500 ${
+            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        } text-white`;
+        notification.classList.remove('opacity-0', 'pointer-events-none');
+        
+        setTimeout(() => {
+            notification.classList.add('opacity-0', 'pointer-events-none');
+        }, 5000);
+    }
+}
+</script>
+

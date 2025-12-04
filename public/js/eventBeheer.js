@@ -186,7 +186,7 @@ window.deleteEvent = async function(id) {
             if(eventDiv) eventDiv.remove();
             window.location.reload();
         } else {
-            errorMsg.textContent = "Fout bij verwijderen: " + result.error;
+            errorMsg.textContent = "Fout bij verwijderen: " + (result.error || "Internal server error");
         }
     } catch(err){
         console.error(err);
@@ -212,7 +212,7 @@ window.deleteItem = async function(id, eventId) {
             if(itemDiv) itemDiv.remove();
             window.location.reload();
         } else {
-            errorMsg.textContent = "Fout bij verwijderen: " + result.error;
+            errorMsg.textContent = "Fout bij verwijderen: " + (result.error || "Internal server error");
         }
     } catch(err){
         console.error(err);
@@ -221,7 +221,7 @@ window.deleteItem = async function(id, eventId) {
 }
 
 window.deleteStation = async function(id, eventId) {
-    if(!confirm("Weet je zeker dat je dit Item wilt verwijderen?")) return;
+    if(!confirm("Weet je zeker dat je dit station wilt verwijderen? Alle items in dit station worden ook verwijderd.")) return;
     const errorMsg = document.getElementById(`errorMsgStation-${eventId}`);
 
     try{
@@ -238,7 +238,7 @@ window.deleteStation = async function(id, eventId) {
             if(stationDiv) stationDiv.remove();
             window.location.reload();
         } else {
-            errorMsg.textContent = "Fout bij verwijderen: " + result.error;
+            errorMsg.textContent = "Fout bij verwijderen: " + (result.error || "Internal server error");
         }
     } catch(err){
         console.error(err);

@@ -70,9 +70,35 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       totalPrice INTEGER,
       date TEXT DEFAULT CURRENT_TIMESTAMP,
       handled INTEGER DEFAULT 0,
+      qrCode TEXT UNIQUE,
+      orderCode TEXT UNIQUE,
       FOREIGN KEY(bezoekerId) REFERENCES users(id) ON DELETE SET NULL
     ) STRICT
   `).run();
+  
+  // Add qrCode and orderCode columns if they don't exist (migration)
+  // SQLite doesn't support UNIQUE in ALTER TABLE ADD COLUMN, so we add the column first, then create unique index
+  try {
+    db.prepare(`ALTER TABLE transactions ADD COLUMN qrCode TEXT`).run();
+    // Create unique index for qrCode
+    db.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_transactions_qrCode ON transactions(qrCode)`).run();
+  } catch (err) {
+    // Column already exists, ignore error
+    if (!err.message.includes('duplicate column')) {
+      console.error('Error adding qrCode column:', err);
+    }
+  }
+  
+  try {
+    db.prepare(`ALTER TABLE transactions ADD COLUMN orderCode TEXT`).run();
+    // Create unique index for orderCode
+    db.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_transactions_orderCode ON transactions(orderCode)`).run();
+  } catch (err) {
+    // Column already exists, ignore error
+    if (!err.message.includes('duplicate column')) {
+      console.error('Error adding orderCode column:', err);
+    }
+  }
 
   // transaction items table
   db.prepare(`
@@ -97,10 +123,22 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       userId INTEGER,
       visitTime TEXT DEFAULT CURRENT_TIMESTAMP,
       leftAt TEXT DEFAULT NULL,
+      lastHeartbeat TEXT DEFAULT NULL,
       FOREIGN KEY(eventId) REFERENCES events(id) ON DELETE CASCADE,
       FOREIGN KEY(userId) REFERENCES users(id) ON DELETE SET NULL
     ) STRICT
   `).run();
+  
+  // Add lastHeartbeat column if it doesn't exist (migration)
+  try {
+    db.prepare(`ALTER TABLE event_visitors ADD COLUMN lastHeartbeat TEXT DEFAULT NULL`).run();
+  } catch (err) {
+    // Column already exists, ignore error
+    // SQLite error messages vary, so we check for common patterns
+    if (!err.message.includes('duplicate column') && !err.message.includes('duplicate column name')) {
+      console.error('Error adding lastHeartbeat column:', err.message);
+    }
+  }
  
   // employees table
   db.prepare(`
@@ -122,6 +160,91 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
     // Column already exists, ignore error
   }
 
+  // groepspot table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS groepspot (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      creatorId INTEGER NOT NULL,
+      eventId INTEGER,
+      totalAmount INTEGER NOT NULL,
+      remainingAmount INTEGER NOT NULL,
+      qrCode TEXT UNIQUE NOT NULL,
+      status TEXT DEFAULT 'pending',
+      createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(creatorId) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY(eventId) REFERENCES events(id) ON DELETE CASCADE
+    ) STRICT
+  `).run();
+
+  // groepspot_contributions table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS groepspot_contributions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      groepspotId INTEGER NOT NULL,
+      contributorId INTEGER NOT NULL,
+      amount INTEGER NOT NULL,
+      createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(groepspotId) REFERENCES groepspot(id) ON DELETE CASCADE,
+      FOREIGN KEY(contributorId) REFERENCES users(id) ON DELETE SET NULL
+    ) STRICT
+  `).run();
+
+  // groepspot_items table (to store which items are in the groepspot)
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS groepspot_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      groepspotId INTEGER NOT NULL,
+      itemId INTEGER NOT NULL,
+      itemName TEXT NOT NULL,
+      itemPrice INTEGER NOT NULL,
+      quantity INTEGER NOT NULL,
+      FOREIGN KEY(groepspotId) REFERENCES groepspot(id) ON DELETE CASCADE,
+      FOREIGN KEY(itemId) REFERENCES items(id) ON DELETE SET NULL
+    ) STRICT
+  `).run();
+
+  // festcoins_transactions table (for buy/sell/share/groepspot operations)
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS festcoins_transactions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      userId INTEGER NOT NULL,
+      type TEXT NOT NULL,
+      amount INTEGER NOT NULL,
+      relatedUserId INTEGER,
+      groepspotId INTEGER,
+      description TEXT,
+      createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY(relatedUserId) REFERENCES users(id) ON DELETE SET NULL,
+      FOREIGN KEY(groepspotId) REFERENCES groepspot(id) ON DELETE SET NULL
+    ) STRICT
+  `).run();
+
+  // budget_alarms table (for budget alerts per category)
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS budget_alarms (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      userId INTEGER NOT NULL,
+      category TEXT NOT NULL,
+      budgetLimit INTEGER NOT NULL,
+      isActive INTEGER DEFAULT 1,
+      createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE,
+      UNIQUE(userId, category)
+    ) STRICT
+  `).run();
+
+  // user_points table (for loyalty points system)
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS user_points (
+      userId INTEGER PRIMARY KEY,
+      currentPoints INTEGER DEFAULT 0,
+      totalPointsEarned INTEGER DEFAULT 0,
+      totalRewardsClaimed INTEGER DEFAULT 0,
+      lastUpdated TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE
+    ) STRICT
+  `).run();
   
   // voor id
   const row = db.prepare("SELECT seq FROM sqlite_sequence WHERE name = 'users'").get();
