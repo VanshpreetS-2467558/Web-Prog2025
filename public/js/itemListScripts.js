@@ -7,6 +7,48 @@ document.addEventListener('DOMContentLoaded', () => {
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   let activeOrder = JSON.parse(localStorage.getItem('activeOrder')) || null;
   let currentStation = localStorage.getItem('currentStation') || null;
+  
+  // Check if active order is from different event or expired
+  if(activeOrder && typeof eventId !== 'undefined') {
+    // Check if order is from different event
+    if(activeOrder.eventId && activeOrder.eventId !== eventId) {
+      if(confirm('Je hebt een actieve bestelling van een ander evenement. Deze bestelling wordt geannuleerd als je doorgaat. Doorgaan?')) {
+        // Cancel order before continuing - use window function
+        if(activeOrder.transactionId) {
+          fetch(`/order/${activeOrder.transactionId}/handle`, {
+            method: 'POST'
+          }).catch(err => console.error('Error cancelling order:', err));
+        }
+        activeOrder = null;
+        localStorage.removeItem('activeOrder');
+        // Force re-render
+        setTimeout(() => {
+          const cartItems = document.getElementById('cartItems');
+          const emptyMsg = document.getElementById('emptyCartMsg');
+          const cartButtons = document.getElementById('cartButtons');
+          const qrButtonContainer = document.getElementById('qrButtonContainer');
+          if(cartButtons) cartButtons.classList.remove('hidden');
+          if(qrButtonContainer) qrButtonContainer.classList.add('hidden');
+        }, 100);
+      } else {
+        // Redirect back to previous event or event list
+        if(activeOrder.eventId) {
+          window.location.href = `/events/${activeOrder.eventId}`;
+        } else {
+          window.location.href = '/evenementen';
+        }
+        return;
+      }
+    } else {
+      // Store current eventId with active order
+      activeOrder.eventId = eventId;
+      saveActiveOrder();
+    }
+  } else if(activeOrder && !activeOrder.eventId && typeof eventId !== 'undefined') {
+    // Old order without eventId, add it
+    activeOrder.eventId = eventId;
+    saveActiveOrder();
+  }
   let currentGroepspot = JSON.parse(localStorage.getItem('currentGroepspot')) || null;
   let groepspotPollInterval = null;
   let festCoinsPollInterval = null;
@@ -21,6 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderCart(){
+    // Re-read activeOrder from localStorage to ensure we have latest state
+    const currentActiveOrder = JSON.parse(localStorage.getItem('activeOrder')) || null;
+    activeOrder = currentActiveOrder;
+    
     const cartItems = document.getElementById('cartItems');
     const emptyMsg = document.getElementById('emptyCartMsg');
     const cartButtons = document.getElementById('cartButtons');
@@ -529,7 +575,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       if(!data.success){ alert("Bestelling mislukt: "+data.error); return; }
 
-      activeOrder = { items:[...cart], scanned:false };
+      activeOrder = { 
+        items:[...cart], 
+        scanned:false,
+        transactionId: data.transactionId,
+        stationId: data.stationId,
+        eventId: typeof eventId !== 'undefined' ? eventId : null
+      };
       saveActiveOrder();
 
       cart = [];
@@ -549,7 +601,8 @@ document.addEventListener('DOMContentLoaded', () => {
         showBudgetNotifications(data.budgetAlarms);
       }
 
-      alert("Bestelling gelukt! Gebruik QR-knop om af te handelen (devmode).");
+      // Show QR code dialog
+      showOrderQRCode(data.transactionId, data.stationId);
 
       renderCart();
       updateCartTotals();
@@ -616,24 +669,230 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   window.openQRActiveOrder = function(){
-    if(!activeOrder) return;
-    document.getElementById('qrOrderItems').innerHTML = activeOrder.items.map(i=>`${i.name} x${i.quantity}`).join('<br>');
-    document.getElementById('qrOrderTotal').textContent = activeOrder.items.reduce((sum,i)=>sum+i.price*i.quantity,0) + ' FestCoins';
-    document.getElementById('qrDialog').classList.remove('hidden');
+    // Re-read from localStorage to ensure we have latest state
+    const currentActiveOrder = JSON.parse(localStorage.getItem('activeOrder')) || null;
+    if(!currentActiveOrder) {
+      // Clean up if order doesn't exist
+      activeOrder = null;
+      localStorage.removeItem('activeOrder');
+      renderCart();
+      return;
+    }
+    
+    activeOrder = currentActiveOrder;
+    
+    // Check if order is expired (if eventEndDate is available)
+    if(typeof eventEndDate !== 'undefined' && eventEndDate) {
+      const endDate = new Date(eventEndDate);
+      const now = new Date();
+      if(now > endDate) {
+        alert('Deze bestelling is niet meer geldig. Het evenement is afgelopen.');
+        // Cancel the order
+        window.cancelActiveOrder();
+        return;
+      }
+    }
+    
+    if(!activeOrder.transactionId || !activeOrder.stationId) {
+      alert('Bestelling informatie ontbreekt. Bestelling wordt geannuleerd.');
+      window.cancelActiveOrder();
+      return;
+    }
+    
+    showOrderQRCode(activeOrder.transactionId, activeOrder.stationId);
   }
 
-  window.handleActiveOrder = function(){
+  function showOrderQRCode(transactionId, stationId) {
+    if(!transactionId || !stationId) return;
+    
+    const qrCode = `ORDER_${transactionId}_${stationId}`;
+    const qrContainer = document.getElementById('qrCodeContainer');
+    
+    // Clear previous QR code
+    if(qrContainer) {
+      qrContainer.innerHTML = '';
+      
+      // Generate QR code using QRCode.js (already loaded)
+      if(typeof QRCode !== 'undefined') {
+        new QRCode(qrContainer, {
+          text: qrCode,
+          width: 200,
+          height: 200,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      } else {
+        qrContainer.innerHTML = `<p class="text-center">QR Code: ${qrCode}</p>`;
+      }
+    }
+    
+    // Show items and total
+    if(activeOrder) {
+      document.getElementById('qrOrderItems').innerHTML = activeOrder.items.map(i=>`${i.name} x${i.quantity}`).join('<br>');
+      document.getElementById('qrOrderTotal').textContent = activeOrder.items.reduce((sum,i)=>sum+i.price*i.quantity,0) + ' FestCoins';
+    }
+    
+    // Show expiry time and timer
+    if(typeof eventEndDate !== 'undefined' && eventEndDate) {
+      const endDate = new Date(eventEndDate);
+      const expiryTimeEl = document.getElementById('orderExpiryTime');
+      const timeRemainingEl = document.getElementById('orderTimeRemaining');
+      
+      if(expiryTimeEl) {
+        expiryTimeEl.textContent = endDate.toLocaleString('nl-NL', { 
+          day: '2-digit', 
+          month: '2-digit', 
+          year: 'numeric',
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+      }
+      
+      // Update timer every second
+      if(timeRemainingEl) {
+        function updateTimer() {
+          const now = new Date();
+          const remaining = endDate - now;
+          
+          if(remaining <= 0) {
+            timeRemainingEl.textContent = 'Bestelling verlopen!';
+            timeRemainingEl.className = 'text-xs mt-1 text-red-600 font-bold';
+            cancelActiveOrder();
+            return;
+          }
+          
+          const hours = Math.floor(remaining / (1000 * 60 * 60));
+          const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+          
+          timeRemainingEl.textContent = `Nog ${hours}u ${minutes}m ${seconds}s geldig`;
+          timeRemainingEl.className = 'text-xs mt-1 text-gray-600';
+        }
+        
+        updateTimer();
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        // Store interval to clear it when dialog closes
+        window.orderTimerInterval = timerInterval;
+      }
+    }
+    
+    document.getElementById('qrDialog').classList.remove('hidden');
+  }
+  
+  window.cancelActiveOrder = function() {
     if(!activeOrder) return;
-    activeOrder.scanned = true;
-    saveActiveOrder();
+    
+    // Mark order as handled (cancelled) - no refund
+    if(activeOrder.transactionId) {
+      fetch(`/order/${activeOrder.transactionId}/handle`, {
+        method: 'POST'
+      }).catch(err => console.error('Error cancelling order:', err));
+    }
+    
     activeOrder = null;
     localStorage.removeItem('activeOrder');
     renderCart();
     updateCartTotals();
     updateGroupDialog();
-    alert("Bestelling afgehandeld! Je kan nu weer items toevoegen.");
-    document.getElementById('qrDialog').classList.add('hidden');
+    const qrDialog = document.getElementById('qrDialog');
+    if(qrDialog) qrDialog.classList.add('hidden');
+    
+    if(window.orderTimerInterval) {
+      clearInterval(window.orderTimerInterval);
+      window.orderTimerInterval = null;
+    }
   }
+  
+  // Intercept event card clicks to check for active order
+  document.addEventListener('DOMContentLoaded', () => {
+    // Use event delegation for dynamically added links
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('a[href^="/events/"]');
+      if(!link) return;
+      
+      const activeOrderCheck = JSON.parse(localStorage.getItem('activeOrder')) || null;
+      if(activeOrderCheck && activeOrderCheck.eventId) {
+        const href = link.getAttribute('href');
+        const newEventId = parseInt(href.split('/events/')[1]);
+        
+        if(newEventId && activeOrderCheck.eventId !== newEventId) {
+          e.preventDefault();
+          if(confirm('Je hebt een actieve bestelling. Als je naar een ander evenement gaat, wordt deze bestelling geannuleerd (geen refund). Doorgaan?')) {
+            // Cancel order before navigating
+            window.cancelActiveOrder();
+            window.location.href = href;
+          }
+        }
+      }
+    });
+  });
+
+  // Check if order is handled (poll every 3 seconds)
+  let orderStatusInterval = null;
+  function checkOrderStatus() {
+    // Re-read from localStorage
+    const currentActiveOrder = JSON.parse(localStorage.getItem('activeOrder')) || null;
+    if(!currentActiveOrder || !currentActiveOrder.transactionId) {
+      activeOrder = null;
+      if(orderStatusInterval) {
+        clearInterval(orderStatusInterval);
+        orderStatusInterval = null;
+      }
+      renderCart();
+      return;
+    }
+    
+    activeOrder = currentActiveOrder;
+    
+    fetch(`/order/status/${activeOrder.transactionId}`)
+      .then(res => res.json())
+      .then(data => {
+        if(data.success && data.handled) {
+          // Order is handled, remove active order
+          activeOrder = null;
+          localStorage.removeItem('activeOrder');
+          renderCart();
+          updateCartTotals();
+          updateGroupDialog();
+          const qrDialog = document.getElementById('qrDialog');
+          if(qrDialog) qrDialog.classList.add('hidden');
+          showNotification('Bestelling afgehandeld! Je kan nu weer items toevoegen.', 'success');
+          
+          // Stop polling
+          if(orderStatusInterval) {
+            clearInterval(orderStatusInterval);
+            orderStatusInterval = null;
+          }
+        }
+      })
+      .catch(err => {
+        console.error('Error checking order status:', err);
+        // If error, check if order still exists in localStorage
+        const checkOrder = JSON.parse(localStorage.getItem('activeOrder')) || null;
+        if(!checkOrder) {
+          activeOrder = null;
+          renderCart();
+        }
+      });
+  }
+
+  // Start checking order status if there's an active order
+  if(activeOrder && activeOrder.transactionId) {
+    if(!orderStatusInterval) {
+      orderStatusInterval = setInterval(checkOrderStatus, 3000);
+    }
+  }
+  
+  // Also check on page load - use setTimeout to ensure DOM is ready
+  setTimeout(() => {
+    const checkOrder = JSON.parse(localStorage.getItem('activeOrder')) || null;
+    if(checkOrder && checkOrder.transactionId && !orderStatusInterval) {
+      activeOrder = checkOrder;
+      orderStatusInterval = setInterval(checkOrderStatus, 3000);
+    }
+  }, 100);
 
   // Setup event listeners for groepspot buttons (using event delegation)
   document.addEventListener('click', (e) => {

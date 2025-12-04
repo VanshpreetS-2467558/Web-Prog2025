@@ -7,14 +7,11 @@
                 Transactie succesvol opgehaald
             </h2>
         </div>
-        <!-- Itemlijst  (placeholder data) -->
+        <!-- Itemlijst  (dynamisch ingevuld) -->
         <div class="mb-8 flex-1 overflow-y-auto text-lg">
             <p class="font-semibold mb-2">Items van transactie:</p>
-            <ul class="list-disc list-inside text-gray-700 space-y-1">
-                <li>2x cola</li>
-                <li>1x pintje</li>
-                <li>1x water</li>
-                <li>3x frietjes</li>
+            <ul id="orderItemsList" class="list-disc list-inside text-gray-700 space-y-1">
+                <!-- Items worden hier dynamisch ingevuld -->
             </ul>
         </div>
 
@@ -27,12 +24,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    const confirmBtn = document.getElementById("confirmBtn");
-    confirmBtn.addEventListener("click", () => {
-        // Modal sluiten
-        document.getElementById("transactionPopup").classList.add("hidden");
-
-    });
-</script>

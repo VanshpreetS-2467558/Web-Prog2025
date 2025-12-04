@@ -138,6 +138,12 @@ function renderAllTransactions(transactions) {
         } else if (transaction.type === 'groepspot') {
             icon = 'fa-users text-purple-500';
             label = 'Groepspot bijdrage';
+        } else if (transaction.type === 'reward') {
+            icon = 'fa-star text-yellow-500';
+            label = transaction.description || 'FestSpark BONUS';
+        } else {
+            icon = 'fa-question text-gray-500';
+            label = transaction.description || 'Onbekende transactie';
         }
 
         const date = new Date(transaction.createdAt).toLocaleString('nl-NL');
@@ -237,6 +243,12 @@ function updateTransactionsDisplay(transactions){
         } else if(transaction.type === 'groepspot'){
             icon = 'fa-users text-purple-500';
             label = 'Groepspot bijdrage';
+        } else if(transaction.type === 'reward'){
+            icon = 'fa-star text-yellow-500';
+            label = transaction.description || 'FestSpark BONUS';
+        } else {
+            icon = 'fa-question text-gray-500';
+            label = transaction.description || 'Onbekende transactie';
         }
 
         const date = new Date(transaction.createdAt).toLocaleString('nl-NL');

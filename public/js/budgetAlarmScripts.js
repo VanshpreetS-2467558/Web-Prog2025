@@ -61,15 +61,13 @@ function renderAlarms(alarms) {
                                     ${alarm.currentSpending} FestCoins
                                 </span>
                             </p>
-                            ${alarm.currentSpending > 0 ? `
-                                <div class="mt-2">
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-purple-500 h-2 rounded-full transition-all duration-300" 
-                                             style="width: ${percentage}%"></div>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">${Math.round(percentage)}% van budget gebruikt</p>
+                            <div class="mt-2">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-purple-500 h-2 rounded-full transition-all duration-300" 
+                                         style="width: ${percentage}%"></div>
                                 </div>
-                            ` : ''}
+                                <p class="text-xs text-gray-500 mt-1">${Math.round(percentage)}% van budget gebruikt</p>
+                            </div>
                             ${isExceeded ? `
                                 <p class="text-sm font-semibold text-red-600 mt-2">
                                     ⚠️ Budget overschreden met ${exceededAmount} FestCoins
@@ -116,7 +114,7 @@ document.getElementById('addAlarmForm').addEventListener('submit', async (e) => 
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ category, budgetLimit })
+            body: JSON.stringify({ category, budgetLimit, isUpdate: false })
         });
 
         const data = await response.json();
@@ -127,7 +125,22 @@ document.getElementById('addAlarmForm').addEventListener('submit', async (e) => 
             await loadAlarms();
             showNotification('Budget alarm succesvol toegevoegd!', 'success');
         } else {
-            alert('Fout: ' + data.error);
+            // Check if it's a duplicate category error
+            if (data.error && data.error.includes('al een budget alarm')) {
+                // Find the existing alarm and suggest editing it
+                const alarms = await fetch('/budget-alarms').then(r => r.json()).then(d => d.alarms || []);
+                const existingAlarm = alarms.find(a => a.category === category);
+                if (existingAlarm) {
+                    const edit = confirm(`${data.error}\n\nWil je het bestaande alarm bewerken?`);
+                    if (edit) {
+                        editAlarm(existingAlarm.id, existingAlarm.category, existingAlarm.budgetLimit);
+                    }
+                } else {
+                    alert(data.error);
+                }
+            } else {
+                alert('Fout: ' + (data.error || 'Onbekende fout'));
+            }
         }
     } catch (error) {
         console.error('Error adding alarm:', error);
@@ -168,7 +181,7 @@ document.getElementById('editAlarmForm').addEventListener('submit', async (e) =>
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ category, budgetLimit })
+            body: JSON.stringify({ category, budgetLimit, isUpdate: true })
         });
 
         const data = await response.json();
@@ -177,7 +190,11 @@ document.getElementById('editAlarmForm').addEventListener('submit', async (e) =>
             closeEditModal();
             // Force reload all alarms to ensure no duplicates
             await loadAlarms();
-            showNotification('Budget alarm succesvol bijgewerkt!', 'success');
+            if (data.wasReset) {
+                showNotification('Budget alarm bijgewerkt! Uitgaven zijn gereset naar 0.', 'success');
+            } else {
+                showNotification('Budget alarm succesvol bijgewerkt!', 'success');
+            }
         } else {
             alert('Fout: ' + data.error);
         }

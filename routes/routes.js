@@ -67,6 +67,7 @@ router.get("/dashboard", requireLogin(), async (request, response) => {
         getSpendingPerCategory,
         getSpendingPerEvent,
         getSpendingToday,
+        getTotalSpending,
         getUserTransactions,
         getUserPoints
       } = await import("../utils/dbHulpfuncties.js");
@@ -74,6 +75,7 @@ router.get("/dashboard", requireLogin(), async (request, response) => {
     const categorySpending = getSpendingPerCategory(user.id);
     const eventSpending = getSpendingPerEvent(user.id);
     const todaySpending = getSpendingToday(user.id);
+    const totalSpending = getTotalSpending(user.id);
     const recentTransactions = getUserTransactions(user.id, 3);
     const userPoints = getUserPoints(user.id);
     
@@ -89,6 +91,7 @@ router.get("/dashboard", requireLogin(), async (request, response) => {
         categorySpending,
         eventSpending,
         todaySpending,
+        totalSpending,
         recentTransactions,
         userPoints
       });
@@ -142,12 +145,14 @@ router.get("/dashboard/data", requireLogin("bezoeker"), async (request, response
       getSpendingPerCategory,
       getSpendingPerEvent,
       getSpendingToday,
+      getTotalSpending,
       getUserTransactions
     } = await import("../utils/dbHulpfuncties.js");
     
     const categorySpending = getSpendingPerCategory(request.session.user.id);
     const eventSpending = getSpendingPerEvent(request.session.user.id);
     const todaySpending = getSpendingToday(request.session.user.id);
+    const totalSpending = getTotalSpending(request.session.user.id);
     const recentTransactions = getUserTransactions(request.session.user.id, 5);
     
     response.json({
@@ -155,6 +160,7 @@ router.get("/dashboard/data", requireLogin("bezoeker"), async (request, response
       categorySpending,
       eventSpending,
       todaySpending,
+      totalSpending,
       recentTransactions
     });
   } catch (error) {

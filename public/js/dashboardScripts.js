@@ -7,8 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start polling for updates every 5 seconds
     dashboardUpdateInterval = setInterval(updateDashboardData, 5000);
     
+    // Also update FestCoins every 3 seconds (more frequent for balance)
+    setInterval(updateDashboardFestCoins, 3000);
+    
     // Initial update
     updateDashboardData();
+    updateDashboardFestCoins();
     
     // Close modals when clicking outside
     document.addEventListener('click', (e) => {
@@ -35,9 +39,29 @@ async function updateDashboardData() {
             updateEventSpending(data.eventSpending);
             updateRecentTransactions(data.recentTransactions);
             updateTodaySpending(data.todaySpending);
+            updateTotalSpending(data.totalSpending);
         }
+        
+        // Also update FestCoins balance
+        updateDashboardFestCoins();
     } catch (error) {
         console.error('Error updating dashboard:', error);
+    }
+}
+
+// Update FestCoins balance in dashboard
+async function updateDashboardFestCoins() {
+    try {
+        const response = await fetch('/user/festcoins');
+        const data = await response.json();
+        if (data.success) {
+            const festCoinsDisplay = document.getElementById('dashboardFestCoinsDisplay');
+            if (festCoinsDisplay) {
+                festCoinsDisplay.textContent = data.festCoins;
+            }
+        }
+    } catch (error) {
+        console.error('Error updating dashboard FestCoins:', error);
     }
 }
 
@@ -275,6 +299,14 @@ function updateTodaySpending(todaySpending) {
     }
 }
 
+// Update total spending
+function updateTotalSpending(totalSpending) {
+    const totalSpendingEl = document.getElementById('totalSpendingDisplay');
+    if (totalSpendingEl) {
+        totalSpendingEl.textContent = totalSpending || 0;
+    }
+}
+
 // Close all modals
 function closeAllModals() {
     document.getElementById('eventDetailsModal')?.classList.add('hidden');
@@ -315,7 +347,7 @@ window.showTransactionDetails = async function(transactionId, isGroepspot = fals
                     </div>
                     <div class="mb-4 p-4 bg-purple-50 rounded-lg">
                         <p class="text-sm text-gray-500 mb-1">Totale Prijs</p>
-                        <p class="font-bold text-2xl text-purple-600">${gs.totalAmount} FestCoins</p>
+                        <p class="font-bold text-2xl text-red-500">${gs.totalAmount} FestCoins</p>
                     </div>
                     <div class="mb-4">
                         <p class="text-sm text-gray-500 mb-2">Jouw Bijdrage</p>

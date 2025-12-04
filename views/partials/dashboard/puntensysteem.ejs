@@ -246,19 +246,24 @@ async function claimPointsReward() {
             // Show success message
             showNotification(`🎉 Gefeliciteerd! Je hebt 10 FestCoins gekregen! 🎉`, 'success');
             
-            // Update FestCoins display dynamically
-            const festCoinsHeader = document.getElementById('festCoinsHeader');
-            if (festCoinsHeader) {
-                // Fetch updated FestCoins
-                fetch('/user/festcoins')
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
+            // Update FestCoins display dynamically (header and dashboard)
+            fetch('/user/festcoins')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update header
+                        const festCoinsHeader = document.getElementById('festCoinsHeader');
+                        if (festCoinsHeader) {
                             festCoinsHeader.textContent = `FestCoins: ${data.festCoins}`;
                         }
-                    })
-                    .catch(err => console.error('Error updating FestCoins:', err));
-            }
+                        // Update dashboard FestCoins display
+                        const dashboardFestCoinsDisplay = document.getElementById('dashboardFestCoinsDisplay');
+                        if (dashboardFestCoinsDisplay) {
+                            dashboardFestCoinsDisplay.textContent = data.festCoins;
+                        }
+                    }
+                })
+                .catch(err => console.error('Error updating FestCoins:', err));
             
             // Update stats
             const totalRewardsEl = document.querySelector('#totalRewardsStat');

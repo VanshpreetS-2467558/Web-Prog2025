@@ -38,6 +38,18 @@ function scan() {
                         lastScannedCode = null;
                     }, 3000);
                 }
+            } else if (code.data.startsWith('ORDER_')) {
+                // Handle order QR code
+                if (code.data !== lastScannedCode && !scanCooldown) {
+                    lastScannedCode = code.data;
+                    output.textContent = "Bestelling gevonden!";
+                    handleOrderScan(code.data);
+                    scanCooldown = true;
+                    setTimeout(() => {
+                        scanCooldown = false;
+                        lastScannedCode = null;
+                    }, 3000);
+                }
             } else {
                 output.textContent = "Gescand: " + code.data;
             }
@@ -74,6 +86,68 @@ async function handleGroepspotScan(qrCode) {
         console.error(err);
         alert("Fout bij ophalen groepspot informatie.");
     }
+}
+
+async function handleOrderScan(qrCode) {
+    try {
+        const response = await fetch(`/order/qr/${encodeURIComponent(qrCode)}`);
+        const data = await response.json();
+        
+        if (data.success && data.order) {
+            // Show order popup with items
+            showOrderPopup(data.order);
+        } else {
+            alert(data.error || "Bestelling niet gevonden of ongeldig.");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Fout bij ophalen bestelling informatie.");
+    }
+}
+
+function showOrderPopup(order) {
+    const popup = document.getElementById('transactionPopup');
+    if (!popup) return;
+    
+    // Update items list
+    const itemsList = document.getElementById('orderItemsList');
+    if (itemsList) {
+        itemsList.innerHTML = order.items.map(item => 
+            `<li>${item.quantity}x ${item.itemName}</li>`
+        ).join('');
+    }
+    
+    // Remove old event listeners and add new one
+    const confirmBtn = document.getElementById('confirmBtn');
+    if (confirmBtn) {
+        // Clone button to remove old listeners
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        
+        newConfirmBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`/order/${order.transactionId}/handle`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    popup.classList.add('hidden');
+                    document.getElementById('scanField')?.classList.remove('hidden');
+                    output.textContent = "Bestelling afgehandeld! Je kan verder scannen.";
+                } else {
+                    alert('Fout: ' + (data.error || 'Kon bestelling niet afhandelen'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Er is een fout opgetreden bij het afhandelen van de bestelling.');
+            }
+        });
+    }
+    
+    // Show popup
+    popup.classList.remove('hidden');
+    document.getElementById('scanField')?.classList.add('hidden');
 }
 
 window.submitContribution = async function() {

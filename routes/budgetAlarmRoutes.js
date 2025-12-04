@@ -39,16 +39,34 @@ budgetAlarmRouter.post("/budget-alarms", requireLogin("bezoeker"), (req, res) =>
             return res.json({ success: false, error: "Ongeldige categorie" });
         }
 
-        const result = upsertBudgetAlarm(req.session.user.id, category, parseInt(budgetLimit));
+        // Check if alarm already exists for this category (for new alarms)
+        const existingAlarm = getBudgetAlarms(req.session.user.id).find(a => a.category === category);
+        if (existingAlarm && !req.body.isUpdate) {
+            return res.json({ 
+                success: false, 
+                error: `Je hebt al een budget alarm voor "${category}". Gebruik de "Bewerken" knop om het te wijzigen.` 
+            });
+        }
+
+        // Get current spending before update
+        const currentSpending = getCategorySpending(req.session.user.id, category);
+        const wasExceeded = existingAlarm && currentSpending > existingAlarm.budgetLimit;
+
+        const result = upsertBudgetAlarm(req.session.user.id, category, parseInt(budgetLimit), wasExceeded);
         if (result.success) {
             const alarm = getBudgetAlarms(req.session.user.id).find(a => 
                 a.category === category
             );
+            // If budget was exceeded and updated, reset spending tracking
             const alarmWithSpending = {
                 ...alarm,
-                currentSpending: getCategorySpending(req.session.user.id, category)
+                currentSpending: wasExceeded ? 0 : getCategorySpending(req.session.user.id, category)
             };
-            res.json({ success: true, alarm: alarmWithSpending });
+            res.json({ 
+                success: true, 
+                alarm: alarmWithSpending,
+                wasReset: wasExceeded
+            });
         } else {
             res.json({ success: false, error: result.error });
         }

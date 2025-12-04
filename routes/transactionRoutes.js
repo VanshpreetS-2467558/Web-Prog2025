@@ -22,7 +22,9 @@ transactionRouter.post("/transaction", async (req, res) => {
             success: true, 
             newAmount: req.session.user.festCoins,
             budgetExceeded: budgetCheck.exceeded,
-            budgetAlarms: budgetCheck.alarms || []
+            budgetAlarms: budgetCheck.alarms || [],
+            transactionId: result.transactionId,
+            stationId: result.stationId
         });
     } catch (err) {
         console.log(err);

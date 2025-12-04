@@ -131,6 +131,12 @@ eventRouter.post("/addItem", async (req, res) => {
     }
 
     try {
+        // Check if item with same name already exists in this station
+        const existing = db.prepare("SELECT id FROM items WHERE locationId = ? AND name = ?").get(sectionId, name);
+        if (existing) {
+            return res.json({ success: false, error: "Er bestaat al een item met deze naam in dit station." });
+        }
+
         db.prepare(`
             INSERT INTO items (locationId, name, price, stock, category)
             VALUES (?, ?, ?, ?, ?)
@@ -147,8 +153,12 @@ eventRouter.post("/addItem", async (req, res) => {
 eventRouter.post("/deleteEvent", async (req, res) => {
     const { id } = req.body;
     try {
-        deleteEvent(id);
-        res.json({ success: true });
+        const result = deleteEvent(id);
+        if(result.success) {
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, error: result.error || "Kon het event niet verwijderen. Probeer het later opnieuw." });
+        }
     } catch(err) {
         console.error(err);
         res.json({ success: false, error: "Kon het event niet verwijderen. Probeer het later opnieuw." });
@@ -158,22 +168,30 @@ eventRouter.post("/deleteEvent", async (req, res) => {
 eventRouter.post("/deleteItem", async (req, res) => {
     const {id} = req.body;
     try{
-        deleteItem(id);
-        res.json({ success: true });
+        const result = deleteItem(id);
+        if(result.success) {
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, error: result.error || "Kon het item niet verwijderen. Probeer het later opnieuw." });
+        }
     } catch (err) {
         console.error(err);
-        res.json({ success: false, error: "Kon het item niet verwijderen. Probeer het later opnieuw." })
+        res.json({ success: false, error: "Kon het item niet verwijderen. Probeer het later opnieuw." });
     }
 });
 
 eventRouter.post("/deleteStation", async (req, res) => {
     const {id} = req.body;
     try{
-        deleteLocation(id);
-        res.json({ success: true });
+        const result = deleteLocation(id);
+        if(result.success) {
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, error: result.error || "Kon het locatie niet verwijderen. Probeer het later opnieuw." });
+        }
     } catch (err) {
         console.error(err);
-        res.json({ success: false, error: "Kon het locatie niet verwijderen. Probeer het later opnieuw." })
+        res.json({ success: false, error: "Kon het locatie niet verwijderen. Probeer het later opnieuw." });
     }
 });
 

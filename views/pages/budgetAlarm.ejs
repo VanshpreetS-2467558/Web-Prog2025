@@ -71,16 +71,14 @@
                                                     <%= alarm.currentSpending %> FestCoins
                                                 </span>
                                             </p>
-                                            <% if (alarm.currentSpending > 0) { %>
-                                                <% const percentage = Math.min(100, (alarm.currentSpending / alarm.budgetLimit) * 100); %>
-                                                <div class="mt-2">
-                                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                                        <div class="bg-purple-500 h-2 rounded-full transition-all duration-300" 
-                                                             style="width: <%= percentage %>%"></div>
-                                                    </div>
-                                                    <p class="text-xs text-gray-500 mt-1"><%= Math.round(percentage) %>% van budget gebruikt</p>
+                                            <% const percentage = Math.min(100, (alarm.currentSpending / alarm.budgetLimit) * 100); %>
+                                            <div class="mt-2">
+                                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-purple-500 h-2 rounded-full transition-all duration-300" 
+                                                         style="width: <%= percentage %>%"></div>
                                                 </div>
-                                            <% } %>
+                                                <p class="text-xs text-gray-500 mt-1"><%= Math.round(percentage) %>% van budget gebruikt</p>
+                                            </div>
                                             <% if (alarm.currentSpending > alarm.budgetLimit) { %>
                                                 <p class="text-sm font-semibold text-red-600 mt-2">
                                                     ⚠️ Budget overschreden met <%= alarm.currentSpending - alarm.budgetLimit %> FestCoins

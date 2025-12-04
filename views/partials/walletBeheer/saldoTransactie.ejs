@@ -47,6 +47,18 @@
                             <p class="font-medium">Groepspot bijdrage</p>
                             <p class="text-sm text-gray-500"><%= new Date(transaction.createdAt).toLocaleString('nl-NL') %></p>
                         </div>
+                    <% } else if(transaction.type === 'reward') { %>
+                        <i class="fa-solid fa-star text-yellow-500"></i>
+                        <div>
+                            <p class="font-medium"><%= transaction.description || 'FestSpark BONUS' %></p>
+                            <p class="text-sm text-gray-500"><%= new Date(transaction.createdAt).toLocaleString('nl-NL') %></p>
+                        </div>
+                    <% } else { %>
+                        <i class="fa-solid fa-question text-gray-500"></i>
+                        <div>
+                            <p class="font-medium"><%= transaction.description || 'Onbekende transactie' %></p>
+                            <p class="text-sm text-gray-500"><%= new Date(transaction.createdAt).toLocaleString('nl-NL') %></p>
+                        </div>
                     <% } %>
                     </div>
 

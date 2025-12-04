@@ -158,34 +158,70 @@ export function createEvent({ organisatorid, name, location, description, startD
 // delete event 
 export function deleteEvent(id) {
     try{
-        db.prepare(`DELETE FROM events WHERE id = ?`).run(id);
+        db.prepare("BEGIN TRANSACTION").run();
+        
+        // First delete employees that reference this event (they reference stations which reference events)
+        db.prepare(`
+            DELETE FROM employees 
+            WHERE eventId = ?
+        `).run(id);
+        
+        // CASCADE should handle deleting stations, items, event_visitors, and groepspot automatically
+        const result = db.prepare(`DELETE FROM events WHERE id = ?`).run(id);
+        
+        db.prepare("COMMIT").run();
+        
+        if(result.changes === 0) {
+            return { success: false, error: "Event niet gevonden" };
+        }
         return {success: true};
     } catch (err) {
+        db.prepare("ROLLBACK").run();
         console.error(err);
-        return { success: false, err };
+        return { success: false, error: "Internal server error" };
     }
 }
 
 
 export function deleteItem(id){
     try{
-        db.prepare(`
+        const result = db.prepare(`
             DELETE FROM items 
             WHERE id = ?
         `).run(id);
+        if(result.changes === 0) {
+            return { success: false, error: "Item niet gevonden" };
+        }
+        return { success: true };
     } catch(err){
         console.error(err);
-        return { success: false, err };
+        return { success: false, error: "Internal server error" };
     }
 }
 
 export function deleteLocation(id){
     try{
-        db.prepare(`DELETE FROM stations WHERE id = ?`).run(id);
+        db.prepare("BEGIN TRANSACTION").run();
+        
+        // First delete employees that reference this station
+        db.prepare(`
+            DELETE FROM employees 
+            WHERE stationId = ?
+        `).run(id);
+        
+        // CASCADE should handle deleting items automatically
+        const result = db.prepare(`DELETE FROM stations WHERE id = ?`).run(id);
+        
+        db.prepare("COMMIT").run();
+        
+        if(result.changes === 0) {
+            return { success: false, error: "Station niet gevonden" };
+        }
         return { success: true };
     } catch(err){
+        db.prepare("ROLLBACK").run();
         console.error(err);
-        return { success: false, err };
+        return { success: false, error: "Internal server error" };
     }
 }
 
@@ -298,6 +334,66 @@ export function getEmployeeStationNameById(userId) {
   return result.stationName;
 }
 
+export function getEmployeeStationId(userId) {
+  const result = db.prepare(`
+    SELECT stationId
+    FROM employees
+    WHERE userId = ?
+  `).get(userId);
+
+  return result ? result.stationId : null;
+}
+
+// Get order details by transaction ID
+export function getOrderDetails(transactionId) {
+  try {
+    const transaction = db.prepare(`
+      SELECT t.*, s.id as stationId, s.name as stationName
+      FROM transactions t
+      JOIN transaction_items ti ON t.id = ti.transactionId
+      JOIN items i ON ti.itemId = i.id
+      JOIN stations s ON i.locationId = s.id
+      WHERE t.id = ?
+      LIMIT 1
+    `).get(transactionId);
+
+    if (!transaction) return null;
+
+    const items = db.prepare(`
+      SELECT ti.itemName, ti.quantity, ti.itemPrice
+      FROM transaction_items ti
+      WHERE ti.transactionId = ?
+    `).all(transactionId);
+
+    return {
+      transactionId: transaction.id,
+      stationId: transaction.stationId,
+      stationName: transaction.stationName,
+      totalPrice: transaction.totalPrice,
+      handled: transaction.handled,
+      items: items
+    };
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+// Mark order as handled
+export function markOrderAsHandled(transactionId) {
+  try {
+    db.prepare(`
+      UPDATE transactions
+      SET handled = 1
+      WHERE id = ?
+    `).run(transactionId);
+    return { success: true };
+  } catch (err) {
+    console.error(err);
+    return { success: false, error: err.message };
+  }
+}
+
 export function getFestcoinsById(id){
     const row = db.prepare("SELECT festCoins FROM users WHERE id = ?").get(id);
     return row.festCoins;
@@ -341,7 +437,18 @@ export function makeTransaction(userId, itemsDict){
 
         const transactionId = result.lastInsertRowid;
 
-        // 5. voeg items toe + update stock
+        // 5. Get station ID from first item (all items should be from same station)
+        const firstItem = itemsData[0];
+        const stationInfo = db.prepare(`
+            SELECT s.id as stationId, s.name as stationName
+            FROM items i
+            JOIN stations s ON i.locationId = s.id
+            WHERE i.id = ?
+        `).get(firstItem.id);
+        
+        const stationId = stationInfo?.stationId || null;
+
+        // 6. voeg items toe + update stock
         const insertItem = db.prepare(`
             INSERT INTO transaction_items (transactionId, itemId, itemName, itemPrice, quantity)
             VALUES (?, ?, ?, ?, ?)
@@ -358,7 +465,7 @@ export function makeTransaction(userId, itemsDict){
         // Add points to user (1 FestCoin = 1 point)
         addUserPoints(userId, totalPrice);
 
-        return { success: true, totalPrice, items: itemsData };
+        return { success: true, totalPrice, items: itemsData, transactionId, stationId };
 
     } catch (err) {
         db.prepare("ROLLBACK").run();
@@ -748,20 +855,29 @@ export function getBudgetAlarmByCategory(userId, category) {
 }
 
 // Create or update budget alarm
-export function upsertBudgetAlarm(userId, category, budgetLimit) {
+export function upsertBudgetAlarm(userId, category, budgetLimit, resetSpending = false) {
     try {
+        // Add resetDate column if it doesn't exist (migration)
+        try {
+            db.prepare(`ALTER TABLE budget_alarms ADD COLUMN resetDate TEXT DEFAULT NULL`).run();
+        } catch (err) {
+            // Column already exists, ignore error
+        }
+
         const existing = getBudgetAlarmByCategory(userId, category);
         if (existing) {
+            // If resetSpending is true, set resetDate to now
+            const resetDate = resetSpending ? new Date().toISOString() : existing.resetDate;
             db.prepare(`
                 UPDATE budget_alarms 
-                SET budgetLimit = ?, isActive = 1
+                SET budgetLimit = ?, isActive = 1, resetDate = ?
                 WHERE userId = ? AND category = ?
-            `).run(budgetLimit, userId, category);
+            `).run(budgetLimit, resetDate, userId, category);
             return { success: true, id: existing.id };
         } else {
             const result = db.prepare(`
-                INSERT INTO budget_alarms (userId, category, budgetLimit, isActive)
-                VALUES (?, ?, ?, 1)
+                INSERT INTO budget_alarms (userId, category, budgetLimit, isActive, resetDate)
+                VALUES (?, ?, ?, 1, NULL)
             `).run(userId, category, budgetLimit);
             return { success: true, id: result.lastInsertRowid };
         }
@@ -812,16 +928,33 @@ export function toggleBudgetAlarm(userId, alarmId) {
 }
 
 // Calculate total spending per category for a user (from transactions)
+// If resetDate is set in budget_alarms, only count transactions after that date
 export function getCategorySpending(userId, category) {
-    const result = db.prepare(`
-        SELECT COALESCE(SUM(ti.itemPrice * ti.quantity), 0) as total
-        FROM transaction_items ti
-        JOIN transactions t ON ti.transactionId = t.id
-        JOIN items i ON ti.itemId = i.id
-        WHERE t.bezoekerId = ? AND i.category = ?
-    `).get(userId, category);
+    // Check if there's a resetDate for this category
+    const alarm = getBudgetAlarmByCategory(userId, category);
+    const resetDate = alarm?.resetDate;
     
-    return result ? result.total : 0;
+    if (resetDate) {
+        const result = db.prepare(`
+            SELECT COALESCE(SUM(ti.itemPrice * ti.quantity), 0) as total
+            FROM transaction_items ti
+            JOIN transactions t ON ti.transactionId = t.id
+            JOIN items i ON ti.itemId = i.id
+            WHERE t.bezoekerId = ? AND i.category = ? AND datetime(t.date) > datetime(?)
+        `).get(userId, category, resetDate);
+        
+        return result ? result.total : 0;
+    } else {
+        const result = db.prepare(`
+            SELECT COALESCE(SUM(ti.itemPrice * ti.quantity), 0) as total
+            FROM transaction_items ti
+            JOIN transactions t ON ti.transactionId = t.id
+            JOIN items i ON ti.itemId = i.id
+            WHERE t.bezoekerId = ? AND i.category = ?
+        `).get(userId, category);
+        
+        return result ? result.total : 0;
+    }
 }
 
 // Check if budget limit is exceeded and return info for notification
@@ -999,6 +1132,22 @@ export function getSpendingToday(userId) {
     }
 }
 
+// Get total spending (all time)
+export function getTotalSpending(userId) {
+    try {
+        const result = db.prepare(`
+            SELECT COALESCE(SUM(totalPrice), 0) as total
+            FROM transactions
+            WHERE bezoekerId = ?
+        `).get(userId);
+        
+        return result?.total || 0;
+    } catch (err) {
+        console.error(err);
+        return 0;
+    }
+}
+
 // Get user transactions with full details (items, event, etc.)
 export function getUserTransactions(userId, limit = null) {
     try {
@@ -1043,7 +1192,30 @@ export function getUserTransactions(userId, limit = null) {
                 `).get(items[0].itemId) : null;
                 
                 const itemsString = items.map(item => `${item.itemName} x${item.quantity}`).join(' | ');
-                const creatorContribution = contributions.find(c => c.contributorId === userId);
+                
+                // Sum contributions per user
+                const contributionsByUser = {};
+                contributions.forEach(c => {
+                    if (!contributionsByUser[c.contributorId]) {
+                        contributionsByUser[c.contributorId] = {
+                            contributorId: c.contributorId,
+                            contributorName: c.contributorName || 'Onbekend',
+                            amount: 0,
+                            createdAt: c.createdAt
+                        };
+                    }
+                    contributionsByUser[c.contributorId].amount += c.amount;
+                });
+                
+                // Convert to array and sort by creation date
+                const summedContributions = Object.values(contributionsByUser).sort((a, b) => 
+                    new Date(a.createdAt) - new Date(b.createdAt)
+                );
+                
+                // Calculate total contribution for creator (sum all contributions from this user)
+                const creatorContributionSum = contributions
+                    .filter(c => c.contributorId === userId)
+                    .reduce((sum, c) => sum + c.amount, 0);
                 
                 return {
                     ...trans,
@@ -1054,12 +1226,8 @@ export function getUserTransactions(userId, limit = null) {
                     stationName: stationInfo?.stationName || 'Onbekend station',
                     items: itemsString,
                     totalAmount: groepspotCheck.totalAmount,
-                    contributions: contributions.map(c => ({
-                        contributorName: c.contributorName || 'Onbekend',
-                        amount: c.amount,
-                        createdAt: c.createdAt
-                    })),
-                    creatorContribution: creatorContribution ? creatorContribution.amount : 0
+                    contributions: summedContributions,
+                    creatorContribution: creatorContributionSum
                 };
             } else {
                 // Regular transaction
@@ -1147,7 +1315,29 @@ export function getTransactionDetails(transactionId, userId) {
                 WHERE i.id = ?
             `).get(items[0].itemId) : null;
             
-            const creatorContribution = contributions.find(c => c.contributorId === userId);
+            // Sum contributions per user
+            const contributionsByUser = {};
+            contributions.forEach(c => {
+                if (!contributionsByUser[c.contributorId]) {
+                    contributionsByUser[c.contributorId] = {
+                        contributorId: c.contributorId,
+                        contributorName: c.contributorName || 'Onbekend',
+                        amount: 0,
+                        createdAt: c.createdAt
+                    };
+                }
+                contributionsByUser[c.contributorId].amount += c.amount;
+            });
+            
+            // Convert to array and sort by creation date
+            const summedContributions = Object.values(contributionsByUser).sort((a, b) => 
+                new Date(a.createdAt) - new Date(b.createdAt)
+            );
+            
+            // Calculate total contribution for creator
+            const creatorTotalContribution = summedContributions
+                .filter(c => c.contributorId === userId)
+                .reduce((sum, c) => sum + c.amount, 0);
             
             return {
                 ...transaction,
@@ -1159,13 +1349,8 @@ export function getTransactionDetails(transactionId, userId) {
                     eventLocation: groepspot.eventLocation || null,
                     stationName: stationInfo?.stationName || 'Onbekend station',
                     totalAmount: groepspot.totalAmount,
-                    creatorContribution: creatorContribution ? creatorContribution.amount : 0,
-                    contributions: contributions.map(c => ({
-                        contributorId: c.contributorId,
-                        contributorName: c.contributorName || 'Onbekend',
-                        amount: c.amount,
-                        createdAt: c.createdAt
-                    })),
+                    creatorContribution: creatorTotalContribution,
+                    contributions: summedContributions,
                     items: items
                 }
             };
@@ -1294,7 +1479,7 @@ export function claimPointsReward(userId) {
             userId: userId,
             type: 'reward',
             amount: 10,
-            description: 'Punten beloning - 100 punten'
+            description: 'FestSpark BONUS'
         });
         
         db.prepare("COMMIT").run();
