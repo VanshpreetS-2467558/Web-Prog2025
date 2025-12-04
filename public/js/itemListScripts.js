@@ -21,14 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         activeOrder = null;
         localStorage.removeItem('activeOrder');
-        // Force re-render
+        // Force re-render - only show buttons if cart has items
         setTimeout(() => {
-          const cartItems = document.getElementById('cartItems');
-          const emptyMsg = document.getElementById('emptyCartMsg');
-          const cartButtons = document.getElementById('cartButtons');
-          const qrButtonContainer = document.getElementById('qrButtonContainer');
-          if(cartButtons) cartButtons.classList.remove('hidden');
-          if(qrButtonContainer) qrButtonContainer.classList.add('hidden');
+          renderCart();
+          updateCartTotals();
         }, 100);
       } else {
         // Redirect back to previous event or event list
@@ -580,6 +576,8 @@ document.addEventListener('DOMContentLoaded', () => {
         scanned:false,
         transactionId: data.transactionId,
         stationId: data.stationId,
+        stationName: data.stationName,
+        orderCode: data.orderCode,
         eventId: typeof eventId !== 'undefined' ? eventId : null
       };
       saveActiveOrder();
@@ -601,13 +599,15 @@ document.addEventListener('DOMContentLoaded', () => {
         showBudgetNotifications(data.budgetAlarms);
       }
 
-      // Show QR code dialog
-      showOrderQRCode(data.transactionId, data.stationId);
+      // Close order confirmation dialog
+      document.getElementById('bestelDialog').classList.add('hidden');
+
+      // Show QR code dialog immediately
+      showOrderQRCode(data.transactionId, data.stationId, data.stationName, data.orderCode);
 
       renderCart();
       updateCartTotals();
       updateGroupDialog();
-      document.getElementById('bestelDialog').classList.add('hidden');
     } catch(err){
       console.error(err);
       alert("Bestelling mislukt: internal error");
@@ -699,38 +699,106 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     
-    showOrderQRCode(activeOrder.transactionId, activeOrder.stationId);
+    showOrderQRCode(activeOrder.transactionId, activeOrder.stationId, activeOrder.stationName, activeOrder.orderCode);
   }
 
-  function showOrderQRCode(transactionId, stationId) {
-    if(!transactionId || !stationId) return;
+  function showOrderQRCode(transactionId, stationId, stationName, orderCode) {
+    if(!transactionId || !stationId) {
+      console.error('Missing transactionId or stationId:', {transactionId, stationId});
+      alert('Bestelling informatie ontbreekt. Bestelling wordt geannuleerd.');
+      window.cancelActiveOrder();
+      return;
+    }
     
     const qrCode = `ORDER_${transactionId}_${stationId}`;
     const qrContainer = document.getElementById('qrCodeContainer');
     
-    // Clear previous QR code
-    if(qrContainer) {
+    if(!qrContainer) {
+      console.error('QR container not found');
+      alert('QR code container niet gevonden. Probeer de pagina te verversen.');
+      return;
+    }
+    
+    // Clear previous QR code and set container size
+    qrContainer.innerHTML = '';
+    qrContainer.style.width = '200px';
+    qrContainer.style.height = '200px';
+    qrContainer.style.minWidth = '200px';
+    qrContainer.style.minHeight = '200px';
+    qrContainer.style.display = 'flex';
+    qrContainer.style.alignItems = 'center';
+    qrContainer.style.justifyContent = 'center';
+    
+    // Function to generate QR code
+    function generateQR() {
+      // Clear container first
       qrContainer.innerHTML = '';
       
-      // Generate QR code using QRCode.js (already loaded)
-      if(typeof QRCode !== 'undefined') {
-        new QRCode(qrContainer, {
-          text: qrCode,
-          width: 200,
-          height: 200,
-          colorDark: "#000000",
-          colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.H
-        });
+      // Check if QRCode library is available
+      if(typeof QRCode !== 'undefined' && QRCode) {
+        try {
+          // Generate QR code
+          new QRCode(qrContainer, {
+            text: qrCode,
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+          });
+          console.log('QR code generated successfully:', qrCode);
+        } catch(err) {
+          console.error('Error generating QR code:', err);
+          // Fallback: show code as text
+          qrContainer.innerHTML = `<div class="text-center p-4 w-full h-full flex flex-col items-center justify-center"><p class="text-lg font-bold text-gray-800 mb-2">Code:</p><p class="text-2xl font-mono text-blue-600">${qrCode}</p></div>`;
+        }
       } else {
-        qrContainer.innerHTML = `<p class="text-center">QR Code: ${qrCode}</p>`;
+        console.warn('QRCode library not loaded, showing text');
+        // Fallback: show code as text
+        qrContainer.innerHTML = `<div class="text-center p-4 w-full h-full flex flex-col items-center justify-center"><p class="text-lg font-bold text-gray-800 mb-2">Code:</p><p class="text-2xl font-mono text-blue-600">${qrCode}</p></div>`;
       }
     }
     
+    // Wait a bit for library to be fully loaded, then generate
+    setTimeout(() => {
+      if(typeof QRCode !== 'undefined' && QRCode) {
+        generateQR();
+      } else {
+        // Wait for library to load with more attempts
+        let attempts = 0;
+        const checkLibrary = setInterval(() => {
+          attempts++;
+          if(typeof QRCode !== 'undefined' && QRCode) {
+            clearInterval(checkLibrary);
+            generateQR();
+          } else if(attempts > 20) {
+            clearInterval(checkLibrary);
+            // Show text fallback after 2 seconds
+            qrContainer.innerHTML = `<div class="text-center p-4 w-full h-full flex flex-col items-center justify-center"><p class="text-lg font-bold text-gray-800 mb-2">Code:</p><p class="text-2xl font-mono text-blue-600">${qrCode}</p></div>`;
+          }
+        }, 100);
+      }
+    }, 200);
+    
+    // Show station name
+    const qrStationName = document.getElementById('qrStationName');
+    if(qrStationName && stationName) {
+      qrStationName.textContent = stationName;
+    }
+    
+    // Show order code (6-digit)
+    const orderCodeDisplay = document.getElementById('orderCodeDisplay');
+    if(orderCodeDisplay && orderCode) {
+      orderCodeDisplay.textContent = orderCode;
+    }
+    
     // Show items and total
-    if(activeOrder) {
-      document.getElementById('qrOrderItems').innerHTML = activeOrder.items.map(i=>`${i.name} x${i.quantity}`).join('<br>');
-      document.getElementById('qrOrderTotal').textContent = activeOrder.items.reduce((sum,i)=>sum+i.price*i.quantity,0) + ' FestCoins';
+    const qrOrderItems = document.getElementById('qrOrderItems');
+    const qrOrderTotal = document.getElementById('qrOrderTotal');
+    
+    if(activeOrder && qrOrderItems && qrOrderTotal) {
+      qrOrderItems.innerHTML = activeOrder.items.map(i=>`${i.name} x${i.quantity}`).join('<br>');
+      qrOrderTotal.textContent = activeOrder.items.reduce((sum,i)=>sum+i.price*i.quantity,0) + ' FestCoins';
     }
     
     // Show expiry time and timer
@@ -758,7 +826,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if(remaining <= 0) {
             timeRemainingEl.textContent = 'Bestelling verlopen!';
             timeRemainingEl.className = 'text-xs mt-1 text-red-600 font-bold';
-            cancelActiveOrder();
+            window.cancelActiveOrder();
             return;
           }
           
@@ -771,14 +839,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         updateTimer();
-        const timerInterval = setInterval(updateTimer, 1000);
-        
-        // Store interval to clear it when dialog closes
-        window.orderTimerInterval = timerInterval;
+        // Clear existing interval if any
+        if(window.orderTimerInterval) {
+          clearInterval(window.orderTimerInterval);
+        }
+        window.orderTimerInterval = setInterval(updateTimer, 1000);
       }
     }
     
-    document.getElementById('qrDialog').classList.remove('hidden');
+    const qrDialog = document.getElementById('qrDialog');
+    if(qrDialog) {
+      qrDialog.classList.remove('hidden');
+    } else {
+      console.error('QR dialog not found');
+    }
   }
   
   window.cancelActiveOrder = function() {

@@ -2,10 +2,14 @@
   <div class="bg-white rounded-lg max-w-md w-full p-6">
     <h2 class="text-xl font-bold mb-4">Toon deze QR-code aan de medewerker</h2>
     <div class="flex flex-col items-center mb-4">
-      <div id="qrCodeContainer" class="w-48 h-48 bg-gray-200 flex items-center justify-center mb-4">
-        <span class="text-gray-500">QR CODE</span>
+      <div id="qrCodeContainer" class="w-48 h-48 bg-white border-2 border-gray-300 flex items-center justify-center mb-4 mx-auto" style="min-width: 200px; min-height: 200px;">
+        <span class="text-gray-500">QR CODE wordt geladen...</span>
       </div>
-      <p class="text-sm text-gray-600 text-center">Scan deze code bij het juiste station</p>
+      <p class="text-sm text-gray-600 text-center">Scan deze code bij station: <strong id="qrStationName">-</strong></p>
+      <div id="orderCodeContainer" class="mt-3 p-3 bg-gray-100 rounded-lg text-center">
+        <p class="text-xs text-gray-500 mb-1">Of voer deze code in:</p>
+        <p id="orderCodeDisplay" class="text-2xl font-bold font-mono text-blue-600">------</p>
+      </div>
     </div>
     <div class="mb-4">
       <p class="font-semibold mb-2">Items:</p>

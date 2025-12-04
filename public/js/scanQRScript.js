@@ -107,14 +107,26 @@ async function handleOrderScan(qrCode) {
 
 function showOrderPopup(order) {
     const popup = document.getElementById('transactionPopup');
-    if (!popup) return;
+    if (!popup) {
+        console.error('Transaction popup not found');
+        return;
+    }
+    
+    // Make sure popup is hidden first
+    popup.classList.add('hidden');
     
     // Update items list
     const itemsList = document.getElementById('orderItemsList');
     if (itemsList) {
-        itemsList.innerHTML = order.items.map(item => 
-            `<li>${item.quantity}x ${item.itemName}</li>`
-        ).join('');
+        if(order.items && order.items.length > 0) {
+            itemsList.innerHTML = order.items.map(item => 
+                `<li>${item.quantity}x ${item.itemName}</li>`
+            ).join('');
+        } else {
+            itemsList.innerHTML = '<li>Geen items gevonden</li>';
+        }
+    } else {
+        console.error('Order items list not found');
     }
     
     // Remove old event listeners and add new one
@@ -133,7 +145,8 @@ function showOrderPopup(order) {
                 
                 if (data.success) {
                     popup.classList.add('hidden');
-                    document.getElementById('scanField')?.classList.remove('hidden');
+                    const scanField = document.getElementById('scanField');
+                    if(scanField) scanField.classList.remove('hidden');
                     output.textContent = "Bestelling afgehandeld! Je kan verder scannen.";
                 } else {
                     alert('Fout: ' + (data.error || 'Kon bestelling niet afhandelen'));
@@ -143,11 +156,14 @@ function showOrderPopup(order) {
                 alert('Er is een fout opgetreden bij het afhandelen van de bestelling.');
             }
         });
+    } else {
+        console.error('Confirm button not found');
     }
     
-    // Show popup
+    // Show popup only after everything is set up
     popup.classList.remove('hidden');
-    document.getElementById('scanField')?.classList.add('hidden');
+    const scanField = document.getElementById('scanField');
+    if(scanField) scanField.classList.add('hidden');
 }
 
 window.submitContribution = async function() {
@@ -211,3 +227,55 @@ window.cancelContribution = function() {
     scannedQRCode = null;
     document.getElementById('contributionAmount').value = '';
 }
+
+window.showManualCodeInput = function() {
+    const modal = document.getElementById('manualCodeModal');
+    if(modal) {
+        modal.classList.remove('hidden');
+        document.getElementById('manualOrderCode').focus();
+    }
+}
+
+window.hideManualCodeInput = function() {
+    const modal = document.getElementById('manualCodeModal');
+    if(modal) {
+        modal.classList.add('hidden');
+        document.getElementById('manualOrderCode').value = '';
+    }
+}
+
+window.submitManualCode = async function() {
+    const code = document.getElementById('manualOrderCode').value.trim();
+    
+    if(!code || code.length !== 6 || !/^\d{6}$/.test(code)) {
+        alert('Voer een geldige 6-cijferige code in');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/order/code/${code}`);
+        const data = await response.json();
+        
+        if(data.success && data.order) {
+            hideManualCodeInput();
+            showOrderPopup(data.order);
+        } else {
+            alert(data.error || 'Bestelling niet gevonden. Controleer de code.');
+        }
+    } catch(err) {
+        console.error(err);
+        alert('Fout bij ophalen bestelling informatie.');
+    }
+}
+
+// Allow Enter key to submit
+document.addEventListener('DOMContentLoaded', () => {
+    const codeInput = document.getElementById('manualOrderCode');
+    if(codeInput) {
+        codeInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') {
+                submitManualCode();
+            }
+        });
+    }
+});

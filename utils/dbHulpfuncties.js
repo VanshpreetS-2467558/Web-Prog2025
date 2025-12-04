@@ -160,13 +160,35 @@ export function deleteEvent(id) {
     try{
         db.prepare("BEGIN TRANSACTION").run();
         
-        // First delete employees that reference this event (they reference stations which reference events)
-        db.prepare(`
-            DELETE FROM employees 
-            WHERE eventId = ?
-        `).run(id);
+        // Delete in order to avoid foreign key constraint errors:
+        // 1. Delete employees (references eventId and stationId)
+        db.prepare(`DELETE FROM employees WHERE eventId = ?`).run(id);
         
-        // CASCADE should handle deleting stations, items, event_visitors, and groepspot automatically
+        // 2. Delete groepspot contributions and items (references groepspot)
+        const groepspots = db.prepare(`SELECT id FROM groepspot WHERE eventId = ?`).all(id);
+        groepspots.forEach(gs => {
+            db.prepare(`DELETE FROM groepspot_contributions WHERE groepspotId = ?`).run(gs.id);
+            db.prepare(`DELETE FROM groepspot_items WHERE groepspotId = ?`).run(gs.id);
+        });
+        
+        // 3. Delete groepspot (references eventId)
+        db.prepare(`DELETE FROM groepspot WHERE eventId = ?`).run(id);
+        
+        // 4. Delete event_visitors (references eventId)
+        db.prepare(`DELETE FROM event_visitors WHERE eventId = ?`).run(id);
+        
+        // 5. Get stations for this event to delete items
+        const stations = db.prepare(`SELECT id FROM stations WHERE eventId = ?`).all(id);
+        
+        // 6. Delete items in these stations (transaction_items has ON DELETE SET NULL, so safe)
+        stations.forEach(station => {
+            db.prepare(`DELETE FROM items WHERE locationId = ?`).run(station.id);
+        });
+        
+        // 7. Delete stations (references eventId)
+        db.prepare(`DELETE FROM stations WHERE eventId = ?`).run(id);
+        
+        // 8. Finally delete the event
         const result = db.prepare(`DELETE FROM events WHERE id = ?`).run(id);
         
         db.prepare("COMMIT").run();
@@ -201,15 +223,14 @@ export function deleteItem(id){
 
 export function deleteLocation(id){
     try{
+        // ON CASCADE DELETE should handle items automatically
+        // But we need to delete employees first since they reference stationId
         db.prepare("BEGIN TRANSACTION").run();
         
-        // First delete employees that reference this station
-        db.prepare(`
-            DELETE FROM employees 
-            WHERE stationId = ?
-        `).run(id);
+        // Delete employees that reference this station
+        db.prepare(`DELETE FROM employees WHERE stationId = ?`).run(id);
         
-        // CASCADE should handle deleting items automatically
+        // Now delete the station - CASCADE will handle items (ON DELETE CASCADE from stations)
         const result = db.prepare(`DELETE FROM stations WHERE id = ?`).run(id);
         
         db.prepare("COMMIT").run();
@@ -437,7 +458,7 @@ export function makeTransaction(userId, itemsDict){
 
         const transactionId = result.lastInsertRowid;
 
-        // 5. Get station ID from first item (all items should be from same station)
+        // 5. Get station ID and name from first item (all items should be from same station)
         const firstItem = itemsData[0];
         const stationInfo = db.prepare(`
             SELECT s.id as stationId, s.name as stationName
@@ -447,6 +468,7 @@ export function makeTransaction(userId, itemsDict){
         `).get(firstItem.id);
         
         const stationId = stationInfo?.stationId || null;
+        const stationName = stationInfo?.stationName || null;
 
         // 6. voeg items toe + update stock
         const insertItem = db.prepare(`
@@ -465,7 +487,10 @@ export function makeTransaction(userId, itemsDict){
         // Add points to user (1 FestCoin = 1 point)
         addUserPoints(userId, totalPrice);
 
-        return { success: true, totalPrice, items: itemsData, transactionId, stationId };
+        // Generate 6-digit order code from transactionId
+        const orderCode = String(transactionId).padStart(6, '0').slice(-6);
+
+        return { success: true, totalPrice, items: itemsData, transactionId, stationId, stationName, orderCode };
 
     } catch (err) {
         db.prepare("ROLLBACK").run();

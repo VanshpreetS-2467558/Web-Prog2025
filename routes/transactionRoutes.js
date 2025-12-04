@@ -24,7 +24,9 @@ transactionRouter.post("/transaction", async (req, res) => {
             budgetExceeded: budgetCheck.exceeded,
             budgetAlarms: budgetCheck.alarms || [],
             transactionId: result.transactionId,
-            stationId: result.stationId
+            stationId: result.stationId,
+            stationName: result.stationName,
+            orderCode: result.orderCode
         });
     } catch (err) {
         console.log(err);

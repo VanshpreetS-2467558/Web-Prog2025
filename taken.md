@@ -50,3 +50,16 @@
 En als die gescanned is. dat de 'handled' bij transacties-table op 1 staat(dus dat die niet meer opnieuw scanbaar is, de check voor fraude eigenlijk) en als gescanned is dat de groene knop bij bezoeker weg gaat zodat die weer kan bestellen. en dat de employee na scannen een popup krijgt (ik heb al een placeholder) van een lijst van de bestelling. en als die deze items overhandigd heeft en op het knop klikt dat die weer verder kan scannen. voorzie ook de juiste checks!
 
 7. bij het event Beheer werken de delete knoppen niet meer, kan je dit fixen? zodat als je station verwijderd ook de items daarin verwijderd worden. en items verwijderen ook werkt en als je event verwijderd dat die alle foreign keys ook samen verwijderd, ik heb ON CASCADE gebruikt maar het verwijder knoppen werken neit meer... ? en ook dat je geen duplicate station hebt in hetzelfde event en geen duplicate items per station.
+
+-----
+1) event verwijder knop werkt nog altijd niet...
+
+2) waarom wordt er geen qr-code gemaakt? dat ziet er niet uit... Zorg dat er een qr-code staat ipv idk wat wordt gebeurd.. 
+
+3) bij workspace krijg ik meteen een popup met : "TRansactie succesvol opgehaald" ? en er staat geen lijst en de knop werkt niet ? deze mag je niet zien? je moet eerst scannen dan de werking/logics van transactie afhandelen en dan was deze popup laten zien? 
+
+
+---
+stel dat code wordt gegeven op een ander event kan je melding geven "deze qr-code/code bestelling is van een ander event" ? 
+
+en qr-code wordt nog altijd niet geshowed want geef NULL bij database? kan je dat misschien zo wel fixen dan? 
