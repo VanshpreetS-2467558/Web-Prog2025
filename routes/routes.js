@@ -139,8 +139,8 @@ router.get("/dashboard/transaction/:transactionId/details", requireLogin("bezoek
   }
 });
 
-// Get dashboard data (for real-time updates)
-router.get("/dashboard/data", requireLogin("bezoeker"), async (request, response) => {
+// Get dashboard data (for real-time updates) - visitor only
+router.get("/dashboard/user-data", requireLogin("bezoeker"), async (request, response) => {
   try {
     const {
       getSpendingPerCategory,

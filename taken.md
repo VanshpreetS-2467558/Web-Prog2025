@@ -3,7 +3,6 @@
 - [ ] QR-code wordt niet geshowed bij (individuele) bestelling maar heeft wel 6cijferige code (qr-code steekt wel in database)
 - [ ] 404 bij leave knoppen van evenementen
 - [ ] heartbeat werkt neit bij visits van evenementen
-- [ ] dashboard organisator werkt ook niet somehow
 - [ ] instructies page moet terug kloppen, want werking is beetje anders
 - [ ] heartbeat werkt ook niet meer bij WalletBeheer -> knop alle transacties laat niks meer zien.. moet lijst zijn van alle FESTCOIN transacties
 - [ ] Festcoins sharen mag enkel between role=== "bezoekers" 

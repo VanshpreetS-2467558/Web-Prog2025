@@ -31,7 +31,7 @@ async function updateDashboardData() {
             return;
         }
         
-        const response = await fetch('/dashboard/data');
+        const response = await fetch('/dashboard/user-data');
         const data = await response.json();
         
         if (data.success) {
