@@ -24,6 +24,16 @@ This README is part of your submission. Make sure it is clear and contains the r
 - https://ejs.co/
 - https://github.com/WiseLibs/better-sqlite3/
 
+## Dependencies
+- bcrypt (^6.0.0) - Password hashing
+- better-sqlite3 (^12.2.0) - SQLite database driver
+- ejs (^3.1.10) - Template engine
+- express (^5.2.1) - Web framework
+- express-session (^1.18.2) - Session middleware
+- express-validator (^7.2.1) - Input validation
+- pdfkit (^0.17.2) - PDF generation
+- tailwind (^4.0.0) - CSS framework
+
 ## Local development
 
 run: `node app.js` --> voor backend op te starten
