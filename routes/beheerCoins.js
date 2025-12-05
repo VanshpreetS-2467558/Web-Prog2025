@@ -67,6 +67,9 @@ beheerCoinsRouter.post("/shareAmount", async (req, res) =>{
     const receiver = getUserById(shareReceiver);
 
     // check validity
+    if(!shareAmount || !shareReceiver) return res.json({success: false, error: "Vul alle velden in!"});
+    if(shareAmount <= 0) return res.json({success: false, error: "Geef een waarde groter dan nul in."});
+    if((getUserTypeById(shareReceiver) !== "bezoeker") || (user.role !== "bezoeker")) return res.json({success: false, error: "Je kan Festcoin enkel tussen bezoekers sturen."});
     if(shareReceiver === user.id) return res.json({success: false, error: "Je kan geen FestCoins naar jezelf sturen."});
     if(!idExists(shareReceiver)) return res.json({success: false, error: "Er bestaat geen account met ID: " + shareReceiver});
     const errorCheck = checkUserAndAmount(user, shareAmount, user?.festCoins);

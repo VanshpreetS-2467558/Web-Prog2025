@@ -5,10 +5,10 @@
 - [ ] heartbeat werkt neit bij visits van evenementen
 - [ ] instructies page moet terug kloppen, want werking is beetje anders
 - [ ] heartbeat werkt ook niet meer bij WalletBeheer -> knop alle transacties laat niks meer zien.. moet lijst zijn van alle FESTCOIN transacties
-- [ ] Festcoins sharen mag enkel between role=== "bezoekers" 
 - [ ] weeral fout bij station (met items) verwijder knop... en event verwijder knop is volledig handmatig ipv met ON CASCADE DELETE..
 - [ ] notificaties van alert vervangen door showNotification 
 - [ ] confirm aanpassen naar custom pop-up
+- [ ] fix budget alarm feature
 - [ ] ? (check voor eventuele bugs)
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 - [ ] Zorgen dat het werkt met DOCKER en database in een volume zetten
