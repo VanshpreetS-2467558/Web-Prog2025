@@ -14,3 +14,4 @@ export * from "./db/festcoinsTransactions.js";
 export * from "./db/userPoints.js";
 export * from "./db/userDashboard.js";
 export * from "./db/dashboard.js";
+export * from "./db/generalAnalysis.js";
