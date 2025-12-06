@@ -1,13 +1,12 @@
 ## BUG
 
 - [ ] QR-code wordt niet geshowed bij (individuele) bestelling maar heeft wel 6cijferige code (qr-code steekt wel in database)
-- [ ] heartbeat werkt neit bij visits van evenementen
+- [x] heartbeat werkt neit bij visits van evenementen
 - [ ] instructies page moet terug kloppen, want werking is beetje anders
 - [ ] notificaties van alert vervangen door showNotification
-- [ ] fix budget alarm feature
 - [ ] ? (check voor eventuele bugs)
 - [ ] photon werkt niet meer ?
-- [ ] share button werkt niet door internal server error door unexpected 1 new line ofz?
+- [x] share button werkt niet door internal server error door unexpected 1 new line ofz?
 
 ---
 

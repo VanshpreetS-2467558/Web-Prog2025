@@ -10,9 +10,9 @@
     <!-- Tabs -->
     <div class="mb-8 p-4 border-gray-400 shadow">
         <div class="grid grid-cols-3 bg-gray-100">
-            <button class="tab-btn py-2 font-semibold border-b-2 border-purple-400 text-purple-500" data-tab="buy">Kopen</button>
-            <button class="tab-btn py-2 font-semibold border-b-2 text-gray-500" data-tab="sell">Verkopen</button>
-            <button class="tab-btn py-2 font-semibold border-b-2 text-gray-500" data-tab="send">Deel FestCoins</button>
+            <button class="tab-btn py-2 font-semibold border-b-2 <%= typeof tab !== 'undefined' && tab === 'buy' ? 'border-purple-400 text-purple-500' : 'text-gray-500' %>" data-tab="buy">Kopen</button>
+            <button class="tab-btn py-2 font-semibold border-b-2 <%= typeof tab !== 'undefined' && tab === 'sell' ? 'border-purple-400 text-purple-500' : 'text-gray-500' %>" data-tab="sell">Verkopen</button>
+            <button class="tab-btn py-2 font-semibold border-b-2 <%= typeof tab !== 'undefined' && tab === 'send' ? 'border-purple-400 text-purple-500' : 'text-gray-500' %>" data-tab="send">Deel FestCoins</button>
         </div>
     </div>
 

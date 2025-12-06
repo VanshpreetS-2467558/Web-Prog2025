@@ -1,10 +1,14 @@
 import { db } from "../../db.js";
 
 export function searchExistingVisit(eventId, userId) {
+  // Find active visit (heartbeat within last 2 minutes)
   return db.prepare(
     `
         SELECT id FROM event_visitors
-        WHERE eventId = ? AND userId = ? AND leftAt IS NULL
+        WHERE eventId = ? AND userId = ?
+        AND (lastHeartbeat IS NULL OR datetime(lastHeartbeat, '+2 minutes') > datetime('now'))
+        ORDER BY visitTime DESC
+        LIMIT 1
     `
   ).get(eventId, userId);
 }
@@ -18,16 +22,11 @@ export function makeVisit(eventId, userId) {
   ).run(eventId, userId);
 }
 
+// closeVisit is no longer needed - visits are automatically inactive after 2 minutes without heartbeat
+// Keeping function for backward compatibility but it does nothing
 export function closeVisit(eventId, userId) {
-  return db.prepare(
-    `
-        UPDATE event_visitors
-        SET leftAt = CURRENT_TIMESTAMP
-        WHERE eventId = ? AND userId = ? AND leftAt IS NULL
-        ORDER BY visitTime DESC
-        LIMIT 1
-    `
-  ).run(eventId, userId);
+  // No-op: visits are automatically inactive after 2 minutes without heartbeat
+  return { changes: 0 };
 }
 
 export function updateVisitHeartbeat(eventId, userId){
@@ -50,23 +49,19 @@ export function updateVisitHeartbeat(eventId, userId){
 
 export function getActiveVisitorsCount(eventId){
     // Get visitors with heartbeat in last 2 minutes
+    // A visitor is active if they have a heartbeat within the last 2 minutes
     return db.prepare(`
         SELECT COUNT(DISTINCT userId) as count
         FROM event_visitors
         WHERE eventId = ? 
-        AND leftAt IS NULL
         AND (lastHeartbeat IS NULL OR datetime(lastHeartbeat, '+2 minutes') > datetime('now'))
     `).get(eventId)?.count || 0;
 }
 
+// cleanupOldVisits is no longer needed - visits are automatically inactive after 2 minutes without heartbeat
+// Keeping function for backward compatibility but it does nothing
 export function cleanupOldVisits(){
-    // Clean up visits older than 2 minutes without heartbeat
-    return db.prepare(`
-        UPDATE event_visitors
-        SET leftAt = CURRENT_TIMESTAMP
-        WHERE leftAt IS NULL
-        AND lastHeartbeat IS NOT NULL
-        AND datetime(lastHeartbeat, '+2 minutes') < datetime('now')
-    `).run();
+    // No-op: visits are automatically inactive after 2 minutes without heartbeat
+    return { changes: 0 };
 }
 

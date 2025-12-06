@@ -196,7 +196,8 @@ router.post("/dashboard/points/claim", requireLogin("bezoeker"), async (request,
 router.get("/wallet", requireLogin("bezoeker") , async (request,response)=>{
   const { getFestCoinsTransactions } = await import("../utils/dbHulpfuncties.js");
   const transactions = getFestCoinsTransactions(request.session.user.id, 4);
-  response.render("pages/walletBeheer", { transactions });
+  const tab = request.query.tab || "buy"; // Default to buy tab
+  response.render("pages/walletBeheer", { transactions, tab });
 });
 
 // budget alarm pagina (bezoeker)
