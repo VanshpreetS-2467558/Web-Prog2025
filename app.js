@@ -14,6 +14,7 @@ import dashboardRouter from "./routes/dashboardRoutes.js";
 import groepspotRouter from "./routes/groepspotRoutes.js";
 import budgetAlarmRouter from "./routes/budgetAlarmRoutes.js";
 import orderRouter from "./routes/orderRoutes.js";
+import analyse from "./routes/analysePageRoutes.js";
 
 
 
@@ -69,6 +70,7 @@ app.use("/dashboard", dashboardRouter);
 app.use("/groepspot", groepspotRouter);
 app.use("/budget-alarms", budgetAlarmRouter);
 app.use("/order", orderRouter);
+app.use("/analyse", analyse);
 
 // Middleware for unknown routes
 app.use((request, response, next) => {

@@ -13,7 +13,9 @@
     <nav class="flex items-center flex-wrap gap-4 md:gap-10 text-sm md:text-base">
       <a href="/home" class="hidden md:inline font-semibold border-b-2 border-transparent hover:border-pink-500 transition-all">Home</a>
       <a href="/HoeWerktFestCoin" class="font-semibold border-b-2 border-transparent hover:border-blue-500 transition-all">Instructies</a>
-
+      <% if(user && user.role === "organisator") { %>
+        <a href="/analyse/algemene-analyse" class="md:inline font-semibold border-b-2 border-transparent hover:border-purple-500 transition-all">Analystics</a>
+      <% } %>
       <% if(!user) { %>
         <a href="/inloggen" class="font-semibold border-b-2 border-transparent hover:border-pink-500 transition-all">Inloggen</a>
       <% } else { %>
