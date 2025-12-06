@@ -1042,7 +1042,7 @@ function startDynamicUpdates(){
   if(typeof eventId !== 'undefined'){
     heartbeatInterval = setInterval(async () => {
       try {
-        await fetch(`/events/${eventId}/heartbeat`, { method: 'POST' });
+        await fetch(`/list/events/${eventId}/heartbeat`, { method: 'POST' });
       } catch(err){
         console.error('Error sending heartbeat:', err);
       }
@@ -1054,11 +1054,24 @@ function startDynamicUpdates(){
     updateItemStocks();
   }, 5000);
 
-  // Cleanup on page unload
+  // Cleanup on page unload - close visit automatically
   window.addEventListener('beforeunload', () => {
     if(festCoinsPollInterval) clearInterval(festCoinsPollInterval);
     if(heartbeatInterval) clearInterval(heartbeatInterval);
     if(stockUpdateInterval) clearInterval(stockUpdateInterval);
+    
+    // Close visit when leaving page (using fetch with keepalive for reliability)
+    if(typeof eventId !== 'undefined' && eventId) {
+      // Use fetch with keepalive flag for reliable delivery even if page is closing
+      fetch(`/list/events/${eventId}/leave`, {
+        method: 'POST',
+        keepalive: true,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+      }).catch(() => {}); // Ignore errors since page is closing
+    }
   });
 }
 

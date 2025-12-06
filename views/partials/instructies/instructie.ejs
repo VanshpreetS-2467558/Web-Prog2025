@@ -9,10 +9,10 @@
 
     <!-- knoppen -->
     <div class="flex justify-center gap-4 mb-16">
-        <a href="/HoeWerktFestCoin?zichtbaar=bezoeker" class="px-6 py-2 rounded font-semibold shadow-lg <%= zichtbaar === 'bezoeker' ? 'bg-purple-500 text-white' : 'border-2' %>">
+        <a href="/HoeWerktFestCoin?instructions=bezoeker" class="px-6 py-2 rounded font-semibold shadow-lg <%= instructions === 'bezoeker' ? 'bg-purple-500 text-white' : 'border-2' %>">
             Bezoeker
         </a>
-        <a href="/HoeWerktFestCoin?zichtbaar=organisator" class="px-6 py-2 rounded font-semibold <%= zichtbaar === 'organisator' ? 'bg-purple-500 text-white' : 'border-2' %>">
+        <a href="/HoeWerktFestCoin?instructions=organisator" class="px-6 py-2 rounded font-semibold <%= instructions === 'organisator' ? 'bg-purple-500 text-white' : 'border-2' %>">
             Organisator
         </a>
     </div>
@@ -20,7 +20,7 @@
 
     <!-- stappen tonen bij keuze van knoppen -->
     <div>
-        <% const stappen = zichtbaar === 'bezoeker' ? bezoekerStappen : organisatorStappen; %>
+        <% const stappen = instructions === 'bezoeker' ? bezoekerStappen : organisatorStappen; %>
         <% stappen.forEach((step, index) => { %>
             <div class="mb-10 flex flex-col md:flex-row <%= index % 2 === 0 ? '' : 'md:flex-row-reverse' %> items-center relative"> <!-- voor zig zag patroon -->
                 <!-- index stap -->
@@ -45,7 +45,7 @@
     </div>
 
     <!-- uitleg voor groepspotten enkel tonen bij bezoekers -->
-    <% if(zichtbaar === 'bezoeker') { %>
+    <% if(instructions === 'bezoeker') { %>
         <h1 class="text-5xl font-bold mb-6 pt-20 pb-2 bg-gradientkleurBR bg-clip-text text-transparent">
             Hoe maak je een groepspot aan?
         </h1>

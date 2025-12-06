@@ -2,14 +2,15 @@ import { db } from "../../db.js";
 
 export function deleteLocation(id) {
   try{
-    // ON CASCADE DELETE should handle items automatically
-    // But we need to delete employees first since they reference stationId
     db.prepare("BEGIN TRANSACTION").run();
+    
+    // First, delete all items in this station (to avoid foreign key constraint)
+    db.prepare(`DELETE FROM items WHERE locationId = ?`).run(id);
     
     // Delete employees that reference this station
     db.prepare(`DELETE FROM employees WHERE stationId = ?`).run(id);
     
-    // Now delete the station - CASCADE will handle items (ON DELETE CASCADE from stations)
+    // Now delete the station
     const result = db.prepare(`DELETE FROM stations WHERE id = ?`).run(id);
     
     db.prepare("COMMIT").run();

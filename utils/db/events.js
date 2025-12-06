@@ -39,18 +39,46 @@ export function deleteEvent(id) {
     // 4. Delete event_visitors (references eventId)
     db.prepare(`DELETE FROM event_visitors WHERE eventId = ?`).run(id);
     
-    // 5. Get stations for this event to delete items
+    // 5. Get stations for this event to delete items and transaction_items
     const stations = db.prepare(`SELECT id FROM stations WHERE eventId = ?`).all(id);
     
-    // 6. Delete items in these stations (transaction_items has ON DELETE SET NULL, so safe)
+    // 6. Delete transaction_items that reference items from these stations
     stations.forEach(station => {
+        // Get all items in this station
+        const items = db.prepare(`SELECT id FROM items WHERE locationId = ?`).all(station.id);
+        items.forEach(item => {
+            // Delete transaction_items that reference this item
+            db.prepare(`DELETE FROM transaction_items WHERE itemId = ?`).run(item.id);
+        });
+        // Delete items in this station
         db.prepare(`DELETE FROM items WHERE locationId = ?`).run(station.id);
     });
     
-    // 7. Delete stations (references eventId)
+    // 7. Delete transactions that reference this event (through stations -> items -> transaction_items)
+    // Get all transaction IDs that have items from this event
+    const transactionIds = db.prepare(`
+        SELECT DISTINCT t.id 
+        FROM transactions t
+        JOIN transaction_items ti ON t.id = ti.transactionId
+        JOIN items i ON ti.itemId = i.id
+        JOIN stations s ON i.locationId = s.id
+        WHERE s.eventId = ?
+    `).all(id).map(row => row.id);
+    
+    // Delete transaction_items for these transactions
+    transactionIds.forEach(transId => {
+        db.prepare(`DELETE FROM transaction_items WHERE transactionId = ?`).run(transId);
+    });
+    
+    // Delete transactions
+    transactionIds.forEach(transId => {
+        db.prepare(`DELETE FROM transactions WHERE id = ?`).run(transId);
+    });
+    
+    // 8. Delete stations (references eventId)
     db.prepare(`DELETE FROM stations WHERE eventId = ?`).run(id);
     
-    // 8. Finally delete the event
+    // 9. Finally delete the event
     const result = db.prepare(`DELETE FROM events WHERE id = ?`).run(id);
     
     db.prepare("COMMIT").run();

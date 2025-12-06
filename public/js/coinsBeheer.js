@@ -27,9 +27,11 @@ document.getElementById("koopform").addEventListener("submit", async (e) => {
     const result = await res.json();
 
     if(result.success){
-        showNotification(`Succesvol ${buyAmount} FestCoins toegevoegd.`);
+        sessionStorage.setItem('showNotification', `Succesvol ${buyAmount} FestCoins toegevoegd.`);
         document.getElementById("buyAmount").value="";
         updateFestCoinDisplay(result.newAmount);
+        // Refresh page to update transactions
+        window.location.reload();
     } else{
         errorMsg.textContent = result.error;
     }
@@ -52,9 +54,11 @@ document.getElementById("verkoopform").addEventListener("submit", async (e) => {
     const result = await res.json();
 
     if(result.success){
-        showNotification(`Succesvol ${sellAmount} FestCoins teruggestort.`);
+        sessionStorage.setItem('showNotification', `Succesvol ${sellAmount} FestCoins teruggestort.`);
         document.getElementById("sellAmount").value = "";
         updateFestCoinDisplay(result.newAmount);
+        // Refresh page to update transactions
+        window.location.reload();
     } else{
         errorMsg.textContent = result.error;
     }
@@ -78,12 +82,12 @@ document.getElementById("shareform").addEventListener("submit", async (e) => {
     const result = await res.json();
 
     if(result.success){
-        showNotification(`Succesvol ${shareAmount} FestCoins gestuurd!`);
+        sessionStorage.setItem('showNotification', `Succesvol ${shareAmount} FestCoins gestuurd!`);
         document.getElementById("shareAmount").value = "";
         document.getElementById("shareReceiver").value = "";
         updateFestCoinDisplay(result.newAmount);
-        // Reload transactions
-        if(typeof loadAllTransactions === 'function') loadAllTransactions();
+        // Refresh page to update transactions
+        window.location.reload();
     } else{
         errorMsg.textContent = result.error;
     }
@@ -92,13 +96,22 @@ document.getElementById("shareform").addEventListener("submit", async (e) => {
 // Load all transactions
 async function loadAllTransactions() {
     try {
-        const res = await fetch("/festcoins-transactions");
+        const res = await fetch("/coins/festcoins-transactions");
         const data = await res.json();
-        if (data.success) {
+        if (data.success && data.transactions) {
             renderAllTransactions(data.transactions);
+        } else {
+            const container = document.getElementById("allTransactionsList");
+            if (container) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">Geen transacties gevonden</p>';
+            }
         }
     } catch (err) {
-        console.error(err);
+        console.error('Error loading all transactions:', err);
+        const container = document.getElementById("allTransactionsList");
+        if (container) {
+            container.innerHTML = '<p class="text-red-500 text-center py-4">Fout bij het laden van transacties</p>';
+        }
     }
 }
 
@@ -186,36 +199,31 @@ window.closeAllTransactions = function() {
     document.getElementById('allTransactionsPopup').classList.add('hidden');
 }
 
-// Dynamic updates for wallet page
-let walletUpdateInterval = null;
-
+// Load transactions on page load
 document.addEventListener('DOMContentLoaded', () => {
-    // Update FestCoins and transactions every 3 seconds
-    walletUpdateInterval = setInterval(async () => {
-        try {
-            // Update FestCoins
-            const festRes = await fetch('/user/festcoins');
-            const festData = await festRes.json();
-            if(festData.success){
-                updateFestCoinDisplay(festData.festCoins);
-            }
-
-            // Update transactions
-            const transRes = await fetch('/user/transactions');
-            const transData = await transRes.json();
-            if(transData.success){
-                updateTransactionsDisplay(transData.transactions);
-            }
-        } catch(err){
-            console.error('Error updating wallet:', err);
-        }
-    }, 3000);
-
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-        if(walletUpdateInterval) clearInterval(walletUpdateInterval);
-    });
+    // Load initial transactions
+    loadInitialTransactions();
 });
+
+async function loadInitialTransactions() {
+    try {
+        // Update FestCoins
+        const festRes = await fetch('/list/user/festcoins');
+        const festData = await festRes.json();
+        if(festData.success){
+            updateFestCoinDisplay(festData.festCoins);
+        }
+
+        // Update transactions
+        const transRes = await fetch('/list/user/transactions');
+        const transData = await transRes.json();
+        if(transData.success){
+            updateTransactionsDisplay(transData.transactions);
+        }
+    } catch(err){
+        console.error('Error loading wallet data:', err);
+    }
+}
 
 function updateTransactionsDisplay(transactions){
     const container = document.getElementById('transactionsList');

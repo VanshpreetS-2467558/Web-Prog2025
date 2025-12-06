@@ -42,7 +42,14 @@ eventListRouter.post("/events/:id/leave", requireLogin("bezoeker"), (req, res) =
 
   // Eventueel cart resetten
   req.session.cart = [];
-  res.redirect("/event/evenementen");
+  
+  // If request is from sendBeacon (beforeunload), return 200 OK
+  // Otherwise redirect to event list
+  if (req.headers['content-type']?.includes('multipart/form-data') || req.headers['user-agent']?.includes('beacon')) {
+    res.status(200).send('OK');
+  } else {
+    res.redirect("/event/evenementen");
+  }
 });
 
 // Heartbeat endpoint

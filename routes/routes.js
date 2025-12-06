@@ -13,8 +13,8 @@ router.get("/home", (req, res) => {
 
 // hoe werkt het pagina
 router.get("/HoeWerktFestCoin", (request, response) => {
-  const zichtbaar = request.query.zichtbaar || "bezoeker";
-  response.render("pages/instructies", {zichtbaar,bezoekerStappen, groepspotStappen, organisatorStappen});
+  const instructions = request.query.instructions || "bezoeker";
+  response.render("pages/instructies", {instructions,bezoekerStappen, groepspotStappen, organisatorStappen});
 });
 
 // bezoeker pagina
