@@ -1,9 +1,8 @@
 ## BUG
 
-- [ ] QR-code wordt niet geshowed bij (individuele) bestelling maar heeft wel 6cijferige code (qr-code steekt wel in database)
+- [x] QR-code wordt niet geshowed bij (individuele) bestelling maar heeft wel 6cijferige code (qr-code steekt wel in database)
 - [ ] org dashboard ge ziet niet hoeveel bezoekers bij grafiek (geeft niet veel info)
 - [ ] instructies page moet terug kloppen, want werking is beetje anders
-- [ ] photon werkt niet meer precies
 - [ ] ? (check voor eventuele bugs)
 ------
 - [ ] Zorgen dat het werkt met DOCKER en database in een volume zetten
