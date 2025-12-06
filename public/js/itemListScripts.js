@@ -1054,12 +1054,24 @@ function startDynamicUpdates(){
     updateItemStocks();
   }, 5000);
 
-  // Cleanup on page unload
-  // No need to close visit - it will automatically become inactive after 2 minutes without heartbeat
+  // Cleanup on page unload - close visit by setting leftAt
   window.addEventListener('beforeunload', () => {
     if(festCoinsPollInterval) clearInterval(festCoinsPollInterval);
     if(heartbeatInterval) clearInterval(heartbeatInterval);
     if(stockUpdateInterval) clearInterval(stockUpdateInterval);
+    
+    // Close visit when leaving page (using fetch with keepalive for reliability)
+    if(typeof eventId !== 'undefined' && eventId) {
+      // Use fetch with keepalive flag for reliable delivery even if page is closing
+      fetch(`/list/events/${eventId}/leave`, {
+        method: 'POST',
+        keepalive: true,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+      }).catch(() => {}); // Ignore errors since page is closing
+    }
   });
 }
 

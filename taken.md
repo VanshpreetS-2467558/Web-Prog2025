@@ -1,7 +1,7 @@
 ## BUG
 
 - [ ] QR-code wordt niet geshowed bij (individuele) bestelling maar heeft wel 6cijferige code (qr-code steekt wel in database)
-- [x] heartbeat werkt neit bij visits van evenementen
+- [ ] org dashboard ge ziet niet hoeveel bezoekers bij grafiek (geeft niet veel info)
 - [ ] instructies page moet terug kloppen, want werking is beetje anders
 - [ ] notificaties van alert vervangen door showNotification
 - [ ] ? (check voor eventuele bugs)

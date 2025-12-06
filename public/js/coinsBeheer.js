@@ -64,32 +64,38 @@ document.getElementById("verkoopform").addEventListener("submit", async (e) => {
     }
 });
 
-document.getElementById("shareform").addEventListener("submit", async (e) => {
-    e.preventDefault();
+// Wait for DOM to be ready before adding event listener
+document.addEventListener('DOMContentLoaded', () => {
+    const shareForm = document.getElementById("shareform");
+    if (shareForm) {
+        shareForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-    const shareAmount = parseInt(document.getElementById("shareAmount").value);
-    const shareReceiver = parseInt(document.getElementById("shareReceiver").value);
-    const errorMsg = document.getElementById("errorMsgShare")
+            const shareAmount = parseInt(document.getElementById("shareAmount").value);
+            const shareReceiver = parseInt(document.getElementById("shareReceiver").value);
+            const errorMsg = document.getElementById("errorMsgShare")
 
-    if( !shareAmount || !shareReceiver) return errorMsg.textContent = "Vul alle velden in!";
-    if(shareAmount <= 0) return errorMsg.textContent = "Geef een waarde groter dan nul in."
+            if( !shareAmount || !shareReceiver) return errorMsg.textContent = "Vul alle velden in!";
+            if(shareAmount <= 0) return errorMsg.textContent = "Geef een waarde groter dan nul in."
 
-    const res = await fetch("/coins/shareAmount", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ shareAmount, shareReceiver }),
-    });
-    const result = await res.json();
+            const res = await fetch("/coins/shareAmount", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ shareAmount, shareReceiver }),
+            });
+            const result = await res.json();
 
-    if(result.success){
-        sessionStorage.setItem('showNotification', `Succesvol ${shareAmount} FestCoins gestuurd!`);
-        document.getElementById("shareAmount").value = "";
-        document.getElementById("shareReceiver").value = "";
-        updateFestCoinDisplay(result.newAmount);
-        // Refresh page to update transactions
-        window.location.reload();
-    } else{
-        errorMsg.textContent = result.error;
+            if(result.success){
+                sessionStorage.setItem('showNotification', `Succesvol ${shareAmount} FestCoins gestuurd!`);
+                document.getElementById("shareAmount").value = "";
+                document.getElementById("shareReceiver").value = "";
+                updateFestCoinDisplay(result.newAmount);
+                // Refresh page to update transactions
+                window.location.reload();
+            } else{
+                errorMsg.textContent = result.error;
+            }
+        });
     }
 });
 

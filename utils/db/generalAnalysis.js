@@ -62,13 +62,12 @@ export function getTopCitiesByVisitors(limit = 10) {
 export function getCategorySalesRevenue() {
   return db.prepare(`
     SELECT 
-      COALESCE(i.category, 'Onbekend') as category,
+      COALESCE(ti.itemCategory, 'Onbekend') as category,
       COALESCE(SUM(ti.itemPrice * ti.quantity), 0) as revenue
     FROM transactions t
     JOIN transaction_items ti ON t.id = ti.transactionId
-    JOIN items i ON ti.itemId = i.id
-    WHERE i.category IS NOT NULL
-    GROUP BY i.category
+    WHERE ti.itemCategory IS NOT NULL
+    GROUP BY ti.itemCategory
     ORDER BY revenue DESC
   `).all();
 }
@@ -77,13 +76,12 @@ export function getCategorySalesRevenue() {
 export function getCategorySalesQuantity() {
   return db.prepare(`
     SELECT 
-      COALESCE(i.category, 'Onbekend') as category,
+      COALESCE(ti.itemCategory, 'Onbekend') as category,
       COALESCE(SUM(ti.quantity), 0) as quantity
     FROM transactions t
     JOIN transaction_items ti ON t.id = ti.transactionId
-    JOIN items i ON ti.itemId = i.id
-    WHERE i.category IS NOT NULL
-    GROUP BY i.category
+    WHERE ti.itemCategory IS NOT NULL
+    GROUP BY ti.itemCategory
     ORDER BY quantity DESC
   `).all();
 }
@@ -107,7 +105,7 @@ export function getTopItemsBySales(limit = 5) {
 export function getCategoryStatistics() {
   return db.prepare(`
     SELECT 
-      COALESCE(i.category, 'Onbekend') as category,
+      COALESCE(ti.itemCategory, 'Onbekend') as category,
       COUNT(DISTINCT ti.itemName) as uniqueItems,
       SUM(ti.quantity) as totalSold,
       SUM(ti.itemPrice * ti.quantity) as totalRevenue,
@@ -115,20 +113,19 @@ export function getCategoryStatistics() {
       COUNT(DISTINCT t.id) as transactionCount
     FROM transactions t
     JOIN transaction_items ti ON t.id = ti.transactionId
-    JOIN items i ON ti.itemId = i.id
-    WHERE i.category IS NOT NULL
-    GROUP BY i.category
+    WHERE ti.itemCategory IS NOT NULL
+    GROUP BY ti.itemCategory
     ORDER BY totalRevenue DESC
   `).all();
 }
 
 // Get top items per category
 export function getTopItemsPerCategory(limitPerCategory = 3) {
-  // Get all categories first
+  // Get all categories first from transaction_items
   const categories = db.prepare(`
-    SELECT DISTINCT category
-    FROM items
-    WHERE category IS NOT NULL
+    SELECT DISTINCT itemCategory as category
+    FROM transaction_items
+    WHERE itemCategory IS NOT NULL
   `).all();
 
   const result = {};
@@ -141,8 +138,7 @@ export function getTopItemsPerCategory(limitPerCategory = 3) {
         SUM(ti.itemPrice * ti.quantity) as revenue
       FROM transactions t
       JOIN transaction_items ti ON t.id = ti.transactionId
-      JOIN items i ON ti.itemId = i.id
-      WHERE i.category = ?
+      WHERE ti.itemCategory = ?
       GROUP BY ti.itemName
       ORDER BY sold DESC
       LIMIT ?

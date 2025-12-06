@@ -235,13 +235,16 @@ export function makeTransaction(userId, itemsDict){
 
         // 6. voeg items toe + update stock
         const insertItem = db.prepare(`
-            INSERT INTO transaction_items (transactionId, itemId, itemName, itemPrice, quantity)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO transaction_items (transactionId, itemId, itemName, itemPrice, quantity, itemCategory)
+            VALUES (?, ?, ?, ?, ?, ?)
         `);
         const updateStock = db.prepare("UPDATE items SET stock = stock - ? WHERE id = ?");
 
         itemsData.forEach(it => {
-            insertItem.run(transactionId, it.id, it.name, it.price, it.qty);
+            // Get category from item
+            const item = db.prepare("SELECT category FROM items WHERE id = ?").get(it.id);
+            const category = item?.category || 'Others';
+            insertItem.run(transactionId, it.id, it.name, it.price, it.qty, category);
             updateStock.run(it.qty, it.id);
         });
 

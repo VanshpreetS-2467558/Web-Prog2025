@@ -37,10 +37,19 @@ eventListRouter.post("/events/:id/leave", requireLogin("bezoeker"), (req, res) =
   const eventId = req.params.id;
   const userId = req.session.user.id;
 
-  // No need to close visit - it will automatically become inactive after 2 minutes without heartbeat
-  // Just reset cart and redirect
+  // Close visit by setting leftAt timestamp
+  closeVisit(eventId, userId);
+
+  // Reset cart
   req.session.cart = [];
-  res.redirect("/event/evenementen");
+  
+  // If request is from beforeunload (keepalive), return 200 OK
+  // Otherwise redirect to event list
+  if (req.headers['content-type']?.includes('application/json')) {
+    res.status(200).json({ success: true });
+  } else {
+    res.redirect("/event/evenementen");
+  }
 });
 
 // Heartbeat endpoint

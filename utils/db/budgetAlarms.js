@@ -111,8 +111,7 @@ export function getCategorySpending(userId, category) {
             SELECT COALESCE(SUM(ti.itemPrice * ti.quantity), 0) as total
             FROM transaction_items ti
             JOIN transactions t ON ti.transactionId = t.id
-            JOIN items i ON ti.itemId = i.id
-            WHERE t.bezoekerId = ? AND i.category = ? AND datetime(t.date) > datetime(?)
+            WHERE t.bezoekerId = ? AND COALESCE(ti.itemCategory, 'Others') = ? AND datetime(t.date) > datetime(?)
         `).get(userId, category, resetDate);
         
         return result ? result.total : 0;
@@ -121,8 +120,7 @@ export function getCategorySpending(userId, category) {
             SELECT COALESCE(SUM(ti.itemPrice * ti.quantity), 0) as total
             FROM transaction_items ti
             JOIN transactions t ON ti.transactionId = t.id
-            JOIN items i ON ti.itemId = i.id
-            WHERE t.bezoekerId = ? AND i.category = ?
+            WHERE t.bezoekerId = ? AND COALESCE(ti.itemCategory, 'Others') = ?
         `).get(userId, category);
         
         return result ? result.total : 0;

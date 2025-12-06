@@ -109,11 +109,22 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       itemName TEXT NOT NULL,
       itemPrice INTEGER NOT NULL,
       quantity INTEGER NOT NULL,
+      itemCategory TEXT,
       FOREIGN KEY(transactionId) REFERENCES transactions(id) ON DELETE CASCADE,
       FOREIGN KEY(itemId) REFERENCES items(id) ON DELETE SET NULL
       
     ) STRICT
   `).run();
+  
+  // Add itemCategory column if it doesn't exist (migration)
+  try {
+    db.prepare(`ALTER TABLE transaction_items ADD COLUMN itemCategory TEXT`).run();
+  } catch (err) {
+    // Column already exists, ignore error
+    if (!err.message.includes('duplicate column') && !err.message.includes('duplicate column name')) {
+      console.error('Error adding itemCategory column:', err.message);
+    }
+  }
   
   // event visitors table
   db.prepare(`

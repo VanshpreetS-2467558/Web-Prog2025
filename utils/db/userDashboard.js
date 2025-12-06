@@ -6,13 +6,12 @@ export function getSpendingPerCategory(userId) {
     try {
         const result = db.prepare(`
             SELECT 
-                i.category,
+                COALESCE(ti.itemCategory, 'Others') as category,
                 COALESCE(SUM(ti.itemPrice * ti.quantity), 0) as total
             FROM transaction_items ti
             JOIN transactions t ON ti.transactionId = t.id
-            JOIN items i ON ti.itemId = i.id
             WHERE t.bezoekerId = ?
-            GROUP BY i.category
+            GROUP BY ti.itemCategory
         `).all(userId);
         
         // Ensure all categories are represented
@@ -97,14 +96,14 @@ export function getEventSpendingDetails(userId, eventId) {
         
         const categoryBreakdown = db.prepare(`
             SELECT 
-                i.category,
+                COALESCE(ti.itemCategory, 'Others') as category,
                 COALESCE(SUM(ti.itemPrice * ti.quantity), 0) as total
             FROM transactions t
             JOIN transaction_items ti ON t.id = ti.transactionId
-            JOIN items i ON ti.itemId = i.id
-            JOIN stations s ON i.locationId = s.id
+            LEFT JOIN items i ON ti.itemId = i.id
+            LEFT JOIN stations s ON i.locationId = s.id
             WHERE t.bezoekerId = ? AND s.eventId = ?
-            GROUP BY i.category
+            GROUP BY ti.itemCategory
         `).all(userId, eventId);
         
         return {
@@ -239,7 +238,7 @@ export function getUserTransactions(userId, limit = null) {
                         ti.itemName,
                         ti.quantity,
                         ti.itemPrice,
-                        i.category,
+                        COALESCE(ti.itemCategory, 'Others') as category,
                         s.name as stationName,
                         s.eventId,
                         e.name as eventName
@@ -373,7 +372,7 @@ export function getTransactionDetails(transactionId, userId) {
             const items = db.prepare(`
                 SELECT 
                     ti.*,
-                    i.category,
+                    COALESCE(ti.itemCategory, 'Others') as category,
                     s.name as stationName,
                     e.name as eventName,
                     e.location as eventLocation
