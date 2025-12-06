@@ -554,21 +554,23 @@ function updateCitiesList(citiesData) {
     
     container.innerHTML = citiesData.map((city, index) => {
         const rank = index + 1;
-        let rankColor = 'bg-gray-500';
+        let rankColor = '';
         let rankText = 'text-white';
         
         if (rank === 1) {
-            rankColor = 'bg-yellow-500';
+            rankColor = 'bg-gradientkleurBR';
         } else if (rank === 2) {
-            rankColor = 'bg-gray-400';
+            rankColor = 'bg-gradientkleurSmallText';
         } else if (rank === 3) {
-            rankColor = 'bg-orange-600';
+            rankColor = 'bg-purple-500';
+        } else {
+            rankColor = 'bg-blue-400';
         }
         
         return `
             <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
                 <div class="flex items-center space-x-4">
-                    <div class="w-10 h-10 ${rankColor} ${rankText} rounded-full flex items-center justify-center font-bold text-lg">
+                    <div class="w-10 h-10 ${rankColor} ${rankText} rounded-full flex items-center justify-center font-bold text-lg shadow-md">
                         ${rank}
                     </div>
                     <div>
