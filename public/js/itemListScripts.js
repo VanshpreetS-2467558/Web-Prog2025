@@ -122,27 +122,39 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function generateQRCode(qrCode, containerId){
+    if(!qrCode) {
+      console.error('No QR code provided');
+      return;
+    }
+    
     const container = document.getElementById(containerId);
-    if(!container) return;
+    if(!container) {
+      console.error('Container not found:', containerId);
+      return;
+    }
+    
+    // Clear container
     container.innerHTML = '';
     
-    if(typeof QRCode !== 'undefined'){
-      try {
-        new QRCode(container, {
-          text: qrCode,
-          width: 192,
-          height: 192,
-          colorDark: "#000000",
-          colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.H
-        });
-      } catch(error){
-        console.error('QR Code generation error:', error);
-        container.innerHTML = `<div class="text-center p-4"><p class="text-xs text-gray-600 break-all">${qrCode}</p></div>`;
-      }
-    } else {
-      // Fallback: show QR code as text
-      container.innerHTML = `<div class="text-center p-4"><p class="text-xs text-gray-600 break-all">${qrCode}</p></div>`;
+    // Check if QRCode library is loaded
+    if(typeof QRCode === 'undefined' || !QRCode) {
+      console.warn('QRCode library not loaded, showing text fallback');
+      container.innerHTML = `<div class="text-center p-4 w-full h-full flex items-center justify-center"><p class="text-xs text-gray-600 break-all">${qrCode}</p></div>`;
+      return;
+    }
+    
+    try {
+      new QRCode(container, {
+        text: qrCode,
+        width: 192,
+        height: 192,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    } catch(error){
+      console.error('QR Code generation error:', error);
+      container.innerHTML = `<div class="text-center p-4 w-full h-full flex items-center justify-center"><p class="text-xs text-gray-600 break-all">${qrCode}</p></div>`;
     }
   }
 
@@ -711,74 +723,29 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     
-    const qrContainer = document.getElementById('qrCodeContainer');
+    // Show dialog first
+    const qrDialog = document.getElementById('qrDialog');
+    if(!qrDialog) {
+      console.error('QR dialog not found');
+      alert('QR dialog niet gevonden. Probeer de pagina te verversen.');
+      return;
+    }
+    qrDialog.classList.remove('hidden');
+    
+    // Use unique ID for order QR code container to avoid conflict with groepspot
+    const qrContainer = document.getElementById('orderQrCodeContainer');
     
     if(!qrContainer) {
-      console.error('QR container not found');
+      console.error('Order QR container not found');
       alert('QR code container niet gevonden. Probeer de pagina te verversen.');
       return;
     }
     
-    // Clear previous QR code and set container size
+    // Clear previous QR code
     qrContainer.innerHTML = '';
-    qrContainer.style.width = '200px';
-    qrContainer.style.height = '200px';
-    qrContainer.style.minWidth = '200px';
-    qrContainer.style.minHeight = '200px';
-    qrContainer.style.display = 'flex';
-    qrContainer.style.alignItems = 'center';
-    qrContainer.style.justifyContent = 'center';
     
-    // Function to generate QR code
-    function generateQR() {
-      // Clear container first
-      qrContainer.innerHTML = '';
-      
-      // Check if QRCode library is available
-      if(typeof QRCode !== 'undefined' && QRCode) {
-        try {
-          // Generate QR code
-          new QRCode(qrContainer, {
-            text: qrCode,
-            width: 200,
-            height: 200,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
-          });
-          console.log('QR code generated successfully:', qrCode);
-        } catch(err) {
-          console.error('Error generating QR code:', err);
-          // Fallback: show code as text
-          qrContainer.innerHTML = `<div class="text-center p-4 w-full h-full flex flex-col items-center justify-center"><p class="text-lg font-bold text-gray-800 mb-2">Code:</p><p class="text-2xl font-mono text-blue-600">${qrCode}</p></div>`;
-        }
-      } else {
-        console.warn('QRCode library not loaded, showing text');
-        // Fallback: show code as text
-        qrContainer.innerHTML = `<div class="text-center p-4 w-full h-full flex flex-col items-center justify-center"><p class="text-lg font-bold text-gray-800 mb-2">Code:</p><p class="text-2xl font-mono text-blue-600">${qrCode}</p></div>`;
-      }
-    }
-    
-    // Wait a bit for library to be fully loaded, then generate
-    setTimeout(() => {
-      if(typeof QRCode !== 'undefined' && QRCode) {
-        generateQR();
-      } else {
-        // Wait for library to load with more attempts
-        let attempts = 0;
-        const checkLibrary = setInterval(() => {
-          attempts++;
-          if(typeof QRCode !== 'undefined' && QRCode) {
-            clearInterval(checkLibrary);
-            generateQR();
-          } else if(attempts > 20) {
-            clearInterval(checkLibrary);
-            // Show text fallback after 2 seconds
-            qrContainer.innerHTML = `<div class="text-center p-4 w-full h-full flex flex-col items-center justify-center"><p class="text-lg font-bold text-gray-800 mb-2">Code:</p><p class="text-2xl font-mono text-blue-600">${qrCode}</p></div>`;
-          }
-        }, 100);
-      }
-    }, 200);
+    // Generate QR code immediately - no delay needed
+    generateQRCode(qrCode, 'orderQrCodeContainer');
     
     // Show station name (use fallback if null)
     const qrStationName = document.getElementById('qrStationName');
@@ -845,13 +812,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         window.orderTimerInterval = setInterval(updateTimer, 1000);
       }
-    }
-    
-    const qrDialog = document.getElementById('qrDialog');
-    if(qrDialog) {
-      qrDialog.classList.remove('hidden');
-    } else {
-      console.error('QR dialog not found');
     }
   }
   
