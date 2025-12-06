@@ -1,5 +1,5 @@
 import express from "express";
-import {updateCoins, idExists ,getUserById, transferCoins, createFestCoinsTransaction} from "../utils/dbHulpfuncties.js";
+import {updateCoins, idExists ,getUserById, transferCoins, createFestCoinsTransaction, getUserTypeById} from "../utils/dbHulpfuncties.js";
 import {checkUserAndAmount} from "../utils/validatieHulpfuncties.js";
 
 const beheerCoinsRouter = express.Router();
@@ -73,7 +73,7 @@ beheerCoinsRouter.post("/shareAmount", async (req, res) =>{
     if(shareReceiver === user.id) return res.json({success: false, error: "Je kan geen FestCoins naar jezelf sturen."});
     if(!idExists(shareReceiver)) return res.json({success: false, error: "Er bestaat geen account met ID: " + shareReceiver});
     const errorCheck = checkUserAndAmount(user, shareAmount, user?.festCoins);
-    if(errorCheck) return res.json({ success: false, error });
+    if(errorCheck) return res.json({ success: false, error: errorCheck });
 
     try{
         const result = transferCoins({fromUser: user, toUser: receiver, amount: shareAmount});

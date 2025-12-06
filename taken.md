@@ -4,9 +4,8 @@
 - [ ] org dashboard ge ziet niet hoeveel bezoekers bij grafiek (geeft niet veel info)
 - [ ] instructies page moet terug kloppen, want werking is beetje anders
 - [ ] notificaties van alert vervangen door showNotification
+- [ ] photon werkt niet meer precies
 - [ ] ? (check voor eventuele bugs)
-- [ ] photon werkt niet meer ?
-- [x] share button werkt niet door internal server error door unexpected 1 new line ofz?
 
 ---
 
