@@ -1,6 +1,6 @@
 ## BUG
 
-- [ ] Zorgen dat het werkt met DOCKER en database in een volume zetten
+- [ ] employee dashboard werkend maken
 - alle belangrijke code nakijken + commentaar zetten en mss anders schrijven als mogelijk..
 
 ## 'fuck da' type todo's
