@@ -209,5 +209,90 @@ dashboardRouter.get("/export-pdf", requireLogin("organisator"), async (req, res)
   }
 });
 
-export default dashboardRouter;
+// Get all transactions for dashboard
+dashboardRouter.get("/transactions", requireLogin("bezoeker"), async (request, response) => {
+  const { getUserTransactions } = await import("../utils/dbHulpfuncties.js");
+  const transactions = getUserTransactions(request.session.user.id);
+  response.json({ success: true, transactions });
+});
 
+
+// Get event spending details
+dashboardRouter.get("/event/:eventId/details", requireLogin("bezoeker"), async (request, response) => {
+  const { getEventSpendingDetails } = await import("../utils/dbHulpfuncties.js");
+  const eventId = parseInt(request.params.eventId);
+  const details = getEventSpendingDetails(request.session.user.id, eventId);
+  response.json({ success: true, details });
+});
+
+// Get transaction details
+dashboardRouter.get("/transaction/:transactionId/details", requireLogin("bezoeker"), async (request, response) => {
+  try {
+    const { getTransactionDetails } = await import("../utils/dbHulpfuncties.js");
+    const transactionId = parseInt(request.params.transactionId);
+    const transaction = getTransactionDetails(transactionId, request.session.user.id);
+    if (transaction) {
+      response.json({ success: true, transaction });
+    } else {
+      response.json({ success: false, error: "Transactie niet gevonden" });
+    }
+  } catch (error) {
+    console.error("Transaction details error:", error);
+    response.json({ success: false, error: error.message });
+  }
+});
+
+// Get dashboard data (for real-time updates) - visitor only
+dashboardRouter.get("/user-data", requireLogin("bezoeker"), async (request, response) => {
+  try {
+    const {
+      getSpendingPerCategory,
+      getSpendingPerEvent,
+      getSpendingToday,
+      getTotalSpending,
+      getUserTransactions
+    } = await import("../utils/dbHulpfuncties.js");
+    
+    const categorySpending = getSpendingPerCategory(request.session.user.id);
+    const eventSpending = getSpendingPerEvent(request.session.user.id);
+    const todaySpending = getSpendingToday(request.session.user.id);
+    const totalSpending = getTotalSpending(request.session.user.id);
+    const recentTransactions = getUserTransactions(request.session.user.id, 5);
+    
+    response.json({
+      success: true,
+      categorySpending,
+      eventSpending,
+      todaySpending,
+      totalSpending,
+      recentTransactions
+    });
+  } catch (error) {
+    console.error("Dashboard data error:", error);
+    response.json({ success: false, error: error.message });
+  }
+});
+
+// Get user points
+dashboardRouter.get("/points", requireLogin("bezoeker"), async (request, response) => {
+  const { getUserPoints } = await import("../utils/dbHulpfuncties.js");
+  const points = getUserPoints(request.session.user.id);
+  response.json({ success: true, points });
+});
+
+// Claim points reward
+dashboardRouter.post("/points/claim", requireLogin("bezoeker"), async (request, response) => {
+  const { claimPointsReward, getUserById } = await import("../utils/dbHulpfuncties.js");
+  const result = claimPointsReward(request.session.user.id);
+  
+  if (result.success) {
+    // Update session FestCoins
+    const user = getUserById(request.session.user.id);
+    request.session.user.festCoins = user.festCoins;
+    response.json(result);
+  } else {
+    response.json(result);
+  }
+});
+
+export default dashboardRouter;
