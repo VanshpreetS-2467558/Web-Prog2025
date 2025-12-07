@@ -43,7 +43,8 @@ run: `npm run dev` --> voor tailwind tijdens dev
 ## Deployment wnr klaar
 
 build: `docker build . -t webprogramming/project`
-run: `docker run -it -p 8080:80 webprogramming/project`
+volume: `docker volume create webProject`
+run: `docker run -it -p 8080:80 -v webProject:/website/databaseFiles webprogramming/project`
 
 ## Notes on your submission
 
