@@ -38,7 +38,7 @@ app.use(session({
 app.set("view engine", "ejs");
 app.set("views", "./views");
 
-// process.env.DEPLOYMENT is set by Docker Entrypoint // kan later weg
+// process.env.DEPLOYMENT is set by Docker Entrypoint // kan weg right?????????????????????
 if (!process.env.DEPLOYMENT) {
   console.info("Development mode");
   // Serve static files from the "public" directory
