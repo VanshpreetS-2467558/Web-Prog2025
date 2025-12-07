@@ -1,6 +1,6 @@
 import Database from "better-sqlite3";
 
-export const db = new Database("database.db", { verbose: console.log });
+export const db = new Database("databaseFiles/database.db", { verbose: console.log });
 
 export function InitializeDatabase() { // moet async als we gaan hashen (met bcrypt?)
   db.pragma("journal_mode = WAL;");
