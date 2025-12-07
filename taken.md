@@ -1,7 +1,6 @@
 ## BUG
 
 - [ ] org dashboard ge ziet niet hoeveel bezoekers bij grafiek (geeft niet veel info)
-- [ ] instructies page moet terug kloppen, want werking is beetje anders
 - [ ] ? (check voor eventuele bugs)
 ------
 - [ ] Zorgen dat het werkt met DOCKER en database in een volume zetten
