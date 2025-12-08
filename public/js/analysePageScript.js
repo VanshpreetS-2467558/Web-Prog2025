@@ -126,6 +126,8 @@ function updateSummaryCards(summary) {
 function updateCitiesChart(citiesData) {
     const canvas = document.getElementById('citiesChart');
     if (!canvas) return;
+
+    citiesData = citiesData.sort((a, b) => b.visitorCount - a.visitorCount).slice(0, 3);
     
     const ctx = canvas.getContext('2d');
     
@@ -560,11 +562,11 @@ function updateCitiesList(citiesData) {
         if (rank === 1) {
             rankColor = 'bg-gradientkleurBR';
         } else if (rank === 2) {
-            rankColor = 'bg-gradientkleurSmallText';
+            rankColor = 'bg-gradientkleurBR';
         } else if (rank === 3) {
-            rankColor = 'bg-purple-500';
+            rankColor = 'bg-gradientkleurBR';
         } else {
-            rankColor = 'bg-blue-400';
+            rankColor = 'bg-gradientkleurBR';
         }
         
         return `
