@@ -98,6 +98,7 @@
 </section>
 
 <script>
+window.userRole = "<%= user.role %>";
 function showTab(tabName) {
     // Hide all tabs
     document.querySelectorAll('.tab-content-dashboard').forEach(tab => {
@@ -128,6 +129,7 @@ function showTab(tabName) {
     if (recentSection) {
         if (tabName === 'analytics') {
             recentSection.classList.remove('hidden');
+            
         } else {
             recentSection.classList.add('hidden');
         }

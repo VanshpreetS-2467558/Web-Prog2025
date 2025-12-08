@@ -65,23 +65,22 @@
     </div>
 </div>
 
+
 <script>
 // Handle view all transactions button click
 document.addEventListener('DOMContentLoaded', () => {
     const viewAllBtn = document.getElementById('viewAllTransactionsBtn');
     if (viewAllBtn) {
         viewAllBtn.addEventListener('click', () => {
-            // Check if user is visitor (has showTab function) or organizer (has loadAllTransactions)
-            if (typeof showTab === 'function') {
-                // For visitor: switch to transactions tab
-                showTab('transactions');
-            } else if (typeof loadAllTransactions === 'function') {
-                // For organizer: open modal
+            const role = "<%= user.role %>";
+            if (role === 'organisator' || role === 'employee') {
                 loadAllTransactions();
                 const modal = document.getElementById('allTransactionsModal');
                 if (modal) {
                     modal.classList.remove('hidden');
                 }
+            } else {
+                showAllTransactions();
             }
         });
     }

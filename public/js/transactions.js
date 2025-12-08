@@ -77,7 +77,8 @@ function renderRecentTransactions(transactions) {
     }
 
     // Check if user is organizer (eventSelect only exists for organizers)
-    const isOrganizer = document.getElementById('eventSelect') !== null;
+    const isOrganizer = (window.userRole === 'organisator' || window.userRole === 'employee');
+
 
     container.innerHTML = transactions.map(t => {
         const date = new Date(t.date);
@@ -150,7 +151,8 @@ function renderAllTransactions(transactions) {
     }
 
     // Check if user is organizer (eventSelect only exists for organizers)
-    const isOrganizer = document.getElementById('eventSelect') !== null;
+    const isOrganizer = (window.userRole === 'organisator' || window.userRole === 'employee');
+
 
     container.innerHTML = transactions.map(t => {
         const date = new Date(t.date);
