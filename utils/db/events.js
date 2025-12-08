@@ -4,9 +4,40 @@ export function checkEventName(name) {
   return !!db.prepare("SELECT id FROM events WHERE LOWER(name) = LOWER(?)").get(name);
 }
 
-// Alias for backward compatibility
-export function checkNameEvent(name) {
-  return checkEventName(name);
+export function checkStationName(eventId, name) {
+  return !!db
+    .prepare("SELECT id FROM stations WHERE eventId = ? AND LOWER(name) = LOWER(?)")
+    .get(eventId, name);
+}
+
+export function checkItemName(locationId, name) {
+  return !!db
+    .prepare("SELECT id FROM items WHERE locationId = ? AND LOWER(name) = LOWER(?)")
+    .get(locationId, name);
+}
+
+export function getAllEventsByOrganisator(organisatorid) {
+  return db
+    .prepare("SELECT * FROM events WHERE organisatorid = ?")
+    .all(organisatorid) || [];
+}
+
+export function getAllStationsByEvent(eventId) {
+  return db
+    .prepare("SELECT * FROM stations WHERE eventId = ?")
+    .all(eventId) || [];
+}
+
+export function getAllItemsByStation(locationId) {
+  return db
+    .prepare("SELECT * FROM items WHERE locationId = ?")
+    .all(locationId) || [];
+}
+
+export function getAllEvents() {
+  return db
+    .prepare("SELECT * FROM events")
+    .all() || [];
 }
 
 export function createEvent({ organisatorid, name, location, description, startDate, endDate }) {
@@ -126,3 +157,16 @@ export function getEventsById(userId) {
     .all(userId);
 }
 
+export function createLocationByEvent(eventId, name) {
+  db.prepare(`
+    INSERT INTO stations (eventId, name)
+    VALUES (?, ?)
+  `).run(eventId, name);
+}
+
+export function createItemByLocation(locationId, name, price, stock, category) {
+  db.prepare(`
+      INSERT INTO items (locationId, name, price, stock, category)
+      VALUES (?, ?, ?, ?, ?)
+  `).run(locationId, name, price, stock, category);
+}

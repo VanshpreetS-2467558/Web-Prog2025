@@ -58,11 +58,12 @@
                   <% } else { %>
                     <div class="grid gap-2">
                       <% st.items.forEach(it => { %>
-                        <div id="item-<%= it.id %>" class="flex justify-between items-center p-3 bg-gray-100 rounded-lg">
+                        <div id="item-<%= it.id %>" class="flex justify-between items-center p-3 bg-pink-100 rounded-lg">
                           <div>
                             <p class="font-bold text-lg"><%= it.name %></p>
                             <p class="font-semibold text-base"><%= it.price %> FestCoins</p>
                             <p class="text-sm text-gray-500">Voorraad: <%= it.stock %></p>
+                            <p class="text-sm text-gray-500">Categorie: <%= it.category %></p>
                           </div>
                           <button class="px-1 py-1" onclick="deleteItem('<%= it.id %>', '<%= event.id %>')">
                             <img src="/assets/icons/delete.png" alt="Delete" class="w-6 h-6">

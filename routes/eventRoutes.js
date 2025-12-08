@@ -1,10 +1,23 @@
 import express from "express";
-import { checkEventName, createEvent, deleteEvent, searchEventById, updateEventById } from "../utils/db/events.js";
+import { checkEventName,
+    checkStationName,
+    getAllItemsByStation,
+    getAllEventsByOrganisator,
+    getAllEvents,
+    getAllStationsByEvent,
+    checkItemName,
+    createEvent,
+    deleteEvent,
+    searchEventById,
+    updateEventById,
+    createLocationByEvent,
+    createItemByLocation
+} from "../utils/db/events.js";
 import { deleteItem } from "../utils/db/items.js";
 import { deleteLocation } from "../utils/db/stations.js";
 import {requireLogin} from "../middleware/requireLogin.js";
+import { getActiveVisitorsCount } from "../utils/dbHulpfuncties.js";
 
-import { db } from "../db.js";
 
 const eventRouter = express.Router();
 
@@ -12,11 +25,9 @@ const eventRouter = express.Router();
 eventRouter.get("/event-management", requireLogin("organisator"), async (req, res) => {
     try {
         const orgId = req.session.user.id;
-        const events = db.prepare("SELECT * FROM events WHERE organisatorid = ?").all(orgId) || [];
+        const events = getAllEventsByOrganisator(orgId);
 
         const now = new Date();
-
-        const { getActiveVisitorsCount } = await import("../utils/dbHulpfuncties.js");
 
         events.forEach(event => {
             
@@ -26,10 +37,9 @@ eventRouter.get("/event-management", requireLogin("organisator"), async (req, re
             
             // Add visitor count
             event.attendees = getActiveVisitorsCount(event.id);
-
-            const stations = db.prepare("SELECT * FROM stations WHERE eventId = ?").all(event.id) || [];
+            const stations = getAllStationsByEvent(event.id);
             stations.forEach(station => {
-                station.items = db.prepare("SELECT * FROM items WHERE locationId = ?").all(station.id) || [];
+                station.items = getAllItemsByStation(station.id);
             });
             event.stations = stations;
         });
@@ -45,7 +55,7 @@ eventRouter.get("/evenementen", requireLogin("bezoeker"), async (req, res) => {
     try {
         const now = new Date();
 
-        let events = db.prepare("SELECT * FROM events").all() || [];
+        let events = getAllEvents();
 
         // filter op live (events die nu actief zijn)
         events = events.filter(event => {
@@ -54,9 +64,6 @@ eventRouter.get("/evenementen", requireLogin("bezoeker"), async (req, res) => {
                 const end = new Date(event.endDate);
                 // Event is live als nu tussen start en end is (inclusief end tijd)
                 const isLive = now >= start && now <= end;
-                if (!isLive) {
-                    console.log(`Event ${event.id} (${event.name}) is not live: now=${now}, start=${start}, end=${end}`);
-                }
                 return isLive;
             } catch (err) {
                 console.error(`Error parsing dates for event ${event.id}:`, err);
@@ -70,7 +77,6 @@ eventRouter.get("/evenementen", requireLogin("bezoeker"), async (req, res) => {
             event.attendees = getActiveVisitorsCount(event.id);
         });
 
-        console.log(`Found ${events.length} live events out of ${db.prepare("SELECT COUNT(*) as count FROM events").get()?.count || 0} total events`);
         res.render("pages/eventLijst", { events });
     } catch (err) {
         console.error("Error in /evenementen route:", err);
@@ -108,15 +114,12 @@ eventRouter.post("/addLocation", async (req,res) => {
     try{
 
         // check of naam al bestaat voor dat event
-        const existing = db.prepare("SELECT id FROM stations WHERE eventId = ? AND name = ?").get(eventId, name);
+        const existing = checkStationName(eventId, name);
         if (existing) {
             return res.json({ success: false, error: "Er bestaat al een locatie met deze naam voor dit evenement." });
         }
 
-        db.prepare(`
-        INSERT INTO stations (eventId, name)
-        VALUES (?, ?)
-        `).run(eventId, name);
+        createLocationByEvent(eventId, name);
 
         res.json({ success: true });
     } catch(err){
@@ -131,18 +134,18 @@ eventRouter.post("/addItem", async (req, res) => {
     if (!sectionId || !name || !price || !stock || !category) {
         return res.json({ success: false, error: "Alle velden zijn verplicht." });
     }
+    if(price <= 0 || stock <= 0){
+        return res.json({ success: false, error: "Prijs en voorraad moeten groter zijn dan 0." });
+    }
 
     try {
         // Check if item with same name already exists in this station
-        const existing = db.prepare("SELECT id FROM items WHERE locationId = ? AND name = ?").get(sectionId, name);
+        const existing = checkItemName(sectionId, name);
         if (existing) {
             return res.json({ success: false, error: "Er bestaat al een item met deze naam in dit station." });
         }
 
-        db.prepare(`
-            INSERT INTO items (locationId, name, price, stock, category)
-            VALUES (?, ?, ?, ?, ?)
-        `).run(sectionId, name, price, stock, category);
+        createItemByLocation(sectionId, name, price, stock, category);
 
         res.json({ success: true });
     } catch(err) {

@@ -1,8 +1,6 @@
 ## BUG
 
-- [ ] employee dashboard werkend maken
-- [x] wordt bij event verwijderen ook de employee account verwijderd?
-- [x] negatieve waardes bij items fixen !
+- [x] employee dashboard werkend maken
 - [ ] Alles responsive maken
 - [ ] budget alarm fixen (moet manueel refreshen en mss andere oplossing voor huidige uitgaven)
 - alle belangrijke code nakijken + commentaar zetten en mss anders schrijven als mogelijk..

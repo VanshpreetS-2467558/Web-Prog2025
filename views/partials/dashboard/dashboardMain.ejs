@@ -9,7 +9,7 @@
         <% } else if(user.role === "organisator") { %>
             <p class="text-gray-600">Admin Dashboard - Live overzicht van je evenement</p>
         <% } else if(user.role === "employee") { %>
-            <p class="text-gray-600">Station Dashboard - Live overzicht van locatie: <%= user.stationName || "placeholder" %></p>
+            <p class="text-gray-600">Station Dashboard - Live overzicht van locatie: <%= user.stationName %></p>
         <% } %>
             </div>
             <% if(user.role === "organisator" && typeof events !== 'undefined' && events.length > 0) { %>
