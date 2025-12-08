@@ -71,9 +71,15 @@ function updateSalesChart(salesData) {
 
     salesData.forEach((d) => {
         const bar = document.createElement('div');
-        bar.className = 'bg-blue-500 w-6';
+        bar.className = 'bg-blue-500 w-6 sales-bar'; // <-- voeg sales-bar toe
         bar.style.height = `${(d.sales / maxSales) * 100}%`;
         bar.title = `${d.time}: ${d.sales} FestCoins`;
+        
+        // Voeg data attributen toe voor de modal
+        bar.dataset.hour = d.time;
+        bar.dataset.sales = d.sales;
+        bar.dataset.count = d.count;
+
         container.appendChild(bar);
 
         const label = document.createElement('span');
@@ -81,7 +87,22 @@ function updateSalesChart(salesData) {
         label.textContent = d.time;
         labelsContainer.appendChild(label);
     });
+
+    document.querySelectorAll('.sales-bar').forEach(bar => {
+        bar.addEventListener('click', () => {
+            const hour = bar.dataset.hour;
+            const sales = bar.dataset.sales;
+            const count = bar.dataset.count;
+
+            document.getElementById('modalHour').textContent = hour;
+            document.getElementById('modalSales').textContent = `Totale FestCoins: ${sales}`;
+            document.getElementById('modalCount').textContent = `Aantal transacties: ${count}`;
+            
+            document.getElementById('salesModal').classList.remove('hidden');
+        });
+    });
 }
+
 
 function updatePopularItems(items) {
     const container = document.getElementById('popularItems');
@@ -109,3 +130,9 @@ function updatePopularItems(items) {
         </div>`;
     }).join('');
 }
+
+window.closeModal = function() {
+  const modal = document.getElementById('salesModal');
+  if(modal) modal.classList.add('hidden');
+}
+
