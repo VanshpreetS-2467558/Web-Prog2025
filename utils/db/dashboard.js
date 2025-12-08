@@ -228,3 +228,43 @@ export function getTotalTransactions(organizerId, eventId = null) {
   return result?.count || 0;
 }
 
+
+export function getStationRevenueByEmployee(employeeId) {
+  const stationRow = db.prepare(`
+    SELECT s.id
+    FROM stations s
+    JOIN employees emp ON s.id = emp.stationId
+    WHERE emp.userId = ?
+  `).get(employeeId);
+  if(!stationRow) return 0;
+  const revenueRow = db.prepare(`
+    SELECT COALESCE(SUM(t.totalPrice), 0) as total
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    JOIN items i ON ti.itemId = i.id
+    WHERE i.locationId = ?
+  `).get(stationRow.id);
+
+  return revenueRow?.total || 0;
+}
+
+export function getEventInfoByEmployee(employeeId) {
+  const eventRow = db.prepare(`
+    SELECT e.id, e.startDate, e.endDate
+    FROM events e
+    JOIN stations s ON e.id = s.eventId
+    JOIN employees emp ON s.id = emp.stationId
+    WHERE emp.userId = ?
+    AND datetime(e.startDate) <= datetime('now')
+    AND datetime(e.endDate) >= datetime('now')
+    ORDER BY e.startDate DESC
+    LIMIT 1
+  `).get(employeeId);
+
+  if(!eventRow) return null;
+  return{
+    id: eventRow.id,
+    startDate: eventRow.startDate,
+    endDate: eventRow.endDate
+  }
+}

@@ -10,7 +10,9 @@ import {
   getTransactionsPerHourToday,
   getEventInfo,
   getTotalItemsSold,
-  getTotalTransactions
+  getTotalTransactions,
+  getStationRevenueByEmployee,
+  getEventInfoByEmployee
 } from "../utils/db/dashboard.js";
 import { getAllTransactionsForOrganizer } from "../utils/db/transactions.js";
 import { db } from "../db.js";
@@ -93,6 +95,22 @@ dashboardRouter.get("/data", requireLogin("organisator"), async (req, res) => {
         transactionsPerHour,
         eventInfo
       }
+    });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, error: "internal server error" });
+  }
+});
+
+dashboardRouter.get("/employee-data", requireLogin("employee"), async (req, res) => {
+  try {
+    const employeeId = req.session.user.id;
+
+    const stationRevenue = getStationRevenueByEmployee(employeeId);
+    const eventTimer = getEventInfoByEmployee(employeeId);
+    res.json({
+      success: true,
+      data: { stationRevenue, eventTimer }
     });
   } catch (err) {
     console.error(err);

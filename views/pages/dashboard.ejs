@@ -22,6 +22,8 @@
         <script type="module" src="/js/dashboardOrg.js"></script>
     <% } else if(user.role === "bezoeker") { %>
         <script type="module" src="/js/dashboardUser.js"></script>
+    <% } else if(user.role === "employee") {%>
+        <script type="module" src="/js/dashboardEmployee.js"></script>
     <% } %>
     <script type="module" src="/js/transactions.js"></script>
 
