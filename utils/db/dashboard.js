@@ -268,3 +268,53 @@ export function getEventInfoByEmployee(employeeId) {
     endDate: eventRow.endDate
   }
 }
+
+export function getSalesTodayByEmployee(employeeId) {
+  const stationRow = db.prepare(`
+    SELECT s.id
+    FROM stations s
+    JOIN employees emp ON s.id = emp.stationId
+    WHERE emp.userId = ?
+  `).get(employeeId);
+  if(!stationRow) return [];
+  const salesData = db.prepare(`
+    SELECT 
+      strftime('%H:00', t.date) as time,
+      COALESCE(SUM(t.totalPrice), 0) as sales,
+      COUNT(DISTINCT t.id) as count
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    JOIN items i ON ti.itemId = i.id
+    WHERE i.locationId = ?
+    AND DATE(t.date) = DATE('now')
+    GROUP BY strftime('%H:00', t.date)
+    ORDER BY time
+  `).all(stationRow.id);
+
+  return salesData;
+}
+
+export function getPopularItemsByEmployee(employeeId) {
+  const stationRow = db.prepare(`
+    SELECT s.id
+    FROM stations s
+    JOIN employees emp ON s.id = emp.stationId
+    WHERE emp.userId = ?
+  `).get(employeeId);
+  if(!stationRow) return [];
+  const popularItems = db.prepare(`
+    SELECT 
+      ti.itemName as name,
+      SUM(ti.quantity) as sold,
+      SUM(ti.itemPrice * ti.quantity) as revenue
+    FROM transactions t
+    JOIN transaction_items ti ON t.id = ti.transactionId
+    JOIN items i ON ti.itemId = i.id
+    WHERE i.locationId = ?
+    GROUP BY ti.itemName
+    ORDER BY sold DESC
+    LIMIT 5
+  `).all(stationRow.id);
+
+  return popularItems;
+}

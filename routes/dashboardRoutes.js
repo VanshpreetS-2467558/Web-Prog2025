@@ -12,7 +12,9 @@ import {
   getTotalItemsSold,
   getTotalTransactions,
   getStationRevenueByEmployee,
-  getEventInfoByEmployee
+  getEventInfoByEmployee,
+  getSalesTodayByEmployee,
+  getPopularItemsByEmployee
 } from "../utils/db/dashboard.js";
 import { getAllTransactionsForOrganizer } from "../utils/db/transactions.js";
 import { db } from "../db.js";
@@ -108,9 +110,11 @@ dashboardRouter.get("/employee-data", requireLogin("employee"), async (req, res)
 
     const stationRevenue = getStationRevenueByEmployee(employeeId);
     const eventTimer = getEventInfoByEmployee(employeeId);
+    const salesToday = getSalesTodayByEmployee(employeeId);
+    const popularItems = getPopularItemsByEmployee(employeeId);
     res.json({
       success: true,
-      data: { stationRevenue, eventTimer }
+      data: { stationRevenue, eventTimer, salesToday, popularItems }
     });
   } catch (err) {
     console.error(err);
