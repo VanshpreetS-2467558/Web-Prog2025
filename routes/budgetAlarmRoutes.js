@@ -10,6 +10,22 @@ import {
 
 const budgetAlarmRouter = express.Router();
 
+
+// budget alarm pagina (bezoeker)
+budgetAlarmRouter.get("/", requireLogin("bezoeker"), async (request, response) => {
+  const { getBudgetAlarms, getCategorySpending } = await import("../utils/dbHulpfuncties.js");
+  const alarms = getBudgetAlarms(request.session.user.id);
+  
+  // Add current spending for each alarm
+  const alarmsWithSpending = alarms.map(alarm => ({
+    ...alarm,
+    currentSpending: getCategorySpending(request.session.user.id, alarm.category)
+  }));
+  
+  response.render("pages/budgetAlarm", { alarms: alarmsWithSpending });
+});
+
+
 // Get all budget alarms for user
 budgetAlarmRouter.get("/", requireLogin("bezoeker"), (req, res) => {
     try {

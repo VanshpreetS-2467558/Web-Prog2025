@@ -4,6 +4,7 @@ import {checkUserAndAmount} from "../utils/validatieHulpfuncties.js";
 
 const beheerCoinsRouter = express.Router();
 
+
 // add amount
 beheerCoinsRouter.post("/addAmount", async (req, res) => {
     const {buyAmount} = req.body;

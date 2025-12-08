@@ -16,7 +16,7 @@
 
 Het project werkt volledig zoals bedoeld. Alle kernfunctionaliteiten zijn operationeel en er zijn meerdere extra’s toegevoegd.
 
-- Aparte frontends voor bezoekers en organisatoren
+- Aparte frontends voor bezoekers, organisatoren en werknemers
 - Accountsysteem met correcte rolverdeling
 - Wachtwoorden worden gehashed opgeslagen
 - “Blijf ingelogd”-functionaliteit

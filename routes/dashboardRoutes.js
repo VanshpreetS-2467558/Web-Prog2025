@@ -17,6 +17,57 @@ import { db } from "../db.js";
 
 const dashboardRouter = express.Router();
 
+
+// dashboard pagina
+dashboardRouter.get("/", requireLogin() ,async (request,response)=>{
+  try{
+    if (request.session.user.role === "organisator") {
+      const { getEventsById } = await import("../utils/db/events.js");
+      const events = getEventsById(request.session.user.id);
+      response.render("pages/dashboard", { events });
+
+    } else if (request.session.user.role === "bezoeker") {
+      const {
+        getSpendingPerCategory,
+        getSpendingPerEvent,
+        getSpendingToday,
+        getTotalSpending,
+        getUserTransactions,
+        getUserPoints
+      } = await import("../utils/dbHulpfuncties.js");
+
+      const categorySpending = getSpendingPerCategory(request.session.user.id);
+      const eventSpending = getSpendingPerEvent(request.session.user.id);
+      const todaySpending = getSpendingToday(request.session.user.id);
+      const totalSpending = getTotalSpending(request.session.user.id);
+      const recentTransactions = getUserTransactions(request.session.user.id, 3);
+      const userPoints = getUserPoints(request.session.user.id);
+
+      const dashboardData = {
+        categorySpending,
+        eventSpending,
+        todaySpending,
+        recentTransactions: getUserTransactions(request.session.user.id, 3)
+      };
+
+      response.render("pages/dashboard", {
+        categorySpending,
+        eventSpending,
+        todaySpending,
+        totalSpending,
+        recentTransactions,
+        userPoints
+        });
+    } else {
+      response.render("pages/dashboard");
+    }
+  }catch(error) {
+      console.error("Dashboard error:", error);
+      response.status(500).render("error_pages/500");
+  }
+});
+
+
 // Get dashboard data for organizer
 dashboardRouter.get("/data", requireLogin("organisator"), async (req, res) => {
   try {

@@ -21,7 +21,7 @@
             <a href="/dashboard" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Dashboard</a>
             <% if(user.role === "bezoeker") {  %>
                 <a href="/wallet" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Beheer FestCoins</a>
-                <a href="/budget-alarm" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Budget Alarm</a>
+                <a href="/budget-alarms" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Budget Alarm</a>
                 <a href="/event/evenementen" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Actieve evenementen</a>
             <% } else if(user.role === "organisator") { %>
                 <a href="/event/event-management" class="block px-4 py-2 text-sm text-blue-500 focus:bg-gray-100">Mijn Evenement</a>

@@ -57,77 +57,6 @@ router.get("/registreren", (request,response)=>{
   response.render("pages/registreren");
 });
 
-// dashboard pagina
-router.get("/dashboard", requireLogin() ,async (request,response)=>{
-  try{
-    if (request.session.user.role === "organisator") {
-      const { getEventsById } = await import("../utils/db/events.js");
-      const events = getEventsById(request.session.user.id);
-      response.render("pages/dashboard", { events });
-
-    } else if (request.session.user.role === "bezoeker") {
-      const {
-        getSpendingPerCategory,
-        getSpendingPerEvent,
-        getSpendingToday,
-        getTotalSpending,
-        getUserTransactions,
-        getUserPoints
-      } = await import("../utils/dbHulpfuncties.js");
-
-      const categorySpending = getSpendingPerCategory(request.session.user.id);
-      const eventSpending = getSpendingPerEvent(request.session.user.id);
-      const todaySpending = getSpendingToday(request.session.user.id);
-      const totalSpending = getTotalSpending(request.session.user.id);
-      const recentTransactions = getUserTransactions(request.session.user.id, 3);
-      const userPoints = getUserPoints(request.session.user.id);
-
-      const dashboardData = {
-        categorySpending,
-        eventSpending,
-        todaySpending,
-        recentTransactions: getUserTransactions(request.session.user.id, 3)
-      };
-
-      response.render("pages/dashboard", {
-        categorySpending,
-        eventSpending,
-        todaySpending,
-        totalSpending,
-        recentTransactions,
-        userPoints
-        });
-    } else {
-      response.render("pages/dashboard");
-    }
-  }catch(error) {
-      console.error("Dashboard error:", error);
-      response.status(500).render("error_pages/500");
-  }
-});
-
-// wallet pagina (bezoeker)
-router.get("/wallet", requireLogin("bezoeker") , async (request,response)=>{
-  const { getFestCoinsTransactions } = await import("../utils/dbHulpfuncties.js");
-  const transactions = getFestCoinsTransactions(request.session.user.id, 4);
-  const tab = request.query.tab || "buy"; // Default to buy tab
-  response.render("pages/walletBeheer", { transactions, tab });
-});
-
-// budget alarm pagina (bezoeker)
-router.get("/budget-alarm", requireLogin("bezoeker"), async (request, response) => {
-  const { getBudgetAlarms, getCategorySpending } = await import("../utils/dbHulpfuncties.js");
-  const alarms = getBudgetAlarms(request.session.user.id);
-  
-  // Add current spending for each alarm
-  const alarmsWithSpending = alarms.map(alarm => ({
-    ...alarm,
-    currentSpending: getCategorySpending(request.session.user.id, alarm.category)
-  }));
-  
-  response.render("pages/budgetAlarm", { alarms: alarmsWithSpending });
-});
-
 // profiel pagina
 router.get("/profile", requireLogin() ,(request,response)=>{
   response.render("pages/profielSettings");
@@ -138,10 +67,17 @@ router.get("/wachtwoord-vergeten", (request,response)=>{
   response.render("pages/wachtwoordVergeten");
 });
 
-
 // Workstation pagina (employee) voor scannen en werken
-router.get("/workStation", requireLogin() ,(request,response)=>{
+router.get("/workStation", requireLogin("employee") ,(request,response)=>{
   response.render("pages/workStation");
+});
+
+// wallet pagina (bezoeker)
+router.get("/wallet", requireLogin("bezoeker") , async (request,response)=>{
+  const { getFestCoinsTransactions } = await import("../utils/dbHulpfuncties.js");
+  const transactions = getFestCoinsTransactions(request.session.user.id, 4);
+  const tab = request.query.tab || "buy";
+  response.render("pages/walletBeheer", { transactions, tab });
 });
 
 // employeeBeheer pagina

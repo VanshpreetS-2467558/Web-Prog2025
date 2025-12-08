@@ -1,11 +1,15 @@
 ## BUG
 
 - [ ] employee dashboard werkend maken
-- [ ] wordt bij event verwijderen ook de employee account verwijderd? 
+- [x] wordt bij event verwijderen ook de employee account verwijderd?
+- [x] negatieve waardes bij items fixen !
+- [ ] Alles responsive maken
+- [ ] budget alarm fixen (moet manueel refreshen en mss andere oplossing voor huidige uitgaven)
 - alle belangrijke code nakijken + commentaar zetten en mss anders schrijven als mogelijk..
 
 ## 'fuck da' type todo's
 
+- [ ] ingelogd blijven op ander tablad?
 - [ ] notificaties van alert vervangen door showNotification
 - [ ] als er tijd over is dark mode (extra feature)
 - [ ] als er tijd mogelijk is languages toevoegen (extra feature)
@@ -91,14 +95,10 @@ run: `docker run -it -p 8080:80 -v webProject:/website/databaseFiles webprogramm
 - een "wat is populair" pagina waar je kan zien wat het populairste drank/eten is bij alle evenementen die gekocht worden, welke locaties het meeste bezoekers heeft gemiddeld en andere analyses ofzo zodat organisatoren kunnen zien wat we best kunnen verkopen qua eten en drinken + welke locaties het populairste zijn
 - je kan een qr-code scannen Of applepay/ (andriod pay?) gebruiken om via gsm te betalen (NFC tyype shi)
 
-
-
-Kun je de employee dashboard werkend maken? 
+Kun je de employee dashboard werkend maken?
 
 Dus de totale omzet die ze hebben bij station, event timer werkend maken, gewoon eentje die afteld hoeveel uren nog en vanonder in het klein (in vakje nog) de start en eind datum van event
 
 daaronder werkende grafiek met verkopen vandaag per uur , en daarlanfs een mooite visualisatie zaols mijn placdeholder per item hoeveeleheid verkocht..
 
 en dan daaronder de binnengekomen bestellingen dus geschidenus eig
-
-

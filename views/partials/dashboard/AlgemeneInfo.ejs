@@ -11,11 +11,11 @@
         <div class="p-8 bg-gradientkleurBR text-white rounded-lg shadow">
             <p class="text-2xl font-bold mb-2">Vandaag besteed</p>
             <div id="todaySpendingDisplay" class="text-3xl font-bold mb-1">
-                <%= typeof todaySpending !== 'undefined' ? todaySpending : 0 %> FestCoins
+                <%= typeof todaySpending !== 'undefined' ? todaySpending : 0 %>
             </div>
             <div class="text-sm opacity-90 mt-2">Transacties van vandaag</div>
             <div class="text-sm opacity-75 mt-3 pt-3 border-t border-white border-opacity-30">
-                Totaal besteed: <span id="totalSpendingDisplay" class="font-semibold"><%= typeof totalSpending !== 'undefined' ? totalSpending : 0 %> FestCoins</span>
+                Totaal besteed: <span id="totalSpendingDisplay" class="font-semibold"><%= typeof totalSpending !== 'undefined' ? totalSpending : 0 %></span>
             </div>
         </div>
     </div>
@@ -49,7 +49,7 @@
 <% } else if(user.role === "employee"){  %>
     <div class="grid md:grid-cols-2 gap-6 mb-8">
         <div class="p-8 bg-gradientkleurBR text-white rounded-lg shadow">
-            <p class="text-2xl font-bold mb-2">Totale Omzet (<%= user.stationName || "Placeholder" %>)</p>
+            <p class="text-2xl font-bold mb-2">Totale Omzet (<%= user.stationName %>)</p>
             <div class="text-3xl font-bold mb-1"><%= user.festCoins %></div>
             <div class="text-1xl font-bold mb-1"><%= user.festCoins %> Euro</div>
         </div>
