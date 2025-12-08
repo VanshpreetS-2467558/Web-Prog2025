@@ -76,24 +76,71 @@
         </div>
 
     <% } else if(user.role === "organisator") { %>
-
-        <!-- Verkopen vandaag -->
-        <%- include("orgVerkochte") %>
+        <!-- Tabs -->
+        <div class="mb-8">
+            <div class="border-b-2 border-gray-200">
+                <div class="flex space-x-4">
+                    <button onclick="showTab('analytics')" 
+                            class="tab-btn-dashboard px-6 py-3 font-semibold border-b-2 border-purple-500 text-purple-500 transition-colors"
+                            data-tab="analytics">
+                        Analytics
+                    </button>
+                    <button onclick="showTab('transactions')" 
+                            class="tab-btn-dashboard px-6 py-3 font-semibold border-b-2 border-transparent text-gray-500 hover:text-purple-500 transition-colors"
+                            data-tab="transactions">
+                        📋 Transacties
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Points Tab -->
+        <div id="analyticsTab" class="tab-content-dashboard hidden">
+            <%- include("orgVerkochte") %>
+        </div>
+        <!-- Transactions Tab -->
+        <div id="transactionsTab" class="tab-content-dashboard hidden">
+            <div id="transactionsTabContent">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
 
     <% } else if(user.role === "employee") { %>
-        
-        <%- include("employeeDashboard") %>
-
-    <% } %>
-
-    <!-- Recente transacties (only show in analytics tab for bezoeker) -->
-    <% if(user.role === "bezoeker") { %>
-        <div id="recentTransactionsSection" class="tab-content-dashboard">
-            <%- include("recenteTransacties") %>
+        <!-- Tabs -->
+        <div class="mb-8">
+            <div class="border-b-2 border-gray-200">
+                <div class="flex space-x-4">
+                    <button onclick="showTab('analytics')" 
+                            class="tab-btn-dashboard px-6 py-3 font-semibold border-b-2 border-purple-500 text-purple-500 transition-colors"
+                            data-tab="analytics">
+                        Analytics
+                    </button>
+                    <button onclick="showTab('transactions')" 
+                            class="tab-btn-dashboard px-6 py-3 font-semibold border-b-2 border-transparent text-gray-500 hover:text-purple-500 transition-colors"
+                            data-tab="transactions">
+                        📋 Transacties
+                    </button>
+                </div>
+            </div>
         </div>
-    <% } else { %>
-        <%- include("recenteTransacties") %>
+        <!-- Points Tab -->
+        <div id="analyticsTab" class="tab-content-dashboard hidden">
+            <%- include("employeeDashboard") %>
+        </div>
+        <!-- Transactions Tab -->
+        <div id="transactionsTab" class="tab-content-dashboard hidden">
+            <div id="transactionsTabContent">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+
     <% } %>
+
+    
+
+    <div id="recentTransactionsSection" class="tab-content-dashboard">
+        <%- include("recenteTransacties") %>
+    </div>
+   
 
 </section>
 
@@ -141,7 +188,7 @@ function showTab(tabName) {
 
 async function loadTransactionsTab() {
     try {
-        const response = await fetch('/dashboard/transactions');
+        const response = await fetch('/transactions/all');
         const data = await response.json();
         
         if (data.success) {
