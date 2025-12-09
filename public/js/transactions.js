@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadRecentTransactions();
 
     // Open modal when button is clicked
-    if (viewAllBtn) {
+    if (viewAllBtn && window.userRole !== 'bezoeker') {
         viewAllBtn.addEventListener('click', () => {
             loadAllTransactions();
             modal.classList.remove('hidden');
