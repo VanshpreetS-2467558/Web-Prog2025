@@ -12,12 +12,21 @@ document.addEventListener('DOMContentLoaded', () => {
     loadRecentTransactions();
 
     // Open modal when button is clicked
-    if (viewAllBtn && window.userRole !== 'bezoeker') {
+    if (viewAllBtn) {
         viewAllBtn.addEventListener('click', () => {
-            loadAllTransactions();
-            modal.classList.remove('hidden');
+            if (window.userRole === 'bezoeker') {
+                // Voor bezoekers: switch naar tab
+                if (typeof showTab === 'function') {
+                    showTab('transactions');
+                }
+            } else {
+                // Voor organisatoren/employee: open modal
+                if (modal) modal.classList.remove('hidden');
+                loadAllTransactions(); // laadt de transacties dynamisch
+            }
         });
     }
+
 
     // Close modal
     if (closeModalBtn) {

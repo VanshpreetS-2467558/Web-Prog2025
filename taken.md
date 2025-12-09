@@ -1,6 +1,5 @@
 ## BUG
 
-- [ ] bezoeker dashboard: als ge op "bekijk alle transacties" klikt dan gaat die naar transacties en als ge terug gaat naar analytics komt er de popup van org-employee...?? En mss extrafunctie dat er naar boven wordt gescrolled als ge erop klikt
 - [ ] Alles responsive maken
 - [ ] budget alarm fixen (moet manueel refreshen en mss andere oplossing voor huidige uitgaven)
 - alle belangrijke code nakijken + commentaar zetten en mss anders schrijven als mogelijk..
