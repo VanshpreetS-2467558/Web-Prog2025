@@ -1,6 +1,5 @@
 ## BUG
 
-- [ ] budget alarm fixen (moet manueel refreshen en mss andere oplossing voor huidige uitgaven)
 - alle belangrijke code nakijken + commentaar zetten en mss anders schrijven als mogelijk..
 
 ## 'fuck da' type todo's

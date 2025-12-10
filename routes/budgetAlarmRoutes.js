@@ -44,7 +44,7 @@ budgetAlarmRouter.get("/", requireLogin("bezoeker"), (req, res) => {
 // Create or update budget alarm
 budgetAlarmRouter.post("/", requireLogin("bezoeker"), (req, res) => {
     try {
-        const { category, budgetLimit } = req.body;
+        const { category, budgetLimit, isUpdate } = req.body;
         
         if (!category || !budgetLimit || budgetLimit < 0) {
             return res.json({ success: false, error: "Ongeldige gegevens" });
@@ -55,45 +55,48 @@ budgetAlarmRouter.post("/", requireLogin("bezoeker"), (req, res) => {
             return res.json({ success: false, error: "Ongeldige categorie" });
         }
 
-        // Check if alarm already exists for this category (for new alarms)
-        const existingAlarm = getBudgetAlarms(req.session.user.id).find(a => a.category === category);
-        if (existingAlarm && !req.body.isUpdate) {
-            return res.json({ 
-                success: false, 
-                error: `Je hebt al een budget alarm voor "${category}". Gebruik de "Bewerken" knop om het te wijzigen.` 
-            });
-        }
+        const existingAlarm = getBudgetAlarms(req.session.user.id)
+            .find(a => a.category === category);
 
-        // Get current spending before update
+        // === ⭐ AUTO-UPDATE HIER ⭐ ===
+        // Als alarm bestaat, gaan we automatisch updaten
+        const isAutomaticUpdate = existingAlarm && !isUpdate;
+
+        // Bepalen of reset nodig is
         const currentSpending = getCategorySpending(req.session.user.id, category);
         const wasExceeded = existingAlarm && currentSpending > existingAlarm.budgetLimit;
-
-        // Always reset if updating and was exceeded
         const shouldReset = existingAlarm && wasExceeded;
 
-        const result = upsertBudgetAlarm(req.session.user.id, category, parseInt(budgetLimit), shouldReset);
-        if (result.success) {
-            const alarm = getBudgetAlarms(req.session.user.id).find(a => 
-                a.category === category
-            );
-            // If budget was exceeded and updated, reset spending tracking (will be 0 after resetDate update)
-            const alarmWithSpending = {
-                ...alarm,
-                currentSpending: shouldReset ? 0 : getCategorySpending(req.session.user.id, category)
-            };
-            res.json({ 
-                success: true, 
-                alarm: alarmWithSpending,
-                wasReset: shouldReset
-            });
-        } else {
-            res.json({ success: false, error: result.error });
+        const result = upsertBudgetAlarm(
+            req.session.user.id,
+            category,
+            parseInt(budgetLimit),
+            shouldReset
+        );
+
+        if (!result.success) {
+            return res.json({ success: false, error: result.error });
         }
+
+        const updatedAlarm = getBudgetAlarms(req.session.user.id)
+            .find(a => a.category === category);
+
+        res.json({
+            success: true,
+            updated: isAutomaticUpdate || isUpdate,
+            wasReset: shouldReset,
+            alarm: {
+                ...updatedAlarm,
+                currentSpending: shouldReset ? 0 : getCategorySpending(req.session.user.id, category)
+            }
+        });
+
     } catch (err) {
         console.error(err);
         res.json({ success: false, error: "Kon alarm niet aanmaken" });
     }
 });
+
 
 // Delete budget alarm
 budgetAlarmRouter.delete("/:id", requireLogin("bezoeker"), (req, res) => {

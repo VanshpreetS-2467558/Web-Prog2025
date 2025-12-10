@@ -1,4 +1,4 @@
-// Budget Alarm Management Scripts
+
 
 // Load alarms on page load
 document.addEventListener('DOMContentLoaded', () => {
@@ -121,31 +121,20 @@ document.getElementById('addAlarmForm').addEventListener('submit', async (e) => 
         
         if (data.success) {
             e.target.reset();
-            // Force reload all alarms to ensure no duplicates
             await loadAlarms();
-            showNotification('Budget alarm succesvol toegevoegd!', 'success');
+            sessionStorage.setItem('showNotification', data.updated 
+                ? "Bestaand budget alarm bijgewerkt!" 
+                : "Budget alarm succesvol toegevoegd!"
+            );
+            window.location.reload();
         } else {
-            // Check if it's a duplicate category error
-            if (data.error && data.error.includes('al een budget alarm')) {
-                // Find the existing alarm and suggest editing it
-                const alarms = await fetch('/budget-alarms').then(r => r.json()).then(d => d.alarms || []);
-                const existingAlarm = alarms.find(a => a.category === category);
-                if (existingAlarm) {
-                    const edit = confirm(`${data.error}\n\nWil je het bestaande alarm bewerken?`);
-                    if (edit) {
-                        editAlarm(existingAlarm.id, existingAlarm.category, existingAlarm.budgetLimit);
-                    }
-                } else {
-                    alert(data.error);
-                }
-            } else {
-                alert('Fout: ' + (data.error || 'Onbekende fout'));
-            }
+            alert('Fout: ' + (data.error || 'Onbekende fout'));
         }
     } catch (error) {
         console.error('Error adding alarm:', error);
         alert('Er is een fout opgetreden bij het toevoegen van het alarm.');
     }
+
 });
 
 // Edit alarm
@@ -191,9 +180,11 @@ document.getElementById('editAlarmForm').addEventListener('submit', async (e) =>
             // Force reload all alarms to ensure no duplicates
             await loadAlarms();
             if (data.wasReset) {
-                showNotification('Budget alarm bijgewerkt! Uitgaven zijn gereset naar 0.', 'success');
+                sessionStorage.setItem('showNotification', "Budget alarm bijgewerkt! Uitgaven zijn gereset naar 0.");
+                window.location.reload();
             } else {
-                showNotification('Budget alarm succesvol bijgewerkt!', 'success');
+                sessionStorage.setItem('showNotification', "Budget alarm succesvol bijgewerkt!");
+                window.location.reload();
             }
         } else {
             alert('Fout: ' + data.error);
@@ -216,7 +207,8 @@ window.toggleAlarm = async function(alarmId) {
         if (data.success) {
             // Force reload all alarms
             await loadAlarms();
-            showNotification(`Alarm ${data.isActive ? 'geactiveerd' : 'gedeactiveerd'}!`, 'success');
+            sessionStorage.setItem('showNotification', `Alarm ${data.isActive ? 'geactiveerd' : 'gedeactiveerd'}!`);
+            window.location.reload();
         } else {
             alert('Fout: ' + data.error);
         }
@@ -242,7 +234,8 @@ window.deleteAlarm = async function(alarmId) {
         if (data.success) {
             // Force reload all alarms to ensure deleted alarm is removed
             await loadAlarms();
-            showNotification('Budget alarm succesvol verwijderd!', 'success');
+            sessionStorage.setItem('showNotification', 'Budget alarm succesvol verwijderd!');
+            window.location.reload();
         } else {
             alert('Fout: ' + data.error);
         }
@@ -252,21 +245,7 @@ window.deleteAlarm = async function(alarmId) {
     }
 };
 
-// Show notification
-function showNotification(message, type = 'success') {
-    const notification = document.getElementById('notificatie');
-    if (notification) {
-        notification.textContent = message;
-        notification.className = `fixed top-16 right-4 px-4 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-500 ${
-            type === 'success' ? 'bg-green-500' : 'bg-red-500'
-        } text-white`;
-        notification.classList.remove('opacity-0', 'pointer-events-none');
-        
-        setTimeout(() => {
-            notification.classList.add('opacity-0', 'pointer-events-none');
-        }, 3000);
-    }
-}
+
 
 // Auto-refresh alarms every 10 seconds to update spending
 setInterval(() => {
