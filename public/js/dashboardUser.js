@@ -52,7 +52,7 @@ async function updateDashboardData() {
 // Update FestCoins balance in dashboard
 async function updateDashboardFestCoins() {
     try {
-        const response = await fetch('/user/festcoins');
+        const response = await fetch('/list/user/festcoins');
         const data = await response.json();
         if (data.success) {
             const festCoinsDisplay = document.getElementById('dashboardFestCoinsDisplay');

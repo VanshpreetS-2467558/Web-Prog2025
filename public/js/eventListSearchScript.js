@@ -39,7 +39,7 @@ async function updateVisitorCounts(){
         if(href){
             const eventId = href.split('/').pop();
             try {
-                const res = await fetch(`/events/${eventId}/visitors`);
+                const res = await fetch(`/list/events/${eventId}/visitors`);
                 const data = await res.json();
                 if(data.success){
                     const countEl = card.querySelector('[data-visitor-count]');

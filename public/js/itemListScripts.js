@@ -987,7 +987,7 @@ function startDynamicUpdates(){
   // Update FestCoins every 3 seconds
   festCoinsPollInterval = setInterval(async () => {
     try {
-      const res = await fetch('/user/festcoins');
+      const res = await fetch('/list/user/festcoins');
       const data = await res.json();
       if(data.success){
         user.festCoins = data.festCoins;
@@ -1051,7 +1051,7 @@ async function updateItemStocks(){
   itemCards.forEach(async (card) => {
     const itemId = card.getAttribute('data-item-id');
     try {
-      const res = await fetch(`/items/${itemId}/stock`);
+      const res = await fetch(`/list/items/${itemId}/stock`);
       const data = await res.json();
       if(data.success){
         const stockEl = card.querySelector('[data-stock]');
