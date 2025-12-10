@@ -1,5 +1,5 @@
 <section class="container mx-auto py-10">
-    <div class="mb-6 flex justify-between items-center">
+    <div class="mb-6 flex justify-between flex-col sm:flex-row gap-y-4  items-center">
         <div>
             <h2 class="text-3xl font-bold mb-2 ">Live Evenementen</h2>
             <p class="text-muted-foreground text-sm">Klik op het evenement waar je aanwezig bent!</p>
@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    <div class="grid gap-6 grid-cols-2 lg:grid-cols-4 max-h-[70vh] overflow-y-auto">
+    <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 max-h-[70vh] overflow-y-auto">
         <% if (events.length > 0) { %>
             <% events.forEach(event => { %>
                 <a href="/list/events/<%= event.id %>" class="eventCard border rounded-2xl p-4 hover:shadow-lg transition-shadow cursor-pointer">

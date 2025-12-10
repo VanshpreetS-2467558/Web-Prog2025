@@ -5,37 +5,37 @@
             <p class="text-xl text-muted-foreground">Kies je gewenste contactmethode en neem gerust contacto op!</p>
         </div>
 
-        <div class="grid grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
 
-        <!-- Email support -->
-        <%- include("../cards/stappen", {
-            icoon: "/assets/icons/email.png",
-            icoonAlt: "Email support",
-            title: "Email support",
-            uitleg: "We reageren binnen de 24 uur!",
-            knopNaam: "Email ons",
-            knopHref: "mailto:vanshpreet.singh@student.uhasselt.be",
-        }) %>
+            <!-- Email support -->
+            <%- include("../cards/stappen", {
+                icoon: "/assets/icons/email.png",
+                icoonAlt: "Email support",
+                title: "Email support",
+                uitleg: "We reageren binnen de 24 uur!",
+                knopNaam: "Email ons",
+                knopHref: "mailto:vanshpreet.singh@student.uhasselt.be",
+            }) %>
 
-        <!-- Telefonisch -->
-        <%- include("../cards/stappen", {
-            icoon: "/assets/icons/phone.png",
-            icoonAlt: "Telefonisch",
-            title: "Telefonisch",
-            uitleg: "Ma-Vr 09:00-18:00",
-            knopNaam: "+32 123456789",
-            knopHref: "tel:+32 123456789",
-        }) %>
+            <!-- Telefonisch -->
+            <%- include("../cards/stappen", {
+                icoon: "/assets/icons/phone.png",
+                icoonAlt: "Telefonisch",
+                title: "Telefonisch",
+                uitleg: "Ma-Vr 09:00-18:00",
+                knopNaam: "+32 123456789",
+                knopHref: "tel:+32 123456789",
+            }) %>
 
-        <!-- Live chat -->
-        <%- include("../cards/stappen", {
-            icoon: "/assets/icons/liveChat.png",
-            icoonAlt: "Live chat",
-            title: "Live Chat",
-            uitleg: "Direct antwoord online",
-            knopNaam: "Start Chat",
-            knopHref: "disable",
-        }) %>
+            <!-- Live chat -->
+            <%- include("../cards/stappen", {
+                icoon: "/assets/icons/liveChat.png",
+                icoonAlt: "Live chat",
+                title: "Live Chat",
+                uitleg: "Direct antwoord online",
+                knopNaam: "Start Chat",
+                knopHref: "disable",
+            }) %>
 
 
         </div>

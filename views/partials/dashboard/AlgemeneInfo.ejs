@@ -1,6 +1,6 @@
 <% if(user.role === "bezoeker") { %>
 
-    <div class="grid md:grid-cols-2 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div class="p-8 bg-gradientkleurBR text-white rounded-lg shadow">
             <p class="text-2xl font-bold mb-2">FestCoins</p>
             <div id="dashboardFestCoinsDisplay" class="text-3xl font-bold mb-1">
@@ -22,7 +22,7 @@
 
 <% } else if(user.role === "organisator" ) { %>
 
-    <div class="grid grid-cols-3 gap-6 mb-8" id="infoCardsGrid">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" id="infoCardsGrid">
         <div class="p-8 bg-gradientkleurSmallText text-white rounded-lg shadow">
             <p class="text-2xl font-bold mb-2">Totale Omzet</p>
             <div class="text-3xl font-bold mb-1" id="totalRevenue">0 FestCoins</div>
@@ -47,7 +47,7 @@
     </div>
 
 <% } else if(user.role === "employee"){  %>
-    <div class="grid md:grid-cols-2 gap-6 mb-8" id="infoCardsGridEmployee">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" id="infoCardsGridEmployee">
         <div class="p-8 bg-gradientkleurBR text-white rounded-lg shadow">
             <p class="text-2xl font-bold mb-2">Totale Omzet (<%= user.stationName %>)</p>
             <div class="text-3xl font-bold mb-1" id="totalRevenueStation">-</div>

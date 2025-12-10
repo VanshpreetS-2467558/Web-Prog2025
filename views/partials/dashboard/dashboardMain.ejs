@@ -1,33 +1,32 @@
-<section class="container mx-auto max-w-full p-14 border-2">
+<section class="container mx-auto max-w-full p-4 sm:p-6 md:p-14 border-2">
 
     <div class="mb-8">
-        <div class="flex justify-between items-center mb-4">
+        <div class="flex justify-between flex-col sm:flex-row items-center mb-4">
             <div>
-        <h1 class="text-3xl font-bold mb-2">Welkom terug, <%= user.name %>!</h1>
-        <% if(user.role === "bezoeker") { %>
-            <p class="text-gray-600">Bekijk rustig je overzicht.</p>
-        <% } else if(user.role === "organisator") { %>
-            <p class="text-gray-600">Admin Dashboard - Live overzicht van je evenement</p>
-        <% } else if(user.role === "employee") { %>
-            <p class="text-gray-600">Station Dashboard - Live overzicht van locatie: <%= user.stationName %></p>
-        <% } %>
+                <h1 class="text-3xl font-bold mb-2">Welkom terug, <%= user.name %>!</h1>
+                <% if(user.role === "bezoeker") { %>
+                    <p class="text-gray-600">Bekijk rustig je overzicht.</p>
+                <% } else if(user.role === "organisator") { %>
+                    <p class="text-gray-600">Admin Dashboard - Live overzicht van je evenement</p>
+                <% } else if(user.role === "employee") { %>
+                    <p class="text-gray-600">Station Dashboard - Live overzicht van locatie: <%= user.stationName %></p>
+                <% } %>
             </div>
             <% if(user.role === "organisator" && typeof events !== 'undefined' && events.length > 0) { %>
-                <div class="flex items-center gap-4">
-                    <label for="eventSelect" class="text-sm font-medium text-gray-700">Evenement:</label>
+                <div class="flex justify-end w-full sm:w-auto mt-4 sm:mt-0 space-x-2">
                     <select id="eventSelect" class="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">Alle evenementen</option>
                         <% events.forEach(event => { %>
                             <option value="<%= event.id %>"><%= event.name %></option>
                         <% }); %>
                     </select>
-                    <button id="exportPdfBtn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                    <button id="exportPdfBtn" class="hidden md:inline-block bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
                         Exporteer naar PDF
                     </button>
                 </div>
             <% } %>
         </div>
-        </div>
+    </div>
 
     <!-- info kaarten -->
     <%- include("AlgemeneInfo") %>
@@ -37,16 +36,16 @@
         <!-- Tabs -->
         <div class="mb-8">
             <div class="border-b-2 border-gray-200">
-                <div class="flex space-x-4">
+                <div class="flex space-x-2 md:space-x-4">
                     <button onclick="showTab('analytics')" 
                             class="tab-btn-dashboard px-6 py-3 font-semibold border-b-2 border-purple-500 text-purple-500 transition-colors"
                             data-tab="analytics">
-                        Analytics
+                        📊 Analytics
                     </button>
                     <button onclick="showTab('points')" 
                             class="tab-btn-dashboard px-6 py-3 font-semibold border-b-2 border-transparent text-gray-500 hover:text-purple-500 transition-colors"
                             data-tab="points">
-                        ⭐ Puntensysteem
+                        ⭐ FestSparks
                     </button>
                     <button onclick="showTab('transactions')" 
                             class="tab-btn-dashboard px-6 py-3 font-semibold border-b-2 border-transparent text-gray-500 hover:text-purple-500 transition-colors"
