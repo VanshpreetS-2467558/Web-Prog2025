@@ -5,12 +5,19 @@
 - Vansh Singh — 2467558 — VanshpreetS-2467558
 - Theo Roosens — 2468311 — TheoR-2468311
 
-## Login Credentials
+## Login Credentials users
 
 | Email                 | Wachtwoord |
 | --------------------- | ---------- |
-| bezoeker123@gmail.com | Qwerty123@ |
-| org@gmail.com         | Qwerty123@ |
+| bezoeker1@gmail.com   | Qwerty123@ |
+| bezoeker2@gmail.com   | Qwerty123@ |
+| org1@gmail.com        | Qwerty123@ |
+
+## Login Credentials werknemers
+| id                 | Wachtwoord |
+| 2426911            | Qwerty123@ |
+| 2426914            | Qwerty123@ |
+
 
 ## Functionaliteit
 
