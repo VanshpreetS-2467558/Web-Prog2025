@@ -59,6 +59,12 @@ Het project werkt volledig zoals bedoeld. Alle kernfunctionaliteiten zijn operat
 - express-validator (^7.2.1)
 - pdfkit (^0.17.2)
 
+### Libraries
+
+- crypto
+- jsQR
+- QRCode.js
+
 ### Browser API’s
 
 - Fetch
