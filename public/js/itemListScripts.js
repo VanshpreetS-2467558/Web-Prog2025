@@ -429,50 +429,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  window.updateCreatorContribution = async function(){
-    if(!currentGroepspot || !currentGroepspot.contributionId) return;
-    
-    const input = document.getElementById('creatorContribution');
-    const newAmount = parseInt(input.value) || 0;
-    
-    if(newAmount < 0){
-      alert("Bijdrage kan niet negatief zijn");
-      return;
-    }
-    
-    try {
-      const res = await fetch('/groepspot/update-contribution', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          contributionId: currentGroepspot.contributionId,
-          newAmount: newAmount
-        })
-      });
-      
-      const data = await res.json();
-      if(!data.success){
-        alert("Bijdrage wijzigen mislukt: " + data.error);
-        return;
-      }
-      
-      currentGroepspot.remainingAmount = data.remainingAmount;
-      saveGroepspot();
-      updateGroepspotUI();
-      input.value = 0;
-      
-      if(data.newAmount !== undefined){
-        user.festCoins = data.newAmount;
-        updateFestCoinsDisplay();
-      }
-      
-      showCreatorContribution();
-    } catch(err){
-      console.error(err);
-      alert("Bijdrage wijzigen mislukt: internal error");
-    }
-  }
-
   window.deleteCreatorContribution = async function(){
     if(!currentGroepspot || !currentGroepspot.contributionId) return;
     

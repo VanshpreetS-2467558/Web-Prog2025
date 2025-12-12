@@ -7,18 +7,18 @@
 
 ## Login Credentials users
 
-| Email                 | Wachtwoord |
-| --------------------- | ---------- |
-| bezoeker1@gmail.com   | Qwerty123@ |
-| bezoeker2@gmail.com   | Qwerty123@ |
-| org1@gmail.com        | Qwerty123@ |
+| Email               | Wachtwoord |
+| ------------------- | ---------- |
+| bezoeker1@gmail.com | Qwerty123@ |
+| bezoeker2@gmail.com | Qwerty123@ |
+| org1@gmail.com      | Qwerty123@ |
 
 ## Login Credentials werknemers
-| id                 | Wachtwoord |
-| ------------------ | ---------- |
-| 2426911            | Qwerty123@ |
-| 2426914            | Qwerty123@ |
 
+| id      | Wachtwoord |
+| ------- | ---------- |
+| 2426911 | Qwerty123@ |
+| 2426914 | Qwerty123@ |
 
 ## Functionaliteit
 
@@ -90,7 +90,7 @@ Het project werkt volledig zoals bedoeld. Alle kernfunctionaliteiten zijn operat
 ## AI Usage
 
 - Door tijdsdruk is Cursor gebruikt om de frontendstructuur te matchen met eerdere code.
-- AI (ChatGPT/Copilot) is gebruikt voor kleine vragen zoals syntax of optimalisaties.
+- AI (ChatGPT/Copilot) is gebruikt voor kleine vragen zoals syntax, optimalisaties.
 - Het grootste deel van de code is zelfgeschreven door Vansh en Theo.
 
 ## Docker

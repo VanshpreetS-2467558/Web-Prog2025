@@ -311,43 +311,6 @@ groepspotRouter.post("/finalize", async (req, res) => {
     }
 });
 
-// Update creator contribution POST
-groepspotRouter.post("/update-contribution", async (req, res) => {
-    const user = req.session.user;
-    if (!user) return res.json({ success: false, error: "Niet ingelogd" });
-
-    const { contributionId, newAmount } = req.body;
-
-    if (!contributionId || newAmount === undefined || newAmount < 0) {
-        return res.json({ success: false, error: "Ongeldige parameters" });
-    }
-
-    try {
-        const result = updateGroepspotContribution({
-            contributionId: parseInt(contributionId),
-            newAmount: parseInt(newAmount),
-            userId: user.id
-        });
-
-        if (!result.success) {
-            return res.json({ success: false, error: result.error });
-        }
-
-        // Update session
-        const updatedUser = getUserById(user.id);
-        req.session.user.festCoins = updatedUser.festCoins;
-
-        res.json({
-            success: true,
-            remainingAmount: result.remainingAmount,
-            newAmount: updatedUser.festCoins
-        });
-    } catch (err) {
-        console.error(err);
-        res.json({ success: false, error: "internal server error" });
-    }
-});
-
 // Get groepspot items GET
 groepspotRouter.get("/items/:id", async (req, res) => {
     const user = req.session.user;
