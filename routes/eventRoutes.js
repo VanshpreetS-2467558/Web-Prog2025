@@ -35,6 +35,15 @@ eventRouter.get("/event-management", requireLogin("organisator"), async (req, re
             const end = new Date(event.endDate);
             event.isLive = now >= start && now < end;
             
+            // Determine event status for display
+            if (event.isLive) {
+                event.status = 'live';
+            } else if (now < start) {
+                event.status = 'upcoming'; // Nog te beginnen
+            } else {
+                event.status = 'ended'; // Afgelopen
+            }
+            
             // Add visitor count
             event.attendees = getActiveVisitorsCount(event.id);
             const stations = getAllStationsByEvent(event.id);

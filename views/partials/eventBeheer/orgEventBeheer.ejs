@@ -46,8 +46,12 @@
                 <p class="text-gray-500"><%= event.location %></p>
               </div>
 
-              <% if(event.isLive) { %>
+              <% if(event.status === 'live') { %>
                 <div class="p-3 text-right rounded-full bg-green-600 text-white inline-block">Live</div>
+              <% } else if(event.status === 'upcoming') { %>
+                <div class="p-3 text-right rounded-full bg-blue-500 text-white inline-block">Nog te beginnen</div>
+              <% } else if(event.status === 'ended') { %>
+                <div class="p-3 text-right rounded-full bg-red-500 text-white inline-block">Afgelopen</div>
               <% } else { %>
                 <div class="p-3 text-right rounded-full bg-red-500 text-white inline-block">Niet Live</div>
               <% } %>

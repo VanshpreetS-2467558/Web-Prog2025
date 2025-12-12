@@ -571,11 +571,11 @@ function updateCitiesList(citiesData) {
         
         return `
             <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-4 gap-4">
                     <div class="w-10 h-10 ${rankColor} ${rankText} rounded-full flex items-center justify-center font-bold text-lg shadow-md">
                         ${rank}
                     </div>
-                    <div>
+                    <div class="ml-3">
                         <h3 class="font-bold text-lg text-gray-800">${city.city || 'Onbekend'}</h3>
                         <p class="text-sm text-gray-600">${(city.eventCount || 0)} evenement${(city.eventCount || 0) !== 1 ? 'en' : ''}</p>
                     </div>
