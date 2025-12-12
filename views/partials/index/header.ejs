@@ -2,7 +2,7 @@
 
   <div id="notificatie" class="fixed top-16 right-4 bg-green-500 text-white px-3 py-2 rounded opacity-0 transition-opacity duration-500 pointer-events-none z-50"></div>
 
-  <div class="flex flex-wrap items-center justify-between px-4 py-3 w-full gap-6 md:gap-20">
+  <div class="flex items-center justify-between px-4 py-3 w-full gap-6 md:gap-20">
     
     <!-- logo -->
     <a href="<%= user ? '/dashboard' : '/home' %>" class="text-3xl md:text-4xl font-bold bg-gradientkleurBR bg-clip-text text-transparent">
@@ -10,9 +10,12 @@
     </a>
 
     <!-- knoppen -->
-    <nav class="flex items-center flex-wrap gap-4 md:gap-10 text-sm md:text-base">
+    <nav class="flex items-center gap-4 md:gap-10 text-sm md:text-base">
       <a href="/home" class="hidden md:inline font-semibold border-b-2 border-transparent hover:border-pink-500 transition-all">Home</a>
-      <a href="/HoeWerktFestCoin" class="font-semibold border-b-2 border-transparent hover:border-blue-500 transition-all">Instructies</a>
+      <a href="/HoeWerktFestCoin" class="font-semibold border-b-2 border-transparent hover:border-blue-500 transition-all
+          <% if(user && (user.role === 'organisator' || user.role === 'employee')) { %>
+            hidden md:inline <% } else { %> inline md:inline <% } %>"> Instructies </a>
+
       <% if(user && user.role === "organisator") { %>
         <a href="/analyse/algemene-analyse" class="md:inline font-semibold border-b-2 border-transparent hover:border-purple-500 transition-all">Analytics</a>
       <% } %>

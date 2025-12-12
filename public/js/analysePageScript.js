@@ -17,29 +17,45 @@ function checkMobileDevice() {
     
     if (isMobile) {
         mobileWarning.classList.remove('hidden');
-        // Hide content area
+        // Hide content area and main content
         const contentArea = document.getElementById('contentArea');
         if (contentArea) {
             contentArea.classList.add('hidden');
         }
+        const analyseContent = document.getElementById('analyseContent');
+        if (analyseContent) {
+            analyseContent.classList.add('hidden');
+        }
     } else {
         mobileWarning.classList.add('hidden');
+        const analyseContent = document.getElementById('analyseContent');
+        if (analyseContent) {
+            analyseContent.classList.remove('hidden');
+        }
     }
     
     // Listen for resize events
     window.addEventListener('resize', () => {
         const isMobileNow = window.innerWidth < 1024;
-        if (isMobileNow && !mobileWarning.classList.contains('hidden')) {
+        if (isMobileNow) {
             mobileWarning.classList.remove('hidden');
             const contentArea = document.getElementById('contentArea');
             if (contentArea) {
                 contentArea.classList.add('hidden');
             }
-        } else if (!isMobileNow) {
+            const analyseContent = document.getElementById('analyseContent');
+            if (analyseContent) {
+                analyseContent.classList.add('hidden');
+            }
+        } else {
             mobileWarning.classList.add('hidden');
             const contentArea = document.getElementById('contentArea');
             if (contentArea) {
                 contentArea.classList.remove('hidden');
+            }
+            const analyseContent = document.getElementById('analyseContent');
+            if (analyseContent) {
+                analyseContent.classList.remove('hidden');
             }
         }
     });
