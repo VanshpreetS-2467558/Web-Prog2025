@@ -137,6 +137,8 @@ function showTab(tabName) {
     // Load transactions if transactions tab is selected
     if (tabName === 'transactions') {
         loadTransactionsTab();
+        // Scroll naar boven wanneer transacties tab wordt geselecteerd
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
 
