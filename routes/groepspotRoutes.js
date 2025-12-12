@@ -301,6 +301,10 @@ groepspotRouter.post("/finalize", async (req, res) => {
         res.json({
             success: true,
             transactionId: result.transactionId,
+            stationId: result.stationId,
+            stationName: result.stationName,
+            qrCode: result.qrCode,
+            orderCode: result.orderCode,
             newAmount: req.session.user.festCoins,
             budgetExceeded: budgetCheck.exceeded,
             budgetAlarms: budgetCheck.alarms || []

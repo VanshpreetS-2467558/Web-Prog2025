@@ -346,31 +346,38 @@ document.addEventListener('DOMContentLoaded', () => {
         showBudgetNotifications(data.budgetAlarms);
       }
 
-      alert("Bestelling gelukt! De FestCoins zijn afgeschreven van alle bijdragers.");
-
-      // Create active order (same as normal order)
+      // Get items for activeOrder
+      let groepspotItems = [];
       try {
         const itemsRes = await fetch(`/groepspot/items/${currentGroepspot.id}`);
         const itemsData = await itemsRes.json();
         if(itemsData.success){
-          // Create active order from groepspot items
-          activeOrder = { 
-            items: itemsData.items.map(i => ({
-              id: i.id,
-              name: i.name,
-              price: i.price,
-              quantity: i.quantity,
-              sectionName: ''
-            })), 
-            scanned: false,
-            isGroepspot: true,
-            groepspotId: currentGroepspot.id
-          };
-          saveActiveOrder();
+          groepspotItems = itemsData.items.map(i => ({
+            id: i.id,
+            name: i.name,
+            price: i.price,
+            quantity: i.quantity,
+            sectionName: ''
+          }));
         }
       } catch(err){
-        console.error('Error creating active order:', err);
+        console.error('Error fetching groepspot items:', err);
       }
+
+      // Create active order (same structure as normal order)
+      activeOrder = { 
+        items: groepspotItems, 
+        scanned: false,
+        transactionId: data.transactionId,
+        stationId: data.stationId,
+        stationName: data.stationName,
+        qrCode: data.qrCode,
+        orderCode: data.orderCode,
+        eventId: typeof eventId !== 'undefined' ? eventId : null,
+        isGroepspot: true,
+        groepspotId: currentGroepspot.id
+      };
+      saveActiveOrder();
 
       // Clear groepspot
       currentGroepspot = null;
@@ -400,6 +407,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Update item stocks
       updateItemStocks();
+
+      // Show QR code dialog (same as normal order)
+      if(data.transactionId && data.stationId && data.qrCode){
+        showOrderQRCode(data.transactionId, data.stationId, data.stationName, data.orderCode, data.qrCode);
+      }
 
     } catch(err){
       console.error(err);
@@ -492,11 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    const currentTotal = cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
-    if(currentTotal + item.price > user.festCoins){
-      alert("Niet genoeg saldo!");
-      return;
-    }
+    // Removed balance check - users can add items beyond their balance for groepspot
 
     const existing = cart.find(i=>i.id===item.id);
     if(existing) existing.quantity++;
@@ -526,6 +534,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.placeOrder = async function(){
     if(cart.length===0) return;
+
+    // Check balance before placing order
+    const totalPrice = cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
+    if(totalPrice > user.festCoins){
+      const createGroepspot = confirm("Je hebt niet genoeg saldo voor deze bestelling. Wil je een groepspot aanmaken zodat anderen kunnen bijdragen?");
+      if(createGroepspot){
+        openGroup();
+      } else {
+        // Close order confirmation dialog when user cancels
+        document.getElementById('bestelDialog').classList.add('hidden');
+      }
+      return;
+    }
 
     const itemsDict = {};
     cart.forEach(i=>itemsDict[i.id]=i.quantity);

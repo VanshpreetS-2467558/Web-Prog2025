@@ -1,6 +1,7 @@
 import { db } from "../../db.js";
 import { getFestcoinsById, updateCoins } from "./users.js";
 import { addUserPoints } from "./userPoints.js";
+import crypto from "crypto";
 
 // Create groepspot
 export function createGroepspot({creatorId, eventId, totalAmount, qrCode, items}){
@@ -216,26 +217,60 @@ export function finalizeGroepspot(groepspotId){
             if (result === false) throw new Error(`Kon niet betalen voor gebruiker ${contrib.contributorId}`);
         });
 
-        // Create transaction
-        const transactionResult = db.prepare(`
-            INSERT INTO transactions (bezoekerId, totalPrice) VALUES (?, ?)
-        `).run(groepspot.creatorId, groepspot.totalAmount);
+        // Generate unique QR code and random 6-digit order code (same as makeTransaction)
+        const qrCode = `ORDER_${crypto.randomBytes(16).toString('hex')}`;
+        
+        // Generate random 6-digit code (ensure uniqueness)
+        let orderCode;
+        let isUnique = false;
+        while (!isUnique) {
+          orderCode = Math.floor(100000 + Math.random() * 900000).toString();
+          const existing = db.prepare(`SELECT id FROM transactions WHERE orderCode = ?`).get(orderCode);
+          if (!existing) {
+            isUnique = true;
+          }
+        }
 
-        const transactionId = transactionResult.lastInsertRowid;
-
-        // Get items and add to transaction
+        // Get items first to determine station
         const items = db.prepare(`
             SELECT * FROM groepspot_items WHERE groepspotId = ?
         `).all(groepspotId);
 
+        // Get station ID and name from first item (all items should be from same station)
+        let stationId = null;
+        let stationName = null;
+        if (items.length > 0) {
+            const firstItem = items[0];
+            const stationInfo = db.prepare(`
+                SELECT s.id as stationId, s.name as stationName
+                FROM items i
+                JOIN stations s ON i.locationId = s.id
+                WHERE i.id = ?
+            `).get(firstItem.itemId);
+            
+            stationId = stationInfo?.stationId || null;
+            stationName = stationInfo?.stationName || null;
+        }
+
+        // Create transaction with QR code and order code
+        const transactionResult = db.prepare(`
+            INSERT INTO transactions (bezoekerId, totalPrice, qrCode, orderCode) VALUES (?, ?, ?, ?)
+        `).run(groepspot.creatorId, groepspot.totalAmount, qrCode, orderCode);
+
+        const transactionId = transactionResult.lastInsertRowid;
+
+        // Add items to transaction
         const insertItem = db.prepare(`
-            INSERT INTO transaction_items (transactionId, itemId, itemName, itemPrice, quantity)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO transaction_items (transactionId, itemId, itemName, itemPrice, quantity, itemCategory)
+            VALUES (?, ?, ?, ?, ?, ?)
         `);
         const updateStock = db.prepare("UPDATE items SET stock = stock - ? WHERE id = ?");
 
         items.forEach(item => {
-            insertItem.run(transactionId, item.itemId, item.itemName, item.itemPrice, item.quantity);
+            // Get category from item
+            const itemRow = db.prepare("SELECT category FROM items WHERE id = ?").get(item.itemId);
+            const category = itemRow?.category || 'Others';
+            insertItem.run(transactionId, item.itemId, item.itemName, item.itemPrice, item.quantity, category);
             updateStock.run(item.quantity, item.itemId);
         });
 
@@ -248,7 +283,7 @@ export function finalizeGroepspot(groepspotId){
         addUserPoints(groepspot.creatorId, groepspot.totalAmount);
 
         db.prepare("COMMIT").run();
-        return { success: true, transactionId };
+        return { success: true, transactionId, stationId, stationName, qrCode, orderCode };
     } catch (err) {
         db.prepare("ROLLBACK").run();
         console.error(err);
