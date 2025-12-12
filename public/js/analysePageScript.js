@@ -571,7 +571,7 @@ function updateCitiesList(citiesData) {
         
         return `
             <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-4 gap-6">
                     <div class="w-10 h-10 ${rankColor} ${rankText} rounded-full flex items-center justify-center font-bold text-lg shadow-md">
                         ${rank}
                     </div>
