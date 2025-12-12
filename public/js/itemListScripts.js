@@ -1,5 +1,11 @@
 import { showNotification } from './headerScripts.js';
 
+// Make functions available globally immediately (before DOMContentLoaded)
+window.addToCartItem = null;
+window.removeFromCart = null;
+window.openOrderPopup = null;
+window.placeOrder = null;
+
 document.addEventListener('DOMContentLoaded', () => {
   // Request notification permission on page load
   if('Notification' in window && Notification.permission === 'default'){
@@ -490,20 +496,37 @@ document.addEventListener('DOMContentLoaded', () => {
     groepspotPollInterval = setInterval(updateGroepspotStatus, 2000);
   }
 
-  window.addToCartItem = function(item){
+  window.addToCartItem = async function(item){
     if(activeOrder && !activeOrder.scanned){
       alert("Je hebt een lopende bestelling! Nieuwe items toevoegen is niet toegestaan.");
       return;
     }
 
-    // Check if item is out of stock
-    const itemCard = document.querySelector(`[data-item-id="${item.id}"]`);
-    if(itemCard){
-      const stockEl = itemCard.querySelector('[data-stock]');
-      if(stockEl && stockEl.textContent.includes('Out of stock')){
-        alert("Dit item is niet meer op voorraad!");
-        return;
+    // Check if item is out of stock and verify stock limit
+    try {
+      const res = await fetch(`/list/items/${item.id}/stock`);
+      const data = await res.json();
+      if(data.success){
+        const currentStock = data.stock;
+        
+        // Get current quantity in cart for this item
+        const existing = cart.find(i=>i.id===item.id);
+        const currentQuantity = existing ? existing.quantity : 0;
+        const newQuantity = currentQuantity + 1;
+        
+        if(newQuantity > currentStock){
+          alert(`Niet genoeg voorraad! Er zijn nog ${currentStock} ${item.name} op voorraad en je hebt al ${currentQuantity} in je winkelwagen.`);
+          return;
+        }
+        
+        if(currentStock === 0){
+          alert("Dit item is niet meer op voorraad!");
+          return;
+        }
       }
+    } catch(err){
+      console.error('Error checking stock:', err);
+      // Continue anyway if stock check fails (graceful degradation)
     }
 
     // Removed balance check - users can add items beyond their balance for groepspot
@@ -900,13 +923,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Set initial currentStation if not set and a tab is visible
+  if(!currentStation){
+    const firstTab = document.querySelector('[data-tab]');
+    if(firstTab){
+      currentStation = firstTab.dataset.tab;
+      localStorage.setItem('currentStation', currentStation);
+    }
+  }
+
   // Tabs
   document.querySelectorAll('[data-tab]').forEach(btn => {
     btn.addEventListener('click', () => {
       const clicked = btn.dataset.tab;
 
-      // Reset cart bij station-wissel (met bevestiging)
-      if (cart.length > 0 && clicked !== currentStation) {
+      // Only reset cart if switching to a different station (not on first load when currentStation is null)
+      if (cart.length > 0 && currentStation !== null && clicked !== currentStation) {
         const confirmReset = confirm("Je gaat naar een ander station. Winkelmandje leegmaken?");
         if (!confirmReset) return;
 
