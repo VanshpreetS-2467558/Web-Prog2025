@@ -29,40 +29,4 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Fix dropdown menu on mobile - ensure touch events work
-    // Wait a bit for custom elements to be registered
-    setTimeout(() => {
-        const dropdown = document.querySelector('el-dropdown');
-        if (dropdown) {
-            const dropdownButton = dropdown.querySelector('button');
-            if (dropdownButton) {
-                // Make button clickable on mobile by ensuring it has proper touch handling
-                dropdownButton.style.cursor = 'pointer';
-                dropdownButton.style.touchAction = 'manipulation'; // Prevents double-tap zoom
-                
-                // Add explicit click handler for mobile compatibility
-                dropdownButton.addEventListener('click', function(e) {
-                    // Force the dropdown to toggle by dispatching a proper click event
-                    if (!dropdown.open) {
-                        dropdown.open = true;
-                    }
-                }, true);
-
-                // Also handle touch events for better mobile support
-                let touchStartTime = 0;
-                dropdownButton.addEventListener('touchstart', function(e) {
-                    touchStartTime = Date.now();
-                }, { passive: true });
-
-                dropdownButton.addEventListener('touchend', function(e) {
-                    const touchDuration = Date.now() - touchStartTime;
-                    // Only trigger if it was a quick tap (not a swipe)
-                    if (touchDuration < 300) {
-                        e.preventDefault();
-                        this.click();
-                    }
-                }, { passive: false });
-            }
-        }
-    }, 100);
 });
