@@ -1,3 +1,5 @@
+import { showNotification } from './headerScripts.js';
+
 document.addEventListener('DOMContentLoaded', () => {
   // Request notification permission on page load
   if('Notification' in window && Notification.permission === 'default'){
@@ -638,24 +640,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       // In-app notification
-      showNotification(message, 'warning');
+      showNotification(message);
     });
-  }
-
-  // Show notification helper
-  function showNotification(message, type = 'info'){
-    const notification = document.getElementById('notificatie');
-    if(notification){
-      notification.textContent = message;
-      notification.className = `fixed top-16 right-4 px-4 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-500 ${
-        type === 'warning' ? 'bg-yellow-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-      } text-white`;
-      notification.classList.remove('opacity-0', 'pointer-events-none');
-      
-      setTimeout(() => {
-        notification.classList.add('opacity-0', 'pointer-events-none');
-      }, 5000);
-    }
   }
 
   window.openQRActiveOrder = function(){
@@ -869,7 +855,7 @@ document.addEventListener('DOMContentLoaded', () => {
           updateGroupDialog();
           const qrDialog = document.getElementById('qrDialog');
           if(qrDialog) qrDialog.classList.add('hidden');
-          showNotification('Bestelling afgehandeld! Je kan nu weer items toevoegen.', 'success');
+          showNotification('Bestelling afgehandeld! Je kan nu weer items toevoegen.');
           
           // Stop polling
           if(orderStatusInterval) {
