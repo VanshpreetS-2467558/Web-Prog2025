@@ -3,7 +3,7 @@ import express from "express";
 import { searchEventById } from "../utils/db/events.js";
 import { searchStationByEventId } from "../utils/db/stations.js";
 import { searchItemsByStationId } from "../utils/db/items.js";
-import { searchExistingVisit, makeVisit, closeVisit } from "../utils/db/eventVisitors.js";
+import { searchExistingVisit, makeVisit, closeVisit, cleanupOldVisits } from "../utils/db/eventVisitors.js";
 import {updateVisitHeartbeat, getActiveVisitorsCount, getUserById } from "../utils/dbHulpfuncties.js";
 
 import {requireLogin} from "../middleware/requireLogin.js";
@@ -64,6 +64,11 @@ eventListRouter.post("/events/:id/heartbeat", requireLogin("bezoeker"), (req, re
 // Get active visitors count
 eventListRouter.get("/events/:id/visitors", (req, res) => {
   const eventId = req.params.id;
+  // Clean up old visits before getting count (only run cleanup occasionally to avoid overhead)
+  // Run cleanup roughly every 10 requests (using timestamp check would be better but this is simpler)
+  if (Math.random() < 0.1) {
+    cleanupOldVisits();
+  }
   const count = getActiveVisitorsCount(eventId);
   res.json({ success: true, count });
 });
