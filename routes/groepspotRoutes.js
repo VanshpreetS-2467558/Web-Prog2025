@@ -298,10 +298,6 @@ groepspotRouter.post("/finalize", async (req, res) => {
             req.session.user.festCoins = updatedCreator.festCoins;
         }
 
-        // Note: Groepspot transactions are already stored in transactions table via finalizeGroepspot
-        // We don't need to create festcoins_transactions for groepspot contributions
-        // as they are regular purchase transactions, not FestCoin buy/sell/share operations
-
         res.json({
             success: true,
             transactionId: result.transactionId,
