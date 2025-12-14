@@ -84,6 +84,10 @@ function renderAlarms(alarms) {
                                 class="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg text-sm font-semibold hover:bg-blue-200 transition-colors">
                             Bewerken
                         </button>
+                        <button onclick="resetAlarm(${alarm.id})" 
+                                class="px-4 py-2 bg-orange-100 text-orange-800 rounded-lg text-sm font-semibold hover:bg-orange-200 transition-colors">
+                            Reset Uitgaven
+                        </button>
                         <button onclick="deleteAlarm(${alarm.id})" 
                                 class="px-4 py-2 bg-red-100 text-red-800 rounded-lg text-sm font-semibold hover:bg-red-200 transition-colors">
                             Verwijderen
@@ -179,13 +183,8 @@ document.getElementById('editAlarmForm').addEventListener('submit', async (e) =>
             closeEditModal();
             // Force reload all alarms to ensure no duplicates
             await loadAlarms();
-            if (data.wasReset) {
-                sessionStorage.setItem('showNotification', "Budget alarm bijgewerkt! Uitgaven zijn gereset naar 0.");
-                window.location.reload();
-            } else {
-                sessionStorage.setItem('showNotification', "Budget alarm succesvol bijgewerkt!");
-                window.location.reload();
-            }
+            sessionStorage.setItem('showNotification', "Budget alarm succesvol bijgewerkt!");
+            window.location.reload();
         } else {
             alert('Fout: ' + data.error);
         }
@@ -215,6 +214,33 @@ window.toggleAlarm = async function(alarmId) {
     } catch (error) {
         console.error('Error toggling alarm:', error);
         alert('Er is een fout opgetreden bij het wijzigen van het alarm.');
+    }
+};
+
+// Reset alarm spending
+window.resetAlarm = async function(alarmId) {
+    if (!confirm('Weet je zeker dat je de uitgaven wilt resetten naar 0? Dit zal alle uitgaven vanaf nu tellen.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/budget-alarms/${alarmId}/reset`, {
+            method: 'POST'
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            // Force reload all alarms to update spending
+            await loadAlarms();
+            sessionStorage.setItem('showNotification', 'Uitgaven succesvol gereset naar 0!');
+            window.location.reload();
+        } else {
+            alert('Fout: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error resetting alarm:', error);
+        alert('Er is een fout opgetreden bij het resetten van de uitgaven.');
     }
 };
 

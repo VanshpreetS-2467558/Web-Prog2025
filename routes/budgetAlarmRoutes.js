@@ -5,7 +5,8 @@ import {
     upsertBudgetAlarm,
     deleteBudgetAlarm,
     toggleBudgetAlarm,
-    getCategorySpending
+    getCategorySpending,
+    resetBudgetAlarmSpending
 } from "../utils/dbHulpfuncties.js";
 
 const budgetAlarmRouter = express.Router();
@@ -62,10 +63,10 @@ budgetAlarmRouter.post("/", requireLogin("bezoeker"), (req, res) => {
         // Als alarm bestaat, gaan we automatisch updaten
         const isAutomaticUpdate = existingAlarm && !isUpdate;
 
-        // Bepalen of reset nodig is
-        const currentSpending = getCategorySpending(req.session.user.id, category);
-        const wasExceeded = existingAlarm && currentSpending > existingAlarm.budgetLimit;
-        const shouldReset = existingAlarm && wasExceeded;
+        // When editing (isUpdate = true), do NOT reset spending
+        // Only reset when creating new alarm (which now sets resetDate automatically)
+        // or when explicitly requested via reset button
+        const shouldReset = false; // Never auto-reset on edit/create
 
         const result = upsertBudgetAlarm(
             req.session.user.id,
@@ -84,10 +85,10 @@ budgetAlarmRouter.post("/", requireLogin("bezoeker"), (req, res) => {
         res.json({
             success: true,
             updated: isAutomaticUpdate || isUpdate,
-            wasReset: shouldReset,
+            wasReset: false,
             alarm: {
                 ...updatedAlarm,
-                currentSpending: shouldReset ? 0 : getCategorySpending(req.session.user.id, category)
+                currentSpending: getCategorySpending(req.session.user.id, category)
             }
         });
 
@@ -119,6 +120,33 @@ budgetAlarmRouter.post("/:id/toggle", requireLogin("bezoeker"), (req, res) => {
     } catch (err) {
         console.error(err);
         res.json({ success: false, error: "Kon alarm status niet wijzigen" });
+    }
+});
+
+// Reset budget alarm spending (set uitgave to 0)
+budgetAlarmRouter.post("/:id/reset", requireLogin("bezoeker"), (req, res) => {
+    try {
+        const alarmId = parseInt(req.params.id);
+        const result = resetBudgetAlarmSpending(req.session.user.id, alarmId);
+        
+        if (!result.success) {
+            return res.json(result);
+        }
+
+        // Get updated alarm with current spending (should be 0 after reset)
+        const alarms = getBudgetAlarms(req.session.user.id);
+        const updatedAlarm = alarms.find(a => a.id === alarmId);
+        
+        res.json({
+            success: true,
+            alarm: {
+                ...updatedAlarm,
+                currentSpending: getCategorySpending(req.session.user.id, updatedAlarm.category)
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        res.json({ success: false, error: "Kon uitgaven niet resetten" });
     }
 });
 

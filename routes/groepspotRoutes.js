@@ -289,26 +289,44 @@ groepspotRouter.post("/finalize", async (req, res) => {
             return res.json({ success: false, error: result.error });
         }
 
-        // Update session for all contributors
-        const contributions = getGroepspotContributions(groepspot.id);
-        
-        // Update session for creator
-        const updatedCreator = getUserById(groepspot.creatorId);
-        if (req.session.user.id === groepspot.creatorId) {
-            req.session.user.festCoins = updatedCreator.festCoins;
-        }
-
-        res.json({
-            success: true,
+        // Store result data in case of errors later
+        const transactionData = {
             transactionId: result.transactionId,
             stationId: result.stationId,
             stationName: result.stationName,
             qrCode: result.qrCode,
-            orderCode: result.orderCode,
-            newAmount: req.session.user.festCoins,
-            budgetExceeded: budgetCheck.exceeded,
-            budgetAlarms: budgetCheck.alarms || []
-        });
+            orderCode: result.orderCode
+        };
+
+        try {
+            // Update session for all contributors
+            const contributions = getGroepspotContributions(groepspot.id);
+            
+            // Update session for creator
+            const updatedCreator = getUserById(groepspot.creatorId);
+            if (req.session.user.id === groepspot.creatorId) {
+                req.session.user.festCoins = updatedCreator.festCoins;
+            }
+
+            res.json({
+                success: true,
+                ...transactionData,
+                newAmount: req.session.user.festCoins,
+                budgetExceeded: budgetCheck.exceeded,
+                budgetAlarms: budgetCheck.alarms || []
+            });
+        } catch (sessionErr) {
+            // If session update fails, still return transaction data since order was successful
+            console.error('Error updating session after finalize:', sessionErr);
+            res.json({
+                success: true,
+                ...transactionData,
+                newAmount: req.session.user.festCoins || 0,
+                budgetExceeded: budgetCheck.exceeded,
+                budgetAlarms: budgetCheck.alarms || [],
+                warning: 'Bestelling succesvol, maar sessie kon niet worden bijgewerkt'
+            });
+        }
     } catch (err) {
         console.error(err);
         res.json({ success: false, error: "internal server error" });

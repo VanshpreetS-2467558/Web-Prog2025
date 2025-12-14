@@ -35,11 +35,22 @@ document.addEventListener('DOMContentLoaded', () => {
           updateCartTotals();
         }, 100);
       } else {
-        // Redirect back to previous event or event list
-        if(activeOrder.eventId) {
-          window.location.href = `/events/${activeOrder.eventId}`;
+        // User clicked cancel - close the visit that was just created and redirect back to event list
+        if(typeof eventId !== 'undefined') {
+          fetch(`/list/events/${eventId}/leave`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          })
+          .then(() => {
+            window.location.href = '/event/evenementen';
+          })
+          .catch(err => {
+            console.error('Error closing visit:', err);
+            // Still redirect even if leave fails
+            window.location.href = '/event/evenementen';
+          });
         } else {
-          window.location.href = '/evenementen';
+          window.location.href = '/event/evenementen';
         }
         return;
       }
@@ -417,8 +428,12 @@ document.addEventListener('DOMContentLoaded', () => {
       updateItemStocks();
 
       // Show QR code dialog (same as normal order)
-      if(data.transactionId && data.stationId && data.qrCode){
-        showOrderQRCode(data.transactionId, data.stationId, data.stationName, data.orderCode, data.qrCode);
+      // stationId is optional, but transactionId and qrCode are required
+      if(data.transactionId && data.qrCode){
+        showOrderQRCode(data.transactionId, data.stationId || null, data.stationName || 'Onbekend station', data.orderCode, data.qrCode);
+      } else {
+        console.error('Missing required data for QR dialog:', {transactionId: data.transactionId, qrCode: data.qrCode});
+        alert('Bestelling succesvol, maar QR code kon niet worden getoond. Controleer je bestellingen.');
       }
 
     } catch(err){
@@ -609,15 +624,20 @@ document.addEventListener('DOMContentLoaded', () => {
       // Update item stocks
       updateItemStocks();
 
-      // Check and show budget notifications
+      // Check and show budget notifications (wrap in try-catch to prevent blocking QR dialog)
       if(data.budgetExceeded && data.budgetAlarms && data.budgetAlarms.length > 0){
-        showBudgetNotifications(data.budgetAlarms);
+        try {
+          showBudgetNotifications(data.budgetAlarms);
+        } catch(budgetErr) {
+          console.error('Error showing budget notifications:', budgetErr);
+          // Continue anyway - don't block the order flow
+        }
       }
 
       // Close order confirmation dialog
       document.getElementById('bestelDialog').classList.add('hidden');
 
-      // Show QR code dialog immediately
+      // Show QR code dialog immediately (even if budget was exceeded)
       showOrderQRCode(data.transactionId, data.stationId, data.stationName, data.orderCode, data.qrCode);
 
       renderCart();
@@ -636,14 +656,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Show budget notifications
   function showBudgetNotifications(alarms){
+    if(!alarms || alarms.length === 0) return;
+    
+    // Create combined message for all exceeded budgets
+    let combinedMessage = '';
+    if(alarms.length === 1) {
+      const alarm = alarms[0];
+      combinedMessage = `⚠️ Budget limiet bereikt voor ${alarm.category}!\n\n` +
+                       `Budget: ${alarm.budgetLimit} FestCoins\n` +
+                       `Huidige uitgaven: ${alarm.newSpending} FestCoins\n` +
+                       `Je hebt ${alarm.newSpending - alarm.budgetLimit} FestCoins te veel uitgegeven.\n\n` +
+                       `Overweeg om meer FestCoins bij te kopen.`;
+    } else {
+      combinedMessage = `⚠️ Budget limiet bereikt voor ${alarms.length} categorieën!\n\n`;
+      alarms.forEach((alarm, index) => {
+        combinedMessage += `${index + 1}. ${alarm.category}: ` +
+                          `${alarm.newSpending} / ${alarm.budgetLimit} FestCoins ` +
+                          `(+${alarm.newSpending - alarm.budgetLimit} overschreden)\n`;
+      });
+      combinedMessage += `\nOverweeg om meer FestCoins bij te kopen.`;
+    }
+    
+    // Browser notifications - show one for each category
     alarms.forEach(alarm => {
-      const message = `⚠️ Budget limiet bereikt voor ${alarm.category}!\n\n` +
-                     `Budget: ${alarm.budgetLimit} FestCoins\n` +
-                     `Huidige uitgaven: ${alarm.newSpending} FestCoins\n` +
-                     `Je hebt ${alarm.newSpending - alarm.budgetLimit} FestCoins te veel uitgegeven.\n\n` +
-                     `Overweeg om meer FestCoins bij te kopen.`;
-      
-      // Browser notification
       if('Notification' in window && Notification.permission === 'granted'){
         new Notification('Budget Alarm - ' + alarm.category, {
           body: `Je budget limiet voor ${alarm.category} is overschreden. Overweeg om meer FestCoins bij te kopen.`,
@@ -661,10 +696,10 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
       }
-      
-      // In-app notification
-      showNotification(message);
     });
+    
+    // In-app notification - show combined message
+    showNotification(combinedMessage);
   }
 
   window.openQRActiveOrder = function(){
@@ -702,11 +737,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showOrderQRCode(transactionId, stationId, stationName, orderCode, qrCode) {
-    if(!transactionId || !stationId || !qrCode) {
-      console.error('Missing transactionId, stationId, or qrCode:', {transactionId, stationId, qrCode});
+    if(!transactionId || !qrCode) {
+      console.error('Missing transactionId or qrCode:', {transactionId, qrCode});
       alert('Bestelling informatie ontbreekt. Bestelling wordt geannuleerd.');
       window.cancelActiveOrder();
       return;
+    }
+    
+    // stationId is optional, use default if not provided
+    if(!stationId) {
+      console.warn('stationId not provided, using default');
+      stationId = null;
     }
     
     // Show dialog first
@@ -825,29 +866,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   
-  // Intercept event card clicks to check for active order
   document.addEventListener('DOMContentLoaded', () => {
-    // Use event delegation for dynamically added links
     document.addEventListener('click', (e) => {
-      const link = e.target.closest('a[href^="/events/"]');
-      if(!link) return;
+      const link = e.target.closest('a[href^="/events/"], a[href^="/list/events/"]');
+      if (!link) return;
+  
+      const active = JSON.parse(localStorage.getItem('activeOrder'));
+      if (!active || !active.eventId) return;
+  
+      const href = link.getAttribute('href');
+      const match = href.match(/\/(?:list\/)?events\/(\d+)/);
+      if (!match) return;
+  
+      const newEventId = parseInt(match[1]);
+      if (isNaN(newEventId) || newEventId === active.eventId) return;
+  
+      // Prevent navigation immediately
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
       
-      const activeOrderCheck = JSON.parse(localStorage.getItem('activeOrder')) || null;
-      if(activeOrderCheck && activeOrderCheck.eventId) {
-        const href = link.getAttribute('href');
-        const newEventId = parseInt(href.split('/events/')[1]);
-        
-        if(newEventId && activeOrderCheck.eventId !== newEventId) {
-          e.preventDefault();
-          if(confirm('Je hebt een actieve bestelling. Als je naar een ander evenement gaat, wordt deze bestelling geannuleerd (geen refund). Doorgaan?')) {
-            // Cancel order before navigating
-            window.cancelActiveOrder();
-            window.location.href = href;
-          }
-        }
+      if (confirm('Je hebt een actieve bestelling. Als je naar een ander evenement gaat, wordt deze bestelling geannuleerd (geen refund). Doorgaan?')) {
+        // User clicked OK - cancel order and navigate to new event
+        window.cancelActiveOrder();
+        window.location.href = href;
+      } else {
+        // User clicked Cancel - navigate back to event list
+        window.location.href = "/event/evenementen";
       }
-    });
+    }, true); // Capture phase to intercept before navigation
   });
+  
 
   // Check if order is handled (poll every 3 seconds)
   let orderStatusInterval = null;

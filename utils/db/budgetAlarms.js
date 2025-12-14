@@ -38,7 +38,7 @@ export function upsertBudgetAlarm(userId, category, budgetLimit, resetSpending =
 
         const existing = getBudgetAlarmByCategory(userId, category);
         if (existing) {
-            // If resetSpending is true, set resetDate to now
+            // If resetSpending is true, set resetDate to now, otherwise keep existing resetDate
             const resetDate = resetSpending ? new Date().toISOString() : existing.resetDate;
             db.prepare(`
                 UPDATE budget_alarms 
@@ -47,10 +47,12 @@ export function upsertBudgetAlarm(userId, category, budgetLimit, resetSpending =
             `).run(budgetLimit, resetDate, userId, category);
             return { success: true, id: existing.id };
         } else {
+            // For NEW alarms, set resetDate to now so uitgave starts at 0
+            const resetDate = new Date().toISOString();
             const result = db.prepare(`
                 INSERT INTO budget_alarms (userId, category, budgetLimit, isActive, resetDate)
-                VALUES (?, ?, ?, 1, NULL)
-            `).run(userId, category, budgetLimit);
+                VALUES (?, ?, ?, 1, ?)
+            `).run(userId, category, budgetLimit, resetDate);
             return { success: true, id: result.lastInsertRowid };
         }
     } catch (err) {
@@ -93,6 +95,32 @@ export function toggleBudgetAlarm(userId, alarmId) {
         `).run(newStatus, alarmId, userId);
         
         return { success: true, isActive: newStatus === 1 };
+    } catch (err) {
+        console.error(err);
+        return { success: false, error: err.message };
+    }
+}
+
+// Reset budget alarm spending (set resetDate to now)
+export function resetBudgetAlarmSpending(userId, alarmId) {
+    try {
+        const alarm = db.prepare(`
+            SELECT * FROM budget_alarms 
+            WHERE id = ? AND userId = ?
+        `).get(alarmId, userId);
+        
+        if (!alarm) {
+            return { success: false, error: "Alarm niet gevonden" };
+        }
+
+        const resetDate = new Date().toISOString();
+        db.prepare(`
+            UPDATE budget_alarms 
+            SET resetDate = ?
+            WHERE id = ? AND userId = ?
+        `).run(resetDate, alarmId, userId);
+        
+        return { success: true };
     } catch (err) {
         console.error(err);
         return { success: false, error: err.message };
