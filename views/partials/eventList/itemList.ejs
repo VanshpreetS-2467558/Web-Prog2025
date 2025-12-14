@@ -81,13 +81,10 @@
 <!-- QR Active Order popup -->
 <%- include("qr-dialog") %>
 
-<script>
-  const user = {
-    festCoins: <%= user.festCoins %>,
-    id: <%= user.id %>
-  };
-  const eventId = <%= event.id %>;
-  const eventEndDate = '<%= event.endDate %>';
-</script>
+<!-- Data for JavaScript -->
+<div id="userData" data-festcoins="<%= user.festCoins %>" data-id="<%= user.id %>" class="hidden"></div>
+<div id="eventData" data-eventid="<%= event.id %>" data-eventenddate="<%= event.endDate %>" class="hidden"></div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script type="module" src="/js/itemListData.js"></script>
 <script type="module" src="/js/itemListScripts.js"></script>

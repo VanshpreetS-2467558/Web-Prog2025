@@ -7,16 +7,12 @@ const SALT_LENGTH = 32;
 const TAG_LENGTH = 16;
 const ITERATIONS = 100000;
 
-/**
- * Derive encryption key from organizer password
- */
+// Derive encryption key from organizer password
 function deriveKey(password, salt) {
   return crypto.pbkdf2Sync(password, salt, ITERATIONS, KEY_LENGTH, "sha256");
 }
 
-/**
- * Encrypt employee password using organizer password as key
- */
+// encrypt employee password using organizer password as key
 export function encryptPassword(employeePassword, organizerPassword) {
   try {
     // Generate random salt and IV
@@ -52,9 +48,7 @@ export function encryptPassword(employeePassword, organizerPassword) {
   }
 }
 
-/**
- * Decrypt employee password using organizer password as key
- */
+// decrypt employee password using organizer password as key
 export function decryptPassword(encryptedData, organizerPassword) {
   try {
     // Decode from base64

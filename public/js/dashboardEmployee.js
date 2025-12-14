@@ -71,7 +71,7 @@ function updateSalesChart(salesData) {
 
     salesData.forEach((d) => {
         const bar = document.createElement('div');
-        bar.className = 'bg-blue-500 w-6 sales-bar'; // <-- voeg sales-bar toe
+        bar.className = 'bg-blue-500 w-6 sales-bar'; // voegt sales-bar toe
         bar.style.height = `${(d.sales / maxSales) * 100}%`;
         bar.title = `${d.time}: ${d.sales} FestCoins`;
         

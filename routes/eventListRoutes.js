@@ -43,8 +43,8 @@ eventListRouter.post("/events/:id/leave", requireLogin("bezoeker"), (req, res) =
   // Reset cart
   req.session.cart = [];
   
-  // If request is from beforeunload (keepalive), return 200 OK
-  // Otherwise redirect to event list
+  // if request is from beforeunload (keepalive), return 200 OK
+  // otherwise redirect to event list
   if (req.headers['content-type']?.includes('application/json')) {
     res.status(200).json({ success: true });
   } else {
@@ -64,8 +64,8 @@ eventListRouter.post("/events/:id/heartbeat", requireLogin("bezoeker"), (req, re
 // Get active visitors count
 eventListRouter.get("/events/:id/visitors", (req, res) => {
   const eventId = req.params.id;
-  // Clean up old visits before getting count (only run cleanup occasionally to avoid overhead)
-  // Run cleanup roughly every 10 requests (using timestamp check would be better but this is simpler)
+  // Clean up old visits before getting count 
+  // Run cleanup roughly every 10 requests
   if (Math.random() < 0.1) {
     cleanupOldVisits();
   }

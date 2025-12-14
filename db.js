@@ -2,7 +2,7 @@ import Database from "better-sqlite3";
 
 export const db = new Database("databaseFiles/database.db", { verbose: console.log });
 
-export function InitializeDatabase() { // moet async als we gaan hashen (met bcrypt?)
+export function InitializeDatabase() { 
   db.pragma("journal_mode = WAL;");
   db.pragma("busy_timeout = 5000;");
   db.pragma("synchronous = NORMAL;");
@@ -75,30 +75,6 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       FOREIGN KEY(bezoekerId) REFERENCES users(id) ON DELETE SET NULL
     ) STRICT
   `).run();
-  
-  // Add qrCode and orderCode columns if they don't exist (migration)
-  // SQLite doesn't support UNIQUE in ALTER TABLE ADD COLUMN, so we add the column first, then create unique index
-  try {
-    db.prepare(`ALTER TABLE transactions ADD COLUMN qrCode TEXT`).run();
-    // Create unique index for qrCode
-    db.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_transactions_qrCode ON transactions(qrCode)`).run();
-  } catch (err) {
-    // Column already exists, ignore error
-    if (!err.message.includes('duplicate column')) {
-      console.error('Error adding qrCode column:', err);
-    }
-  }
-  
-  try {
-    db.prepare(`ALTER TABLE transactions ADD COLUMN orderCode TEXT`).run();
-    // Create unique index for orderCode
-    db.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_transactions_orderCode ON transactions(orderCode)`).run();
-  } catch (err) {
-    // Column already exists, ignore error
-    if (!err.message.includes('duplicate column')) {
-      console.error('Error adding orderCode column:', err);
-    }
-  }
 
   // transaction items table
   db.prepare(`
@@ -116,16 +92,6 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
     ) STRICT
   `).run();
   
-  // Add itemCategory column if it doesn't exist (migration)
-  try {
-    db.prepare(`ALTER TABLE transaction_items ADD COLUMN itemCategory TEXT`).run();
-  } catch (err) {
-    // Column already exists, ignore error
-    if (!err.message.includes('duplicate column') && !err.message.includes('duplicate column name')) {
-      console.error('Error adding itemCategory column:', err.message);
-    }
-  }
-  
   // event visitors table
   db.prepare(`
     CREATE TABLE IF NOT EXISTS event_visitors (
@@ -139,17 +105,6 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       FOREIGN KEY(userId) REFERENCES users(id) ON DELETE SET NULL
     ) STRICT
   `).run();
-  
-  // Add lastHeartbeat column if it doesn't exist (migration)
-  try {
-    db.prepare(`ALTER TABLE event_visitors ADD COLUMN lastHeartbeat TEXT DEFAULT NULL`).run();
-  } catch (err) {
-    // Column already exists, ignore error
-    // SQLite error messages vary, so we check for common patterns
-    if (!err.message.includes('duplicate column') && !err.message.includes('duplicate column name')) {
-      console.error('Error adding lastHeartbeat column:', err.message);
-    }
-  }
  
   // employees table
   db.prepare(`
@@ -163,13 +118,6 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
       FOREIGN KEY(stationId) REFERENCES stations(id) ON DELETE CASCADE
     ) STRICT
   `).run();
-  
-  // Add encryptedPassword column if it doesn't exist (migration)
-  try {
-    db.prepare("ALTER TABLE employees ADD COLUMN encryptedPassword TEXT").run();
-  } catch (err) {
-    // Column already exists, ignore error
-  }
 
   // groepspot table
   db.prepare(`
@@ -231,7 +179,7 @@ export function InitializeDatabase() { // moet async als we gaan hashen (met bcr
     ) STRICT
   `).run();
 
-  // budget_alarms table (for budget alerts per category)
+  // budget_alarms table
   db.prepare(`
     CREATE TABLE IF NOT EXISTS budget_alarms (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

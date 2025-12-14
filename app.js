@@ -33,17 +33,9 @@ app.use(session({
   }
 }));
 
-
 // set the view engine to ejs
 app.set("view engine", "ejs");
 app.set("views", "./views");
-
-// process.env.DEPLOYMENT is set by Docker Entrypoint // kan weg right?????????????????????
-if (!process.env.DEPLOYMENT) {
-  console.info("Development mode");
-  // Serve static files from the "public" directory
-  app.use(express.static("public"));
-}
 
 // Middleware for serving static files
 app.use(express.static("public"));

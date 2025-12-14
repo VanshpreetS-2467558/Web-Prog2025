@@ -1,8 +1,7 @@
 import { db } from "../../db.js";
 
 export function searchExistingVisit(eventId, userId) {
-  // Find active visit (no leftAt and heartbeat within last 2 minutes)
-  // Also check for visits with NULL heartbeat (new visits that haven't sent heartbeat yet)
+  // zoekt actieve bezoeker met heartbeat in de laatste 2 minuten en geen leftAt timestamp (als ze nog niet uitgecheckt zijn)
   return db.prepare(
     `
         SELECT id FROM event_visitors
@@ -56,9 +55,7 @@ export function updateVisitHeartbeat(eventId, userId){
 }
 
 export function getActiveVisitorsCount(eventId){
-    // Get visitors with heartbeat in last 2 minutes and no leftAt
-    // A visitor is active if they have no leftAt and heartbeat within the last 2 minutes
-    // Only count visitors with a recent heartbeat (not NULL - NULL means no recent activity)
+    // get aantal actieve bezoekers met heartbeat in de laatste 2 minuten en geen leftAt timestamp
     return db.prepare(`
         SELECT COUNT(DISTINCT userId) as count
         FROM event_visitors

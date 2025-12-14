@@ -1,5 +1,4 @@
-// Central export file for all database helper functions
-// All functions are organized per table in the utils/db/ folder
+// central export file for all database helper functions
 
 export * from "./db/users.js";
 export * from "./db/events.js";

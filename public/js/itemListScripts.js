@@ -427,8 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Update item stocks
       updateItemStocks();
 
-      // Show QR code dialog (same as normal order)
-      // stationId is optional, but transactionId and qrCode are required
+      // Show QR code dialog
       if(data.transactionId && data.qrCode){
         showOrderQRCode(data.transactionId, data.stationId || null, data.stationName || 'Onbekend station', data.orderCode, data.qrCode);
       } else {
@@ -541,10 +540,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch(err){
       console.error('Error checking stock:', err);
-      // Continue anyway if stock check fails (graceful degradation)
     }
 
-    // Removed balance check - users can add items beyond their balance for groepspot
 
     const existing = cart.find(i=>i.id===item.id);
     if(existing) existing.quantity++;
@@ -630,14 +627,13 @@ document.addEventListener('DOMContentLoaded', () => {
           showBudgetNotifications(data.budgetAlarms);
         } catch(budgetErr) {
           console.error('Error showing budget notifications:', budgetErr);
-          // Continue anyway - don't block the order flow
         }
       }
 
       // Close order confirmation dialog
       document.getElementById('bestelDialog').classList.add('hidden');
 
-      // Show QR code dialog immediately (even if budget was exceeded)
+      // Show QR code dialog immediately
       showOrderQRCode(data.transactionId, data.stationId, data.stationName, data.orderCode, data.qrCode);
 
       renderCart();
@@ -1064,7 +1060,7 @@ function startDynamicUpdates(){
     if(heartbeatInterval) clearInterval(heartbeatInterval);
     if(stockUpdateInterval) clearInterval(stockUpdateInterval);
     
-    // Close visit when leaving page (using fetch with keepalive for reliability)
+    // Close visit when leaving page
     if(typeof eventId !== 'undefined' && eventId) {
       // Use fetch with keepalive flag for reliable delivery even if page is closing
       fetch(`/list/events/${eventId}/leave`, {

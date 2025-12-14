@@ -53,7 +53,6 @@ export function deleteEvent(id) {
   try{
     db.prepare("BEGIN TRANSACTION").run();
     
-    // Delete in order to avoid foreign key constraint errors:
     // 1. Delete employees (references eventId and stationId)
     db.prepare(`DELETE FROM employees WHERE eventId = ?`).run(id);
     

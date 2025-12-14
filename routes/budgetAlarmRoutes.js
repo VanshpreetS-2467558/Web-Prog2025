@@ -59,14 +59,11 @@ budgetAlarmRouter.post("/", requireLogin("bezoeker"), (req, res) => {
         const existingAlarm = getBudgetAlarms(req.session.user.id)
             .find(a => a.category === category);
 
-        // === ⭐ AUTO-UPDATE HIER ⭐ ===
-        // Als alarm bestaat, gaan we automatisch updaten
+        // automatic update
         const isAutomaticUpdate = existingAlarm && !isUpdate;
 
-        // When editing (isUpdate = true), do NOT reset spending
-        // Only reset when creating new alarm (which now sets resetDate automatically)
-        // or when explicitly requested via reset button
-        const shouldReset = false; // Never auto-reset on edit/create
+        // should reset spending when creating new alarm or when explicitly requested via reset
+        const shouldReset = false;
 
         const result = upsertBudgetAlarm(
             req.session.user.id,

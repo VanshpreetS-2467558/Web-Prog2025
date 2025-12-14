@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" sizes="32x32">
     <title>Algemene Analyse - FestCoin</title>
@@ -14,10 +13,9 @@
     <main class="min-h-screen bg-gray-100">
         <%- include('../partials/generalAnalyse/mobileWarning') %>
         <%- include('../partials/generalAnalyse/analyseBody') %>
-
-        <script type="module" src="/js/analysePageScript.js"></script>
     </main>
 
     <%- include('../partials/index/footer') %>
+    <%- include('../partials/generalAnalyse/analyseScripts') %>
 </body>
 </html>

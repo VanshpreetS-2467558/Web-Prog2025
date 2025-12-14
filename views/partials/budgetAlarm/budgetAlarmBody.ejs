@@ -1,0 +1,45 @@
+<main class="py-16">
+    <section class="container mx-auto py-10 max-w-4xl">
+        <!-- Header -->
+        <div class="mb-8 bg-gradient-to-br from-blue-500/10 to-blue-500/5 border rounded-2xl p-6 shadow-sm">
+            <div class="mb-4">
+                <h2 class="flex items-center gap-2 text-2xl font-extrabold bg-gradientkleurSmallText bg-clip-text text-transparent">
+                    Budget Alarm Beheer
+                </h2>
+                <p class="text-gray-600 mt-2">Stel budget limieten in per categorie en ontvang notificaties wanneer je je budget overschrijdt.</p>
+            </div>
+        </div>
+
+        <!-- Add New Alarm Form -->
+        <div class="mb-8 bg-white border rounded-2xl p-6 shadow-sm">
+            <h3 class="text-xl font-bold mb-4 text-gray-800">Nieuw Budget Alarm</h3>
+            <form id="addAlarmForm" class="space-y-4">
+                <div>
+                    <label for="alarmCategory" class="block text-sm font-medium text-gray-700 mb-2">Categorie</label>
+                    <select id="alarmCategory" name="category" required class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <option value="" disabled selected>Selecteer een categorie</option>
+                        <option value="Drank">Drank</option>
+                        <option value="Eten">Eten</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="alarmBudgetLimit" class="block text-sm font-medium text-gray-700 mb-2">Budget Limiet (FestCoins)</label>
+                    <input type="number" id="alarmBudgetLimit" name="budgetLimit" min="0" step="1" required 
+                           class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                           placeholder="Bijv. 500">
+                </div>
+                <button type="submit" class="w-full bg-purple-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-600 transition-colors">
+                    Alarm Toevoegen
+                </button>
+            </form>
+        </div>
+
+        <!-- Active Alarms List -->
+        <%- include("alarmsList") %>
+    </section>
+</main>
+
+<!-- Edit Modal -->
+<%- include("editModal") %>
+
