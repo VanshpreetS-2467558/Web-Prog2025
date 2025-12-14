@@ -164,9 +164,10 @@ export function getUserTransactions(userId, limit = null) {
         
         // Then enrich each transaction with items and event info
         const enrichedTransactions = transactions.map(trans => {
-            // Check if this is a groepspot transaction by checking if items match a groepspot
-            const groepspotCheck = db.prepare(`
-                SELECT g.id, g.eventId, g.totalAmount, g.createdAt, e.name as eventName
+            // Check if this is a groepspot transaction
+            // First check if user is creator
+            let groepspotCheck = db.prepare(`
+                SELECT DISTINCT g.id, g.eventId, g.totalAmount, g.createdAt, e.name as eventName, g.creatorId
                 FROM groepspot g
                 LEFT JOIN events e ON g.eventId = e.id
                 WHERE g.creatorId = ? AND g.status = 'completed'
@@ -178,6 +179,52 @@ export function getUserTransactions(userId, limit = null) {
                 ORDER BY g.createdAt DESC
                 LIMIT 1
             `).get(userId, trans.totalPrice, trans.id);
+            
+            // If not found as creator, check if user is a contributor
+            // Match by contribution amount and check if transaction items match groepspot items
+            if (!groepspotCheck) {
+                // Get transaction items
+                const transItems = db.prepare(`
+                    SELECT itemId, itemName, quantity
+                    FROM transaction_items
+                    WHERE transactionId = ?
+                    ORDER BY itemId, quantity
+                `).all(trans.id);
+                
+                if (transItems.length > 0) {
+                    // Check if there's a groepspot where user contributed this amount
+                    // and the items match
+                    const groepspotCandidates = db.prepare(`
+                        SELECT DISTINCT g.id, g.eventId, g.totalAmount, g.createdAt, e.name as eventName, g.creatorId
+                        FROM groepspot g
+                        LEFT JOIN events e ON g.eventId = e.id
+                        JOIN groepspot_contributions gc ON g.id = gc.groepspotId
+                        WHERE gc.contributorId = ? AND g.status = 'completed'
+                        AND gc.amount = ?
+                        ORDER BY g.createdAt DESC
+                    `).all(userId, trans.totalPrice);
+                    
+                    // Check if items match for any candidate
+                    for (const candidate of groepspotCandidates) {
+                        const groepspotItems = getGroepspotItems(candidate.id);
+                        
+                        // Check if items match (same count and same items)
+                        if (groepspotItems.length === transItems.length) {
+                            const itemsMatch = groepspotItems.every(gsItem => {
+                                return transItems.some(tItem => 
+                                    tItem.itemId === gsItem.itemId && 
+                                    tItem.quantity === gsItem.quantity
+                                );
+                            });
+                            
+                            if (itemsMatch) {
+                                groepspotCheck = candidate;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
             
             if (groepspotCheck) {
                 // This is a groepspot transaction
@@ -290,7 +337,8 @@ export function getTransactionDetails(transactionId, userId) {
         if (!transaction) return null;
         
         // Check if this is a groepspot transaction
-        const groepspot = db.prepare(`
+        // First check if user is creator
+        let groepspot = db.prepare(`
             SELECT g.*, e.name as eventName, e.location as eventLocation
             FROM groepspot g
             LEFT JOIN events e ON g.eventId = e.id
@@ -303,6 +351,52 @@ export function getTransactionDetails(transactionId, userId) {
             ORDER BY g.createdAt DESC
             LIMIT 1
         `).get(userId, transaction.totalPrice, transactionId);
+        
+        // If not found as creator, check if user is a contributor
+        // Match by contribution amount and check if transaction items match groepspot items
+        if (!groepspot) {
+            // Get transaction items
+            const transItems = db.prepare(`
+                SELECT itemId, itemName, quantity
+                FROM transaction_items
+                WHERE transactionId = ?
+                ORDER BY itemId, quantity
+            `).all(transactionId);
+            
+            if (transItems.length > 0) {
+                // Check if there's a groepspot where user contributed this amount
+                // and the items match
+                const groepspotCandidates = db.prepare(`
+                    SELECT DISTINCT g.*, e.name as eventName, e.location as eventLocation
+                    FROM groepspot g
+                    LEFT JOIN events e ON g.eventId = e.id
+                    JOIN groepspot_contributions gc ON g.id = gc.groepspotId
+                    WHERE gc.contributorId = ? AND g.status = 'completed'
+                    AND gc.amount = ?
+                    ORDER BY g.createdAt DESC
+                `).all(userId, transaction.totalPrice);
+                
+                // Check if items match for any candidate
+                for (const candidate of groepspotCandidates) {
+                    const groepspotItems = getGroepspotItems(candidate.id);
+                    
+                    // Check if items match (same count and same items)
+                    if (groepspotItems.length === transItems.length) {
+                        const itemsMatch = groepspotItems.every(gsItem => {
+                            return transItems.some(tItem => 
+                                tItem.itemId === gsItem.itemId && 
+                                tItem.quantity === gsItem.quantity
+                            );
+                        });
+                        
+                        if (itemsMatch) {
+                            groepspot = candidate;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
         
         if (groepspot) {
             // Get groepspot details

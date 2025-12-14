@@ -1,5 +1,6 @@
 import express from "express";
-import {updateCoins, idExists ,getUserById, transferCoins, createFestCoinsTransaction, getUserTypeById} from "../utils/dbHulpfuncties.js";
+import {updateCoins, idExists, getUserById, transferCoins, getUserTypeById} from "../utils/db/users.js";
+import {createFestCoinsTransaction} from "../utils/db/festcoinsTransactions.js";
 import {checkUserAndAmount} from "../utils/validatieHulpfuncties.js";
 
 const beheerCoinsRouter = express.Router();
@@ -112,7 +113,7 @@ beheerCoinsRouter.get("/festcoins-transactions", async (req, res) => {
     if (!user) return res.json({ success: false, error: "Niet ingelogd" });
 
     try {
-        const { getFestCoinsTransactions } = await import("../utils/dbHulpfuncties.js");
+        const { getFestCoinsTransactions } = await import("../utils/db/festcoinsTransactions.js");
         const transactions = getFestCoinsTransactions(user.id);
         res.json({ success: true, transactions });
     } catch (err) {

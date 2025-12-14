@@ -16,7 +16,7 @@ import { checkEventName,
 import { deleteItem } from "../utils/db/items.js";
 import { deleteLocation } from "../utils/db/stations.js";
 import {requireLogin} from "../middleware/requireLogin.js";
-import { getActiveVisitorsCount } from "../utils/dbHulpfuncties.js";
+import { getActiveVisitorsCount } from "../utils/db/eventVisitors.js";
 
 
 const eventRouter = express.Router();
@@ -72,7 +72,7 @@ eventRouter.get("/evenementen", requireLogin("bezoeker"), async (req, res) => {
         });
 
         // Add visitor count to each event
-        const { getActiveVisitorsCount } = await import("../utils/dbHulpfuncties.js");
+        const { getActiveVisitorsCount } = await import("../utils/db/eventVisitors.js");
         events.forEach(event => {
             event.attendees = getActiveVisitorsCount(event.id);
         });

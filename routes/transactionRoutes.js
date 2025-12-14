@@ -9,7 +9,7 @@ import {
     getAllTransactionsForEmployee
 } from "../utils/db/transactions.js";
 import { requireLogin } from "../middleware/requireLogin.js";
-import {checkBudgetLimits } from "../utils/dbHulpfuncties.js";
+import {checkBudgetLimits} from "../utils/db/budgetAlarms.js";
 
 
 const transactionRouter = express.Router();

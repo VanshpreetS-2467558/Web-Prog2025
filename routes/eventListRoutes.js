@@ -4,7 +4,8 @@ import { searchEventById } from "../utils/db/events.js";
 import { searchStationByEventId } from "../utils/db/stations.js";
 import { searchItemsByStationId } from "../utils/db/items.js";
 import { searchExistingVisit, makeVisit, closeVisit, cleanupOldVisits } from "../utils/db/eventVisitors.js";
-import {updateVisitHeartbeat, getActiveVisitorsCount, getUserById } from "../utils/dbHulpfuncties.js";
+import {updateVisitHeartbeat, getActiveVisitorsCount} from "../utils/db/eventVisitors.js";
+import {getUserById} from "../utils/db/users.js";
 
 import {requireLogin} from "../middleware/requireLogin.js";
 
@@ -81,7 +82,7 @@ eventListRouter.get("/user/festcoins", requireLogin("bezoeker"), (req, res) => {
 
 // Get transactions
 eventListRouter.get("/user/transactions", requireLogin("bezoeker"), async (req, res) => {
-  const { getFestCoinsTransactions } = await import("../utils/dbHulpfuncties.js");
+  const { getFestCoinsTransactions } = await import("../utils/db/festcoinsTransactions.js");
   const transactions = getFestCoinsTransactions(req.session.user.id, 4);
   res.json({ success: true, transactions });
 });

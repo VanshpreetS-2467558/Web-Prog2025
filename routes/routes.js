@@ -74,7 +74,7 @@ router.get("/workStation", requireLogin("employee") ,(request,response)=>{
 
 // wallet pagina (bezoeker)
 router.get("/wallet", requireLogin("bezoeker") , async (request,response)=>{
-  const { getFestCoinsTransactions } = await import("../utils/dbHulpfuncties.js");
+  const { getFestCoinsTransactions } = await import("../utils/db/festcoinsTransactions.js");
   const transactions = getFestCoinsTransactions(request.session.user.id, 4);
   const tab = request.query.tab || "buy";
   response.render("pages/walletBeheer", { transactions, tab });

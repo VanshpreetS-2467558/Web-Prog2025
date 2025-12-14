@@ -1,6 +1,7 @@
 import express from "express";
 import { requireLogin } from "../middleware/requireLogin.js";
-import { getOrderDetails, getOrderDetailsByQrCode, getOrderDetailsByOrderCode, getEmployeeStationId, getEmployeeEventId, markOrderAsHandled } from "../utils/dbHulpfuncties.js";
+import { getOrderDetails, getOrderDetailsByQrCode, getOrderDetailsByOrderCode, markOrderAsHandled } from "../utils/db/transactions.js";
+import { getEmployeeStationId, getEmployeeEventId } from "../utils/db/employees.js";
 
 
 const orderRouter = express.Router();

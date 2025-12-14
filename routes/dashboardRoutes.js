@@ -36,9 +36,9 @@ dashboardRouter.get("/", requireLogin() ,async (request,response)=>{
         getSpendingPerEvent,
         getSpendingToday,
         getTotalSpending,
-        getUserTransactions,
-        getUserPoints
-      } = await import("../utils/dbHulpfuncties.js");
+        getUserTransactions
+      } = await import("../utils/db/userDashboard.js");
+      const {getUserPoints} = await import("../utils/db/userPoints.js");
 
       const categorySpending = getSpendingPerCategory(request.session.user.id);
       const eventSpending = getSpendingPerEvent(request.session.user.id);
@@ -284,7 +284,7 @@ dashboardRouter.get("/export-pdf", requireLogin("organisator"), async (req, res)
 
 // Get all transactions for dashboard
 dashboardRouter.get("/transactions", requireLogin("bezoeker"), async (request, response) => {
-  const { getUserTransactions } = await import("../utils/dbHulpfuncties.js");
+  const { getUserTransactions } = await import("../utils/db/userDashboard.js");
   const transactions = getUserTransactions(request.session.user.id);
   response.json({ success: true, transactions });
 });
@@ -292,7 +292,7 @@ dashboardRouter.get("/transactions", requireLogin("bezoeker"), async (request, r
 
 // Get event spending details
 dashboardRouter.get("/event/:eventId/details", requireLogin("bezoeker"), async (request, response) => {
-  const { getEventSpendingDetails } = await import("../utils/dbHulpfuncties.js");
+  const { getEventSpendingDetails } = await import("../utils/db/userDashboard.js");
   const eventId = parseInt(request.params.eventId);
   const details = getEventSpendingDetails(request.session.user.id, eventId);
   response.json({ success: true, details });
@@ -301,7 +301,7 @@ dashboardRouter.get("/event/:eventId/details", requireLogin("bezoeker"), async (
 // Get transaction details
 dashboardRouter.get("/transaction/:transactionId/details", requireLogin("bezoeker"), async (request, response) => {
   try {
-    const { getTransactionDetails } = await import("../utils/dbHulpfuncties.js");
+    const { getTransactionDetails } = await import("../utils/db/userDashboard.js");
     const transactionId = parseInt(request.params.transactionId);
     const transaction = getTransactionDetails(transactionId, request.session.user.id);
     if (transaction) {
@@ -315,7 +315,7 @@ dashboardRouter.get("/transaction/:transactionId/details", requireLogin("bezoeke
   }
 });
 
-// Get dashboard data (for real-time updates) - visitor only
+// Get dashboard data voor real-time updates 
 dashboardRouter.get("/user-data", requireLogin("bezoeker"), async (request, response) => {
   try {
     const {
@@ -324,7 +324,7 @@ dashboardRouter.get("/user-data", requireLogin("bezoeker"), async (request, resp
       getSpendingToday,
       getTotalSpending,
       getUserTransactions
-    } = await import("../utils/dbHulpfuncties.js");
+    } = await import("../utils/db/userDashboard.js");
     
     const categorySpending = getSpendingPerCategory(request.session.user.id);
     const eventSpending = getSpendingPerEvent(request.session.user.id);
@@ -348,14 +348,15 @@ dashboardRouter.get("/user-data", requireLogin("bezoeker"), async (request, resp
 
 // Get user points
 dashboardRouter.get("/points", requireLogin("bezoeker"), async (request, response) => {
-  const { getUserPoints } = await import("../utils/dbHulpfuncties.js");
+  const { getUserPoints } = await import("../utils/db/userPoints.js");
   const points = getUserPoints(request.session.user.id);
   response.json({ success: true, points });
 });
 
 // Claim points reward
 dashboardRouter.post("/points/claim", requireLogin("bezoeker"), async (request, response) => {
-  const { claimPointsReward, getUserById } = await import("../utils/dbHulpfuncties.js");
+  const { claimPointsReward } = await import("../utils/db/userPoints.js");
+  const { getUserById } = await import("../utils/db/users.js");
   const result = claimPointsReward(request.session.user.id);
   
   if (result.success) {

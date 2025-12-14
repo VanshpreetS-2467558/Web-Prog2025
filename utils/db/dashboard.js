@@ -49,12 +49,14 @@ export function getVisitorsPerHourToday(organizerId, eventId = null) {
 export function getTotalRevenue(organizerId, eventId = null) {
   let query = `
     SELECT COALESCE(SUM(t.totalPrice), 0) as total
-    FROM transactions t
-    JOIN transaction_items ti ON t.id = ti.transactionId
-    JOIN items i ON ti.itemId = i.id
-    JOIN stations s ON i.locationId = s.id
-    JOIN events e ON s.eventId = e.id
-    WHERE e.organisatorid = ?
+    FROM (
+      SELECT DISTINCT t.id, t.totalPrice
+      FROM transactions t
+      JOIN transaction_items ti ON t.id = ti.transactionId
+      JOIN items i ON ti.itemId = i.id
+      JOIN stations s ON i.locationId = s.id
+      JOIN events e ON s.eventId = e.id
+      WHERE e.organisatorid = ?
   `;
   
   const params = [organizerId];
@@ -63,6 +65,8 @@ export function getTotalRevenue(organizerId, eventId = null) {
     query += ` AND e.id = ?`;
     params.push(eventId);
   }
+  
+  query += `) t`;
   
   const result = db.prepare(query).get(...params);
   return result?.total || 0;
@@ -127,14 +131,16 @@ export function getTransactionsPerHourToday(organizerId, eventId = null) {
     SELECT 
       strftime('%H:00', t.date) as hour,
       COALESCE(SUM(t.totalPrice), 0) as revenue,
-      COUNT(DISTINCT t.id) as count
-    FROM transactions t
-    JOIN transaction_items ti ON t.id = ti.transactionId
-    JOIN items i ON ti.itemId = i.id
-    JOIN stations s ON i.locationId = s.id
-    JOIN events e ON s.eventId = e.id
-    WHERE e.organisatorid = ?
-    AND DATE(t.date) = DATE('now')
+      COUNT(t.id) as count
+    FROM (
+      SELECT DISTINCT t.id, t.date, t.totalPrice
+      FROM transactions t
+      JOIN transaction_items ti ON t.id = ti.transactionId
+      JOIN items i ON ti.itemId = i.id
+      JOIN stations s ON i.locationId = s.id
+      JOIN events e ON s.eventId = e.id
+      WHERE e.organisatorid = ?
+      AND DATE(t.date) = DATE('now')
   `;
   
   const params = [organizerId];
@@ -144,7 +150,7 @@ export function getTransactionsPerHourToday(organizerId, eventId = null) {
     params.push(eventId);
   }
   
-  query += ` GROUP BY strftime('%H:00', t.date) ORDER BY hour`;
+  query += `) t GROUP BY strftime('%H:00', t.date) ORDER BY hour`;
   
   return db.prepare(query).all(...params);
 }
@@ -239,17 +245,21 @@ export function getStationRevenueByEmployee(employeeId) {
   if(!stationRow) return 0;
   const revenueRow = db.prepare(`
     SELECT COALESCE(SUM(t.totalPrice), 0) as total
-    FROM transactions t
-    JOIN transaction_items ti ON t.id = ti.transactionId
-    JOIN items i ON ti.itemId = i.id
-    WHERE i.locationId = ?
+    FROM (
+      SELECT DISTINCT t.id, t.totalPrice
+      FROM transactions t
+      JOIN transaction_items ti ON t.id = ti.transactionId
+      JOIN items i ON ti.itemId = i.id
+      WHERE i.locationId = ?
+    ) t
   `).get(stationRow.id);
 
   return revenueRow?.total || 0;
 }
 
 export function getEventInfoByEmployee(employeeId) {
-  const eventRow = db.prepare(`
+  // First try to get a live event
+  const liveEvent = db.prepare(`
     SELECT e.id, e.startDate, e.endDate
     FROM events e
     JOIN stations s ON e.id = s.eventId
@@ -261,12 +271,32 @@ export function getEventInfoByEmployee(employeeId) {
     LIMIT 1
   `).get(employeeId);
 
-  if(!eventRow) return null;
-  return{
-    id: eventRow.id,
-    startDate: eventRow.startDate,
-    endDate: eventRow.endDate
+  if (liveEvent) {
+    return {
+      id: liveEvent.id,
+      startDate: liveEvent.startDate,
+      endDate: liveEvent.endDate
+    };
   }
+
+  // If no live event, get the most recent event
+  const recentEvent = db.prepare(`
+    SELECT e.id, e.startDate, e.endDate
+    FROM events e
+    JOIN stations s ON e.id = s.eventId
+    JOIN employees emp ON s.id = emp.stationId
+    WHERE emp.userId = ?
+    ORDER BY e.startDate DESC
+    LIMIT 1
+  `).get(employeeId);
+
+  if (!recentEvent) return null;
+  
+  return {
+    id: recentEvent.id,
+    startDate: recentEvent.startDate,
+    endDate: recentEvent.endDate
+  };
 }
 
 export function getSalesTodayByEmployee(employeeId) {
@@ -281,12 +311,15 @@ export function getSalesTodayByEmployee(employeeId) {
     SELECT 
       strftime('%H:00', t.date) as time,
       COALESCE(SUM(t.totalPrice), 0) as sales,
-      COUNT(DISTINCT t.id) as count
-    FROM transactions t
-    JOIN transaction_items ti ON t.id = ti.transactionId
-    JOIN items i ON ti.itemId = i.id
-    WHERE i.locationId = ?
-    AND DATE(t.date) = DATE('now')
+      COUNT(t.id) as count
+    FROM (
+      SELECT DISTINCT t.id, t.date, t.totalPrice
+      FROM transactions t
+      JOIN transaction_items ti ON t.id = ti.transactionId
+      JOIN items i ON ti.itemId = i.id
+      WHERE i.locationId = ?
+      AND DATE(t.date) = DATE('now')
+    ) t
     GROUP BY strftime('%H:00', t.date)
     ORDER BY time
   `).all(stationRow.id);

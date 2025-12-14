@@ -6,13 +6,14 @@ import {
     addGroepspotContribution,
     getGroepspotContributions,
     finalizeGroepspot,
-    getFestcoinsById,
     updateGroepspotContribution,
     deleteGroepspotContribution,
     getCreatorContribution,
-    createFestCoinsTransaction,
-    getUserById
-} from "../utils/dbHulpfuncties.js";
+    getGroepspotItems
+} from "../utils/db/groepspot.js";
+import {getFestcoinsById, getUserById} from "../utils/db/users.js";
+import {createFestCoinsTransaction} from "../utils/db/festcoinsTransactions.js";
+import {checkBudgetLimits} from "../utils/db/budgetAlarms.js";
 import crypto from "crypto";
 
 const groepspotRouter = express.Router();
@@ -274,13 +275,11 @@ groepspotRouter.post("/finalize", async (req, res) => {
         }
 
         // Check budget limits for creator before finalizing
-        const { getGroepspotItems } = await import("../utils/dbHulpfuncties.js");
         const groepspotItems = getGroepspotItems(groepspot.id);
         const itemsDict = {};
         groepspotItems.forEach(item => {
             itemsDict[item.itemId] = item.quantity;
         });
-        const { checkBudgetLimits } = await import("../utils/dbHulpfuncties.js");
         const budgetCheck = checkBudgetLimits(groepspot.creatorId, itemsDict);
 
         const result = finalizeGroepspot(groepspot.id);

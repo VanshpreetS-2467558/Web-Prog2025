@@ -274,6 +274,49 @@ export function finalizeGroepspot(groepspotId){
             updateStock.run(item.quantity, item.itemId);
         });
 
+        // Create transactions for each contributor (so they can see the order in their transactions)
+        contributions.forEach(contrib => {
+            // Only create transaction for contributors (not for creator, as they already have one)
+            if (contrib.contributorId !== groepspot.creatorId) {
+                // Generate unique order code for this contributor
+                let contribOrderCode;
+                let isContribOrderCodeUnique = false;
+                while (!isContribOrderCodeUnique) {
+                    contribOrderCode = Math.floor(100000 + Math.random() * 900000).toString();
+                    const existing = db.prepare(`SELECT id FROM transactions WHERE orderCode = ?`).get(contribOrderCode);
+                    if (!existing) {
+                        isContribOrderCodeUnique = true;
+                    }
+                }
+                
+                // Generate unique QR code for this contributor
+                let contribQrCode;
+                let isContribQrCodeUnique = false;
+                while (!isContribQrCodeUnique) {
+                    contribQrCode = `ORDER_${crypto.randomBytes(16).toString('hex')}`;
+                    const existing = db.prepare(`SELECT id FROM transactions WHERE qrCode = ?`).get(contribQrCode);
+                    if (!existing) {
+                        isContribQrCodeUnique = true;
+                    }
+                }
+                
+                // Create transaction for contributor with their contribution amount
+                // Each transaction has unique qrCode and orderCode
+                const contribTransactionResult = db.prepare(`
+                    INSERT INTO transactions (bezoekerId, totalPrice, qrCode, orderCode) VALUES (?, ?, ?, ?)
+                `).run(contrib.contributorId, contrib.amount, contribQrCode, contribOrderCode);
+                
+                const contribTransactionId = contribTransactionResult.lastInsertRowid;
+                
+                // Add the same items to contributor's transaction (so they can see what was ordered)
+                items.forEach(item => {
+                    const itemRow = db.prepare("SELECT category FROM items WHERE id = ?").get(item.itemId);
+                    const category = itemRow?.category || 'Others';
+                    insertItem.run(contribTransactionId, item.itemId, item.itemName, item.itemPrice, item.quantity, category);
+                });
+            }
+        });
+
         // Update groepspot status
         db.prepare(`
             UPDATE groepspot SET status = 'completed' WHERE id = ?

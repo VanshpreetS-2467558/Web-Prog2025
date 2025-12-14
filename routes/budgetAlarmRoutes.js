@@ -7,14 +7,14 @@ import {
     toggleBudgetAlarm,
     getCategorySpending,
     resetBudgetAlarmSpending
-} from "../utils/dbHulpfuncties.js";
+} from "../utils/db/budgetAlarms.js";
 
 const budgetAlarmRouter = express.Router();
 
 
 // budget alarm pagina (bezoeker)
 budgetAlarmRouter.get("/", requireLogin("bezoeker"), async (request, response) => {
-  const { getBudgetAlarms, getCategorySpending } = await import("../utils/dbHulpfuncties.js");
+  const { getBudgetAlarms, getCategorySpending } = await import("../utils/db/budgetAlarms.js");
   const alarms = getBudgetAlarms(request.session.user.id);
   
   // Add current spending for each alarm

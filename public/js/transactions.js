@@ -92,12 +92,9 @@ function renderRecentTransactions(transactions) {
     container.innerHTML = transactions.map(t => {
         const date = new Date(t.date);
         const time = date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
-        // For organizers, show positive numbers (revenue). For others, show negative (expense)
         const amount = isOrganizer ? t.totalPrice : -t.totalPrice;
         const colorClass = isOrganizer ? 'text-green-500' : 'text-red-500';
-        // Items now includes quantity: "Item Name (2x), Another Item (1x)"
         const itemsString = t.items || t.itemName || 'Transactie';
-        // Split by comma and format with proper spacing
         const itemsArray = itemsString.split(',').map(item => item.trim());
         const itemsFormatted = itemsArray.length > 1 
             ? itemsArray.map(item => `<span class="inline-block mr-2">${item}</span>`).join('')
@@ -171,11 +168,9 @@ function renderAllTransactions(transactions) {
             day: 'numeric' 
         });
         const time = date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
-        // For organizers, show positive numbers (revenue). For others, show negative (expense)
         const amount = isOrganizer ? t.totalPrice : -t.totalPrice;
         const colorClass = isOrganizer ? 'text-green-500' : 'text-red-500';
         const itemsString = t.items || t.itemName || 'Transactie';
-        // Split by comma and format with proper spacing
         const itemsArray = itemsString.split(',').map(item => item.trim());
         const itemsFormatted = itemsArray.length > 1 
             ? itemsArray.map(item => `<span class="inline-block mr-2 mb-1">${item}</span>`).join('')
