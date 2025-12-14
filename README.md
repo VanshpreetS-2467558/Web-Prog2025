@@ -22,7 +22,7 @@
 
 ## Functionaliteit
 
-Het project werkt volledig zoals bedoeld. Alle kernfunctionaliteiten zijn operationeel en er zijn meerdere extra’s toegevoegd.
+Het project werkt volledig zoals bedoeld. Alle kernfunctionaliteiten zijn operationeel en er zijn meerdere extra’s toegevoegd. Het zou mogelijk zijn dat er nog (kleine) bugs inzitten die we zelf niet hebben gevonden, maar deze moeten in principe makkelijk en snel op te lossen zijn.
 
 - Aparte frontends voor bezoekers, organisatoren en werknemers
 - Accountsysteem met correcte rolverdeling
@@ -89,8 +89,8 @@ Het project werkt volledig zoals bedoeld. Alle kernfunctionaliteiten zijn operat
 
 ## AI Usage
 
-- Door tijdsdruk is Cursor gebruikt om de frontendstructuur te matchen met eerdere code.
-- AI (ChatGPT/Copilot) is gebruikt voor kleine vragen zoals syntax, optimalisaties.
+- Door tijdsdruk is Cursor gebruikt om de frontendstructuur te laten aansluiten op eerdere code en voor bepaalde uitbreidingen.
+- AI (ChatGPT/Copilot/claude/cursor) is gebruikt voor kleine vragen zoals syntax-verbeteringen en optimalisaties.
 - Het grootste deel van de code is zelfgeschreven door Vansh en Theo.
 
 ## Docker
